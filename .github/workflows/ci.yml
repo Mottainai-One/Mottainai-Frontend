@@ -130,7 +130,7 @@ jobs:
           echo "Verificando comentários em arquivos TypeScript..."
           
           # Extrair comentários de arquivos .ts/.tsx
-          find src/ -name "*.ts" -o -name "*.tsx" | xargs grep -Hn "//\|/\*\|\*" {} > /tmp/comments.txt || true
+          find src/ \( -name "*.ts" -o -name "*.tsx" \) -exec grep -Hn "//\|/\*\|\*" {} \; > /tmp/comments.txt || true
           
           if [ ! -s /tmp/comments.txt ]; then
             echo "Nenhum comentário encontrado"
