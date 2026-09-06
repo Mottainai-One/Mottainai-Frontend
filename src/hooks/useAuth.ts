@@ -11,3 +11,4 @@ export function useAuth(): AuthContextData {
 
   return context;
 }
+
