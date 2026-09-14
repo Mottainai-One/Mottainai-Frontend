@@ -1,0 +1,22 @@
+.layout {
+    min-height: 100vh;
+    background-color: var(--main-white);
+}
+.content-shell {
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+}
+.content {
+    min-height: calc(100vh - 64px);
+    padding: 32px 40px;
+    color: var(--motta-green);
+}
+@media (max-width: 768px) {
+    .content-shell {
+    margin-left: 0;
+}
+    .content {
+    min-height: calc(100vh - 64px);
+    padding: 24px;
+}
+}
