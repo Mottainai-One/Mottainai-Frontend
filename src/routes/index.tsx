@@ -11,6 +11,8 @@ import ProductTransfer from "@/pages/ProductTransfer";
 import UsageHistory from "@/pages/UsageHistory";
 import ProductsRegistration from "@/pages/ProductsRegistration";
 import Settings from "@/pages/Settings";
+import MainLayout from "@/components/MainLayout";
+import NewPassword from "@/pages/NewPassword";
 
 export default function AppRoutes() {
   return (
@@ -20,21 +22,27 @@ export default function AppRoutes() {
         <Route path="/" element={<Login/>} />
         <Route path="/login" element={<Login/>} />
 
+        {/* Fluxo público de recuperação de senha */}
+        <Route path="/passwordRecovery" element={<PasswordRecovery/>}/>
+        <Route path="/newPassword" element={<NewPassword/>}/>
+
         {/* Rotas Privadas */}
         <Route element={<PrivateRoute/>}>
-          <Route path="/overview" element={<Overview/>}/>
-          <Route path="/home" element={<Home/>}/>
-          <Route path="/users" element={<Users/>}/>
-          <Route path="/passwordRecovery" element={<PasswordRecovery/>}/>
-          <Route path="/productTransfer" element={<ProductTransfer/>}/>
-          <Route path="/settings" element={<Settings/>}/>
-          <Route path="/usageHistory" element={<UsageHistory/>}/>
-          <Route path="/expiringProducts" element={<ExpiringProducts/>}/>
-          <Route path="/productsRegistration" element={<ProductsRegistration/>}/>
+          <Route element={<MainLayout/>}>
+            <Route path="/overview" element={<Overview/>}/>
+            <Route path="/home" element={<Home/>}/>
+            <Route path="/users" element={<Users/>}/>
+            <Route path="/productTransfer" element={<ProductTransfer/>}/>
+            <Route path="/usageHistory" element={<UsageHistory/>}/>
+            <Route path="/expiringProducts" element={<ExpiringProducts/>}/>
+            <Route path="/productsRegistration" element={<ProductsRegistration/>}/>
+            <Route path="/account" element={<Settings/>}/>
+            <Route path="/settings" element={<Settings/>}/>
+          </Route>
         </Route>
 
         {/* Um 'else' para erros */}
-        <Route path="*" element={<ErrorPage/>}></Route>
+        <Route path="*" element={<ErrorPage/>}/>
       </Routes>
     </BrowserRouter>
   );
