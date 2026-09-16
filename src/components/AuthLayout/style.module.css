@@ -1,0 +1,239 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+  background-color: var(--main-white);
+}
+
+.authSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 0;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  background-color: var(--main-white);
+}
+
+.logo {
+  width: 120px;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin-bottom: 0.5rem;
+  color: var(--motta-green);
+  font-size: clamp(1.8rem, 3vw, 2.2rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.subtitle {
+  max-width: 380px;
+  margin-bottom: 2.5rem;
+  color: #5f5b5b;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  border: 0;
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
+}
+
+.input {
+  width: 100%;
+  padding: 16px 24px;
+  border: 1px solid var(--main-gray);
+  border-radius: 50px;
+  outline: none;
+  background-color: transparent;
+  color: var(--motta-green);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.input::placeholder {
+  color: #666161;
+}
+
+.input:focus-visible,
+.backButton:focus-visible,
+.secondaryButton:focus-visible,
+.submitButton:focus-visible,
+.togglePasswordButton:focus-visible {
+  outline: 2px solid var(--motta-light-green);
+  outline-offset: 3px;
+}
+
+.input[aria-invalid='true'] {
+  border-color: #b3261e;
+}
+
+.passwordField {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordField .input {
+  padding-right: 50px;
+}
+
+.togglePasswordButton {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--main-gray);
+  cursor: pointer;
+}
+
+.submitButton,
+.secondaryButton,
+.backButton {
+  border: 0;
+  border-radius: 50px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.submitButton {
+  padding: 18px;
+  margin-top: 0.75rem;
+  background-color: var(--motta-green);
+  color: var(--main-white);
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: var(--motta-light-green);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.secondaryButton {
+  padding: 12px 18px;
+  background: transparent;
+  color: var(--motta-green);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.forgotPasswordButton {
+  align-self: flex-end;
+  margin-top: -4px;
+  border: 0;
+  background: transparent;
+  color: var(--motta-green);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.forgotPasswordButton:focus-visible {
+  outline: 2px solid var(--motta-light-green);
+  outline-offset: 3px;
+}
+
+.backButton {
+  align-self: center;
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: var(--motta-green);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.feedbackMessage {
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.successMessage {
+  background-color: #e8f5eb;
+  color: #14321c;
+}
+
+.errorMessage {
+  background-color: #fcebea;
+  color: #8f1d18;
+}
+
+.codeHint,
+.passwordRequirements {
+  color: #5f5b5b;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.passwordRequirements {
+  margin-top: -0.5rem;
+}
+
+.mascotSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--motta-green);
+}
+
+.mascotImage {
+  width: min(100%, 500px);
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .mascotSection {
+    display: none;
+  }
+
+  .authSection {
+    min-height: 100vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .submitButton {
+    transition: none;
+  }
+}

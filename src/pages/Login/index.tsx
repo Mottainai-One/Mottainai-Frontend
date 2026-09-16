@@ -1,9 +1,9 @@
 import { useEffect, useId, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import type { LoginFormState } from '@/types/login.types';
 import { useLocation, useNavigate } from 'react-router';
-import mottainaiLogo from '@/assets/icons/Logo.png';
-import lontraMascot from '@/assets/imgs/lontra-mascot.png';
-import styles from './style.module.css';
+import AuthLayout from '@/components/AuthLayout';
+import styles from '@/components/AuthLayout/style.module.css';
 import { useAuth } from '@/hooks/useAuth'
 import  Loading  from '@/components/Loading'
 import {
@@ -12,12 +12,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-interface LoginFormState {
-  userEmail: string;
-  password: string;
-}
-
-export function LoginPage() {
+export function Login() {
     const userEmailFieldId = useId();
     const passwordFieldId = useId();
     const errorMessageId = useId();
@@ -66,16 +61,10 @@ export function LoginPage() {
     }
 
     return (
-        
-    <main className={styles.container}>
-        <article className={styles.loginSection}>
-        <img src={mottainaiLogo} alt="Logotipo do Mottainai" className={styles.logo} />
-
-        <h1 className={styles.title}>Bem-vindo de volta!</h1>
-        <p className={styles.subtitle}>
-            Simplificando seu estoque, tudo em um mesmo lugar.
-        </p>
-
+    <AuthLayout
+        title="Bem-vindo de volta!"
+        description="Simplificando seu estoque, tudo em um mesmo lugar."
+    >
         <form
             className={styles.form}
             onSubmit={handleSubmit}
@@ -141,13 +130,8 @@ export function LoginPage() {
             {isLoggingIn ? 'Entrando...' : 'Acessar Conta'}
             </button>
         </form>
-        </article>
-
-        <article className={styles.mascotSection} aria-hidden="true">
-        <img src={lontraMascot} alt="" className={styles.mascotImage} />
-        </article>
-    </main>
+    </AuthLayout>
     );
 }
 
-export default LoginPage
+export default Login
