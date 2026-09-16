@@ -32,3 +32,13 @@ export interface AuthContextData {
   logout: () => void;
   clearError: () => void;
 }
+
+export interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export interface AuthState {
+  token: string | null;
+  user: User | null;
+}
+import type { ReactNode } from 'react';

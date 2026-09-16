@@ -1,0 +1,59 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 440px;
+    margin-top: 32px;
+    padding: 24px;
+    background-color: var(--main-white);
+    border: 1px solid rgba(20, 50, 28, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+    color: var(--motta-green);
+}
+.heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.heading h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.heading p {
+    margin-top: 6px;
+    color: var(--main-gray);
+    font-size: 0.875rem;
+}
+.period {
+    padding: 6px 10px;
+    background-color: rgba(75, 155, 98, 0.12);
+    border-radius: 999px;
+    color: var(--motta-green);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.chartArea {
+    position: relative;
+    flex: 1;
+    min-height: 260px;
+}
+@media (max-width: 600px) {
+    .card {
+        min-height: 360px;
+        margin-top: 24px;
+        padding: 16px;
+    }
+    .heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .chartArea {
+        min-height: 220px;
+    }
+}
