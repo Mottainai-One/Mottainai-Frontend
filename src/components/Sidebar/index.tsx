@@ -2,7 +2,7 @@ import { NavLink } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import styles from './style.module.css';
-import mottainaiLogo from '@/assets/icons/Logo.png';
+import mottainaiLogoWhite from '@/assets/icons/Logo-White.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faHouse,
@@ -72,7 +72,7 @@ function Sidebar() {
             >
                 <div className={styles['sidebar-logo']}>
                     <span className={styles.icon} aria-hidden="true">
-                        <img src={mottainaiLogo} alt="Logo do Mottainai"/>
+                        <img src={mottainaiLogoWhite} alt="Logo do Mottainai"/>
                     </span>
 
                     <span className={styles.text}>

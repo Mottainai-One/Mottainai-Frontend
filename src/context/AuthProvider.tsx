@@ -1,5 +1,4 @@
 import { useState, useMemo, useCallback } from 'react';
-import type { ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './AuthContext';
 import * as authService from '@/services/authService';
@@ -7,20 +6,12 @@ import type {
   AuthContextData,
   DecodedToken,
   LoginCredentials,
+  AuthProviderProps,
+  AuthState,
   User,
 } from '@/types/auth.types';
 
 const TOKEN_KEY = '@App:token';
-
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-interface AuthState {
-  token: string | null;
-  user: User | null;
-}
-
 
 // Função para pegar o tokej
 function decodeUserFromToken(token: string): User | null {

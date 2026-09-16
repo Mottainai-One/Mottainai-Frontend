@@ -1,7 +1,7 @@
 function Users(){
     return(
         <>
-        hi
+        Hii, I'm de users pages
         </>
     )
 }
