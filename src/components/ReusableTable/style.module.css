@@ -1,0 +1,151 @@
+.card {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 22px 24px;
+    background-color: var(--main-white);
+    border: 1px solid rgba(20, 50, 28, 0.12);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+}
+
+.title {
+    margin: 0 0 16px 16px;
+    color: #3f852f;
+    font-size: 1rem;
+    font-weight: bolder;
+    line-height: 1.4;
+}
+
+.scrollArea {
+    width: 100%;
+    max-height: 27rem;
+    overflow: auto;
+    border-radius: 5px;
+    scrollbar-color: #625d58 #faf9f8;
+    scrollbar-width: thin;
+}
+
+.scrollArea:focus-visible {
+    outline: 3px solid #235f2d;
+    outline-offset: 3px;
+}
+
+.table {
+    width: 100%;
+    min-width: 36rem;
+    border-collapse: collapse;
+    color: #625d58;
+    font-size: 0.8125rem;
+    line-height: 1.35;
+}
+
+.table thead {
+    position: sticky;
+    z-index: 1;
+    top: 0;
+    background-color: #faf9f8;
+}
+
+.table th {
+    padding: 11px 16px 9px;
+    border-bottom: 1px solid #568f43;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.table td {
+    height: 34px;
+    padding: 6px 16px;
+    border-bottom: 1px solid #568f43;
+    vertical-align: middle;
+}
+
+.alignStart {
+    text-align: left;
+}
+
+.alignCenter {
+    text-align: center;
+}
+
+.alignEnd {
+    text-align: right;
+}
+
+.badge {
+    display: inline-flex;
+    min-width: 90px;
+    min-height: 22px;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.neutral {
+    background-color: #d9d9d9;
+    color: #4f4f4f;
+}
+
+.success {
+    background-color: #d6fac9;
+    color: #205c1c;
+}
+
+.warning {
+    background-color: #ffe7b0;
+    color: #8a5200;
+}
+
+.danger {
+    background-color: #f9dfe1;
+    color: #8f151b;
+}
+
+.info {
+    background-color: #bff5f0;
+    color: #08645d;
+}
+
+.emptyState {
+    padding: 24px 16px !important;
+    color: #625d58;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .card {
+        padding: 16px 14px 20px;
+    }
+
+    .title {
+        margin-left: 8px;
+    }
+
+    .table th,
+    .table td {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding-right: 10px;
+        padding-left: 10px;
+        border-radius: 8px;
+    }
+
+    .title {
+        margin-left: 6px;
+        font-size: 0.8125rem;
+    }
+
+    .scrollArea {
+        max-height: 22rem;
+    }
+}
