@@ -1,0 +1,79 @@
+.filters {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    flex-wrap: wrap;
+}
+
+.field {
+    position: relative;
+    display: flex;
+    flex: 0 1 12.5rem;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 10.5rem;
+}
+
+.category-field {
+    flex-basis: 15rem;
+}
+
+.field::after {
+    position: absolute;
+    bottom: 0.85rem;
+    right: 1rem;
+    width: 0;
+    height: 0;
+    border-top: 0.55rem solid var(--motta-green);
+    border-right: 0.55rem solid transparent;
+    border-left: 0.55rem solid transparent;
+    content: '';
+    pointer-events: none;
+}
+
+.label {
+    padding-left: 0.25rem;
+    color: var(--motta-green);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.select {
+    width: 100%;
+    min-height: 2.75rem;
+    appearance: none;
+    padding: 0.5rem 3rem 0.5rem 1.125rem;
+    border: 1px solid rgba(20, 50, 28, 0.14);
+    border-radius: 0.75rem;
+    background-color: var(--main-white);
+    box-shadow: 0 2px 6px rgba(20, 50, 28, 0.12);
+    color: #625d58;
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.select:hover {
+    border-color: var(--motta-green);
+}
+
+.select:focus-visible {
+    outline: 3px solid #235f2d;
+    outline-offset: 2px;
+}
+
+@media (max-width: 624px) {
+    .filters {
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .field,
+    .category-field {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+}

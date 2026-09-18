@@ -1,6 +1,8 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
+import FolderNavigation from '@/components/FolderNavigation';
+import { FOLDER_NAVIGATION_PATHS } from '@/config/folder-navigation';
 import styles from './style.module.css';
 
 const PAGE_TITLES: Record<string, string> = {
@@ -17,14 +19,17 @@ const PAGE_TITLES: Record<string, string> = {
 
 function MainLayout() {
     const { pathname } = useLocation();
-    const pageTitle = PAGE_TITLES[pathname] ?? 'Mottainai';
+    const normalizedPathname = pathname.replace(/\/+$/, '') || '/';
+    const pageTitle = PAGE_TITLES[normalizedPathname] ?? 'Mottainai';
+    const showFolderNavigation = FOLDER_NAVIGATION_PATHS.includes(normalizedPathname);
 
     return (
         <div className={styles.layout}>
             <Sidebar />
             <div className={styles['content-shell']}>
                 <Header pageTitle={pageTitle} />
-                <main className={styles.content}>
+                {showFolderNavigation && <FolderNavigation />}
+                <main className={`${styles.content} ${showFolderNavigation ? styles['content-with-folders'] : ''}`}>
                     <Outlet />
                 </main>
             </div>
