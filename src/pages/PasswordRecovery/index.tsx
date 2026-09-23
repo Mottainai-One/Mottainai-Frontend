@@ -3,6 +3,7 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
+import lontraPensando from '@/assets/imgs/lontra-pensando.png';
 
 import type {
   PasswordRecoveryState,
@@ -123,6 +124,8 @@ function PasswordRecovery() {
       <AuthLayout
         title="Recupere sua senha"
         description="Informe seu e-mail e enviaremos um código para você criar uma nova senha."
+        mascotSrc={lontraPensando}
+        mascotAlt="Lontra mascote pensando durante a recuperação da senha"
       >
         <form
           className={styles.form}
@@ -162,6 +165,8 @@ function PasswordRecovery() {
     <AuthLayout
       title="Verifique seu e-mail"
       description="Digite o código que enviamos para confirmar sua identidade."
+      mascotSrc={lontraPensando}
+      mascotAlt="Lontra mascote pensando durante a recuperação da senha"
     >
       <form
         className={styles.form}

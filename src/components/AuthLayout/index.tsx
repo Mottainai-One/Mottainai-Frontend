@@ -1,9 +1,8 @@
 import mottainaiLogo from '@/assets/icons/Logo.png';
-import lontraMascot from '@/assets/imgs/lontra-mascot.png';
 import type { AuthLayoutProps } from '@/types/auth-layout.types';
 import styles from './style.module.css';
 
-export function AuthLayout({ title, description, children }: AuthLayoutProps) {
+export function AuthLayout({ title, description, mascotSrc, mascotAlt, children }: AuthLayoutProps) {
   return (
     <main className={styles.container}>
       <section className={styles.authSection} aria-labelledby="auth-page-title">
@@ -14,7 +13,7 @@ export function AuthLayout({ title, description, children }: AuthLayoutProps) {
       </section>
 
       <aside className={styles.mascotSection} aria-label="Ilustração da lontra do Mottainai">
-        <img src={lontraMascot} alt="Lontra mascote do Mottainai" className={styles.mascotImage} />
+        <img src={mascotSrc} alt={mascotAlt} className={styles.mascotImage} />
       </aside>
     </main>
   );
