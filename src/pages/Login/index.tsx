@@ -4,6 +4,7 @@ import type { LoginFormState } from '@/types/login.types';
 import { useLocation, useNavigate } from 'react-router';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
+import lontraExplicando from '@/assets/imgs/lontra-explicando.png';
 import { useAuth } from '@/hooks/useAuth'
 import  Loading  from '@/components/Loading'
 import {
@@ -64,6 +65,8 @@ export function Login() {
     <AuthLayout
         title="Bem-vindo de volta!"
         description="Simplificando seu estoque, tudo em um mesmo lugar."
+        mascotSrc={lontraExplicando}
+        mascotAlt="Lontra mascote explicando o sistema"
     >
         <form
             className={styles.form}

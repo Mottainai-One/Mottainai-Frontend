@@ -5,6 +5,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
+import lontraOrgulhosa from '@/assets/imgs/lontra-orgulhosa.png';
 import type {
   NewPasswordFormState,
   NewPasswordState,
@@ -92,6 +93,8 @@ function NewPassword() {
       <AuthLayout
         title={state.feedbackType === 'success' ? 'Tudo certo!' : 'Link inválido'}
         description={state.feedbackType === 'success' ? 'Sua senha foi atualizada.' : 'Solicite um novo código para continuar.'}
+        mascotSrc={lontraOrgulhosa}
+        mascotAlt="Lontra mascote orgulhosa"
       >
         <div className={styles.form} aria-describedby={state.feedback ? feedbackId : undefined}>
           {feedback}
@@ -107,6 +110,8 @@ function NewPassword() {
     <AuthLayout
       title="Crie uma nova senha"
       description="Escolha uma senha segura para voltar a acessar sua conta."
+      mascotSrc={lontraOrgulhosa}
+      mascotAlt="Lontra mascote orgulhosa"
     >
       <form
         className={styles.form}
