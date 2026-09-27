@@ -189,8 +189,16 @@
 }
 
 .errorMessage {
-  background-color: #fcebea;
+  width: fit-content;
+  max-width: 100%;
+  align-self: center;
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(179, 38, 30, 0.2);
+  border-radius: 0.5rem;
+  background-color: #fff1f0;
   color: #8f1d18;
+  text-align: left;
 }
 
 .codeHint,

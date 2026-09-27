@@ -16,6 +16,9 @@ import NewPassword from "@/pages/NewPassword";
 import Products from "@/pages/Products";
 import ProductDetails from "@/pages/ProductDetails";
 import ManagementReports from "@/pages/ManagementReports";
+import Stock from "@/pages/Stock";
+import StockSectionPlaceholder from "@/pages/StockSectionPlaceholder";
+import CashClosingReport from "@/pages/CashClosingReport";
 
 export default function AppRoutes() {
   return (
@@ -40,6 +43,47 @@ export default function AppRoutes() {
             <Route path="/expiringProducts" element={<ExpiringProducts />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:productId" element={<ProductDetails />} />
+            <Route path="/stock" element={<Stock />} />
+            <Route
+              path="/stock/cash-closing/:discrepancyId"
+              element={<CashClosingReport />}
+            />
+            <Route
+              path="/stock/counts/new"
+              element={
+                <StockSectionPlaceholder
+                  title="Nova contagem"
+                  description="Este é o ponto de entrada para registrar uma nova contagem de estoque."
+                />
+              }
+            />
+            <Route
+              path="/stock/damages"
+              element={
+                <StockSectionPlaceholder
+                  title="Avarias e consumo interno"
+                  description="Acompanhamento de avarias e consumo interno será desenvolvido nesta pasta."
+                />
+              }
+            />
+            <Route
+              path="/stock/transfers"
+              element={
+                <StockSectionPlaceholder
+                  title="Transferência de lojas"
+                  description="O fluxo de transferência entre lojas será desenvolvido nesta pasta."
+                />
+              }
+            />
+            <Route
+              path="/stock/suppliers"
+              element={
+                <StockSectionPlaceholder
+                  title="Fornecedores"
+                  description="A gestão de fornecedores será desenvolvida nesta pasta."
+                />
+              }
+            />
             <Route path="/managementReports" element={<ManagementReports />} />
             <Route
               path="/productsRegistration"

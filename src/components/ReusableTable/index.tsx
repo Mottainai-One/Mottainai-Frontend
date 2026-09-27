@@ -26,11 +26,12 @@ function ReusableTable<T extends object>({
     data,
     rowKey,
     emptyMessage = 'Nenhum registro encontrado.',
+    variant = 'default',
 }: ReusableTableProps<T>) {
     const titleId = useId();
 
     return (
-        <section className={styles.card}>
+        <section className={`${styles.card} ${variant === 'plain' ? styles.plain : ''}`}>
             <h2 className={styles.title} id={titleId}>{title}</h2>
 
             <div

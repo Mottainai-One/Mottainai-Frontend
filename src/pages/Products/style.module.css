@@ -25,6 +25,7 @@
   color: var(--main-white);
   font-weight: 600;
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .new-product:hover {
@@ -134,10 +135,12 @@
   color: #373431;
   font-weight: 500;
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .view-button:hover {
-  background: #c9c0b6;
+  background: var(--motta-green);
+  color: var(--main-white);
 }
 
 .empty {

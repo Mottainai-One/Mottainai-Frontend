@@ -2,7 +2,11 @@ import { Outlet, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import FolderNavigation from "@/components/FolderNavigation";
-import { FOLDER_NAVIGATION_PATHS } from "@/config/folder-navigation";
+import {
+  FOLDER_NAVIGATION_PATHS,
+  FOLDER_NAVIGATION_ITEMS,
+  STOCK_FOLDER_NAVIGATION_ITEMS,
+} from "@/config/folder-navigation";
 import styles from "./style.module.css";
 
 const PAGE_TITLES: Record<string, string> = {
@@ -16,6 +20,11 @@ const PAGE_TITLES: Record<string, string> = {
   "/usageHistory": "Histórico de Uso",
   "/expiringProducts": "Produtos a Vencer",
   "/productsRegistration": "Cadastro de Produtos",
+  "/stock": "Estoque",
+  "/stock/counts/new": "Nova contagem",
+  "/stock/damages": "Avarias e consumo interno",
+  "/stock/transfers": "Transferência de lojas",
+  "/stock/suppliers": "Fornecedores",
   "/managementReports": "Relatórios Gerenciais",
 };
 
@@ -24,9 +33,16 @@ function MainLayout() {
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
   const pageTitle = normalizedPathname.startsWith("/products/")
     ? "Detalhes do Produto"
+    : normalizedPathname.startsWith("/stock/cash-closing/")
+      ? "Relatório de fechamento de caixa"
     : (PAGE_TITLES[normalizedPathname] ?? "Mottainai");
+  const isStockFlowActive =
+    normalizedPathname === "/stock" || normalizedPathname.startsWith("/stock/");
   const showFolderNavigation =
-    FOLDER_NAVIGATION_PATHS.includes(normalizedPathname);
+    isStockFlowActive || FOLDER_NAVIGATION_PATHS.includes(normalizedPathname);
+  const folderNavigationItems = isStockFlowActive
+    ? STOCK_FOLDER_NAVIGATION_ITEMS
+    : FOLDER_NAVIGATION_ITEMS;
 
   return (
     <div className={styles.layout}>
@@ -36,7 +52,12 @@ function MainLayout() {
       <Sidebar overviewPaths={FOLDER_NAVIGATION_PATHS} />
       <div className={styles["content-shell"]}>
         <Header pageTitle={pageTitle} />
-        {showFolderNavigation && <FolderNavigation />}
+        {showFolderNavigation && (
+          <FolderNavigation
+            items={folderNavigationItems}
+            ariaLabel={isStockFlowActive ? "Seções de estoque" : "Seções de análise"}
+          />
+        )}
         <main
           className={`${styles.content} ${showFolderNavigation ? styles["content-with-folders"] : ""}`}
           id="main-content"

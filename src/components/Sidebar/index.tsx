@@ -9,6 +9,7 @@ import {
   faHouse,
   faChartPie,
   faBox,
+  faWarehouse,
   faMoneyBill,
   faGear,
   faUser,
@@ -27,6 +28,8 @@ function Sidebar({ overviewPaths }: SidebarProps) {
   const isProductsFlowActive =
     ["/products", "/productsRegistration"].includes(normalizedPathname) ||
     normalizedPathname.startsWith("/products/");
+  const isStockFlowActive =
+    normalizedPathname === "/stock" || normalizedPathname.startsWith("/stock/");
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -127,6 +130,19 @@ function Sidebar({ overviewPaths }: SidebarProps) {
                   <FontAwesomeIcon icon={faBox} />
                 </span>
                 <span className={styles.text}>Produtos</span>
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/stock"
+                className={styles["sidebar-item"]}
+                aria-current={isStockFlowActive ? "location" : undefined}
+                onClick={closeSidebar}
+              >
+                <span className={styles.icon} aria-hidden="true">
+                  <FontAwesomeIcon icon={faWarehouse} />
+                </span>
+                <span className={styles.text}>Estoque</span>
               </Link>
             </li>
             <li>

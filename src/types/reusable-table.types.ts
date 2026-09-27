@@ -17,4 +17,5 @@ export interface ReusableTableProps<T extends object> {
     data: T[];
     rowKey: (row: T) => string | number;
     emptyMessage?: string;
+    variant?: 'default' | 'plain';
 }

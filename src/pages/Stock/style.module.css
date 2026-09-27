@@ -1,0 +1,88 @@
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.newCountButton {
+  display: inline-flex;
+  min-width: 9rem;
+  min-height: 2.6rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.25rem;
+  border-radius: 0.6rem;
+  background: var(--motta-green);
+  color: var(--main-white);
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.newCountButton:hover,
+.reportButton:hover {
+  background: var(--motta-green);
+  color: var(--main-white);
+}
+
+.newCountButton:focus-visible,
+.reportButton:focus-visible {
+  outline: 3px solid #235f2d;
+  outline-offset: 3px;
+}
+
+.tableSection {
+  margin-top: clamp(1rem, 2vw, 1.5rem);
+}
+
+.reportButton {
+  display: inline-flex;
+  min-height: 1.9rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.35rem;
+  background: #ded8d0;
+  color: #373431;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.3s ease-in-out;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .newCountButton {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .newCountButton {
+    width: 100%;
+  }
+}
