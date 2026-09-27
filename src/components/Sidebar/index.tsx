@@ -1,6 +1,7 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import type { SidebarProps } from "@/types/sidebar.types";
 import styles from "./style.module.css";
 import mottainaiLogoWhite from "@/assets/icons/Logo-White.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,12 +17,13 @@ import {
   faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 
-function Sidebar() {
+function Sidebar({ overviewPaths }: SidebarProps) {
   const { logout } = useAuth();
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
+  const isOverviewFlowActive = overviewPaths.includes(normalizedPathname);
   const isProductsFlowActive =
     ["/products", "/productsRegistration"].includes(normalizedPathname) ||
     normalizedPathname.startsWith("/products/");
@@ -102,22 +104,23 @@ function Sidebar() {
               </NavLink>
             </li>
             <li>
-              <NavLink
+              <Link
                 to="/overview"
                 className={styles["sidebar-item"]}
+                aria-current={isOverviewFlowActive ? "location" : undefined}
                 onClick={closeSidebar}
               >
                 <span className={styles.icon} aria-hidden="true">
                   <FontAwesomeIcon icon={faChartPie} />
                 </span>
                 <span className={styles.text}>Visão Geral</span>
-              </NavLink>
+              </Link>
             </li>
             <li>
               <Link
                 to="/products"
                 className={styles["sidebar-item"]}
-                aria-current={isProductsFlowActive ? "page" : undefined}
+                aria-current={isProductsFlowActive ? "location" : undefined}
                 onClick={closeSidebar}
               >
                 <span className={styles.icon} aria-hidden="true">
@@ -128,7 +131,7 @@ function Sidebar() {
             </li>
             <li>
               <NavLink
-                to="/usageHistory"
+                to="/managementReports"
                 className={styles["sidebar-item"]}
                 onClick={closeSidebar}
               >

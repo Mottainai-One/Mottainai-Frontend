@@ -130,8 +130,9 @@
     flex-shrink: 0;
 }
 
-.sidebar-item[aria-current="page"] {
+.sidebar-item[aria-current] {
     background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 3px 0 0 var(--main-white);
 }
 
 /* footer */
@@ -204,7 +205,7 @@
     bottom: calc(100% + 12px);
     left: 50%;
     transform:translateX(-50%) translateY(10px);
-    background-color: var(--motta-light-green);
+    background-color: var(--motta-green);
     color: var(--main-white);
     padding: 8px 12px;
     border-radius: 6px;
@@ -230,7 +231,7 @@
     border-width: 6px;
     border-style: solid;
     border-color:
-        var(--motta-light-green)
+        var(--motta-green)
         transparent
         transparent
         transparent;

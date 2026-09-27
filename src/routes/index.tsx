@@ -15,6 +15,7 @@ import MainLayout from "@/components/MainLayout";
 import NewPassword from "@/pages/NewPassword";
 import Products from "@/pages/Products";
 import ProductDetails from "@/pages/ProductDetails";
+import ManagementReports from "@/pages/ManagementReports";
 
 export default function AppRoutes() {
   return (
@@ -39,6 +40,7 @@ export default function AppRoutes() {
             <Route path="/expiringProducts" element={<ExpiringProducts />} />
             <Route path="/products" element={<Products />} />
             <Route path="/products/:productId" element={<ProductDetails />} />
+            <Route path="/managementReports" element={<ManagementReports />} />
             <Route
               path="/productsRegistration"
               element={<ProductsRegistration />}

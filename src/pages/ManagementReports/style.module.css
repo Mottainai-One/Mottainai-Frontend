@@ -1,0 +1,20 @@
+.page {
+    width: 100%;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid rgba(20, 50, 28, 0.12);
+    border-radius: 0.75rem;
+    background-color: var(--main-white);
+    box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+    color: var(--motta-green);
+}
+
+.page h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.page p {
+    margin: 0.75rem 0 0;
+    color: #625d58;
+    line-height: 1.5;
+}
