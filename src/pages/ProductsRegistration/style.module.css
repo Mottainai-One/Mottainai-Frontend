@@ -1,0 +1,372 @@
+.page {
+  display: grid;
+  width: 100%;
+  min-width: 0;
+  gap: 1.5rem;
+}
+
+.card {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  border: 1px solid rgba(20, 50, 28, 0.14);
+  border-radius: 0.75rem;
+  background: var(--main-white);
+  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+}
+
+.card h1 {
+  margin: 0 0 1.25rem;
+  color: var(--motta-green);
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+}
+
+.tabs {
+  display: flex;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  border-bottom: 1px solid #ded8d1;
+  gap: 1rem;
+}
+
+.tabs button {
+  min-height: 2.75rem;
+  padding: 0.5rem clamp(0.75rem, 3vw, 2rem);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #625d58;
+  cursor: pointer;
+  font: inherit;
+}
+
+.tabs .active {
+  border-bottom-color: #568f43;
+  color: var(--motta-green);
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.dropzone {
+  display: flex;
+  min-height: clamp(15rem, 38vh, 21rem);
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  border: 2px dashed #7b746d;
+  border-radius: 0.65rem;
+  background: #f7f5f3;
+  color: #625d58;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 0.65rem;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.dropzone:hover,
+.dropzone:focus-within,
+.dragging {
+  border-color: var(--motta-green);
+  background: #eef5ec;
+}
+
+.dropzone.has-file {
+  border-style: solid;
+  border-color: #3f852f;
+  background: #e8f4e4;
+  color: #174b20;
+}
+
+.file-input:focus-visible + .dropzone,
+.tabs button:focus-visible,
+.primary:focus-visible,
+.secondary:focus-visible,
+.modal header button:focus-visible,
+select:focus-visible,
+input:focus-visible {
+  outline: 3px solid #235f2d;
+  outline-offset: 3px;
+}
+
+.upload-icon {
+  display: inline-flex;
+  width: 5.5rem;
+  height: 5.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d9d9d9;
+  color: var(--motta-green);
+  font-size: 2rem;
+}
+
+.ready-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.selected-file {
+  display: flex;
+  width: min(34rem, 100%);
+  min-height: 6.5rem;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border: 1px solid #86ad78;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 5px 16px rgba(32, 92, 28, 0.12);
+  gap: 1rem;
+  font-size: 1.6rem;
+  text-align: left;
+}
+
+.selected-file > span {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 1rem;
+}
+
+.selected-file strong {
+  overflow-wrap: anywhere;
+}
+
+.selected-file small {
+  color: #625d58;
+}
+
+.actions {
+  display: flex;
+  margin-top: 1.25rem;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  min-width: 10rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.primary {
+  border: 1px solid var(--motta-green);
+  background: var(--motta-green);
+  color: var(--main-white);
+}
+
+.secondary {
+  border: 1px solid #d5d0ca;
+  background: #fff;
+  color: #373431;
+}
+
+.primary:disabled,
+.secondary:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.format {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 700;
+}
+
+.format select {
+  min-height: 2.75rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d5d0ca;
+  border-radius: 0.55rem;
+  background: #fff;
+  font: inherit;
+}
+
+.message {
+  margin: 20px 0px 0px;
+  color: #205c1c;
+}
+
+.error {
+  margin: 20px 0px 0px;
+  color: #9a1c22;
+  font-weight: 700;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem clamp(1rem, 3vw, 2rem);
+}
+
+.form-grid label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.4rem;
+  color: #373431;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.form-grid input,
+.form-grid select {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #aaa29a;
+  border-radius: 0.5rem;
+  background: #faf9f8;
+  font: inherit;
+}
+
+.wide {
+  grid-column: 1/-1;
+}
+
+.backdrop {
+  position: fixed;
+  z-index: 1500;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(10, 20, 13, 0.55);
+}
+
+.modal {
+  width: min(68rem, 100%);
+  max-height: calc(100vh - 2rem);
+  padding: clamp(1rem, 3vw, 2rem);
+  overflow: auto;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.modal header {
+  display: flex;
+  margin-bottom: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal header h2 {
+  margin: 0;
+  color: #3f852f;
+}
+
+.modal header button {
+  display: inline-flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f0ece8;
+  cursor: pointer;
+}
+
+.success {
+  width: min(30rem, 100%);
+  text-align: center;
+}
+
+.success h2 {
+  color: #205c1c;
+}
+
+.success .actions {
+  justify-content: center;
+}
+
+.success-icon {
+  display: inline-flex;
+  width: 4rem;
+  height: 4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #d6fac9;
+  color: #205c1c;
+  font-size: 1.75rem;
+}
+
+@media (max-width: 680px) {
+  .card {
+    padding: 1.25rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+  }
+
+  .tabs button {
+    flex: 1 0 auto;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .primary,
+  .secondary,
+  .format {
+    width: 100%;
+  }
+
+  .format {
+    margin-left: 0;
+  }
+
+  .format select {
+    flex: 1;
+  }
+
+  .dropzone {
+    min-height: 13rem;
+    padding: 1.25rem;
+  }
+
+  .selected-file {
+    padding: 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone {
+    transition: none;
+  }
+}

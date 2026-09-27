@@ -1,0 +1,62 @@
+.filters {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  gap: clamp(0.75rem, 3vw, 1.75rem);
+}
+
+.field {
+  min-width: 0;
+}
+
+.field:first-child {
+  flex: 1;
+  max-width: 26rem;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid #d5d0ca;
+  border-radius: 0.55rem;
+  background: #fff;
+  color: #373431;
+  font: inherit;
+}
+
+.field select {
+  min-width: 12rem;
+}
+
+.field input:focus-visible,
+.field select:focus-visible {
+  outline: 3px solid #235f2d;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 680px) {
+  .filters {
+    flex-direction: column;
+  }
+
+  .field:first-child {
+    max-width: none;
+  }
+
+  .field select {
+    min-width: 0;
+  }
+}
