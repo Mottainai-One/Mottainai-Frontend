@@ -8,4 +8,5 @@ export interface HistoricalChartProps {
   datasetLabel?: string;
   ariaLabel?: string;
   compact?: boolean;
+  beginAtZero?: boolean;
 }

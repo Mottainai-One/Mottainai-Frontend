@@ -8,6 +8,12 @@
     box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
 }
 
+.plain {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+}
+
 .title {
     margin: 0 0 16px 16px;
     color: #3f852f;

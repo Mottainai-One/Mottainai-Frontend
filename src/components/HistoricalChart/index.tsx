@@ -18,6 +18,7 @@ function HistoricalChart({
   datasetLabel = "Índice histórico",
   ariaLabel = "Gráfico de linha com o histórico diário",
   compact = false,
+  beginAtZero = false,
 }: HistoricalChartProps) {
   const titleId = useId();
   const canvasId = useId();
@@ -67,7 +68,7 @@ function HistoricalChart({
         },
         scales: {
           y: {
-            beginAtZero: false,
+            beginAtZero,
             ticks: { color: "#14321c" },
             grid: { color: "rgba(20, 50, 28, 0.12)" },
           },
@@ -83,7 +84,7 @@ function HistoricalChart({
       chartRef.current?.destroy();
       chartRef.current = null;
     };
-  }, [data, datasetLabel]);
+  }, [beginAtZero, data, datasetLabel]);
 
   return (
     <section
