@@ -16,6 +16,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/usageHistory": "Histórico de Uso",
   "/expiringProducts": "Produtos a Vencer",
   "/productsRegistration": "Cadastro de Produtos",
+  "/managementReports": "Relatórios Gerenciais",
 };
 
 function MainLayout() {
@@ -32,7 +33,7 @@ function MainLayout() {
       <a className={styles["skip-link"]} href="#main-content">
         Pular para o conteúdo principal
       </a>
-      <Sidebar />
+      <Sidebar overviewPaths={FOLDER_NAVIGATION_PATHS} />
       <div className={styles["content-shell"]}>
         <Header pageTitle={pageTitle} />
         {showFolderNavigation && <FolderNavigation />}

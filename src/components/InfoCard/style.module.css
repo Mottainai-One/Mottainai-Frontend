@@ -45,7 +45,7 @@
 .footer {
     overflow: hidden;
     margin-top: auto;
-    color: var(--main-gray);
+    color: #625d58;
     font-size: 0.6875rem;
     line-height: 1.2;
     text-overflow: ellipsis;

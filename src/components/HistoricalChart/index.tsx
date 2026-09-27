@@ -5,6 +5,11 @@ import styles from "./style.module.css";
 
 Chart.register(...registerables);
 
+const formatMetricDate = (date: string) => new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "short",
+}).format(new Date(`${date}T12:00:00`));
+
 function HistoricalChart({
   data,
   title = "Histórico do último mês",
@@ -29,12 +34,7 @@ function HistoricalChart({
     chartRef.current = new Chart(canvasRef.current, {
       type: "line",
       data: {
-        labels: data.map((item) =>
-          new Intl.DateTimeFormat("pt-BR", {
-            day: "2-digit",
-            month: "short",
-          }).format(new Date(`${item.date}T12:00:00`)),
-        ),
+        labels: data.map((item) => formatMetricDate(item.date)),
         datasets: [
           {
             label: datasetLabel,
@@ -107,14 +107,14 @@ function HistoricalChart({
         />
       </div>
       <p className={styles["sr-only"]} id={descriptionId}>
-        {description}. {data.length} pontos disponíveis.
+        {description}. {data.length} pontos disponíveis. Dados: {data.map((item) => `${formatMetricDate(item.date)}: ${item.value}. `)}
       </p>
       <details className={styles.dataDetails}>
         <summary>Ver dados do gráfico</summary>
         <ul>
           {data.map((item) => (
             <li key={item.date}>
-              <time dateTime={item.date}>{item.date}</time>
+              <time dateTime={item.date}>{formatMetricDate(item.date)}</time>
               <span>
                 {item.value} — {datasetLabel}
               </span>
