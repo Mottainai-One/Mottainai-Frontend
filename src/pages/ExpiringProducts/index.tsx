@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import EngineActionModal from '@/components/EngineActionModal';
 import ExpiringProductsFilters from '@/components/ExpiringProductsFilters';
 import ReusableTable from '@/components/ReusableTable';
 import type { EngineDecisionStatus } from '@/types/engine-decision.types';
+import type { EngineActionDialogState } from '@/types/engine-action-modal.types';
 import type {
     ExpirationRiskLevel,
     ExpiringProductDecision,
@@ -24,13 +26,10 @@ const riskTones: Record<ExpirationRiskLevel, TableCellTone> = {
     Moderado: 'info',
 };
 
-const decisionColumns: ReusableTableColumn<ExpiringProductDecision>[] = [
-    {
-        id: 'time',
-        header: 'Hora',
-        renderCell: (decision) => decision.time,
-        align: 'center',
-    },
+function createDecisionColumns(
+    onViewAction: (decision: ExpiringProductDecision, trigger: HTMLButtonElement) => void,
+): ReusableTableColumn<ExpiringProductDecision>[] {
+    return [
     {
         id: 'sku',
         header: 'SKU',
@@ -67,7 +66,17 @@ const decisionColumns: ReusableTableColumn<ExpiringProductDecision>[] = [
         tone: (decision) => statusTones[decision.status],
         align: 'center',
     },
-];
+    {
+        id: 'action',
+        header: 'Ação',
+        renderCell: (decision) => decision.tactic,
+        display: 'action',
+        actionLabel: (decision) => `Ver ação sugerida pelo motor para o SKU ${decision.sku}`,
+        onAction: (decision, event) => onViewAction(decision, event.currentTarget),
+        align: 'center',
+    },
+    ];
+}
 
 const decisionData: ExpiringProductDecision[] = [
     { id: 'decision-01', time: '14:32', sku: 'NIK-CAM-ESP-BRC-G', store: 'Loja Centro', category: 'Câmeras', riskLevel: 'Crítico', tactic: 'Desconto de 30%', status: 'Sem ação' },
@@ -96,6 +105,19 @@ const initialFilters: ExpiringProductsFilterState = {
 
 function ExpiringProducts() {
     const [filters, setFilters] = useState<ExpiringProductsFilterState>(initialFilters);
+    const [actionDialog, setActionDialog] = useState<EngineActionDialogState | null>(null);
+
+    const handleViewAction = (decision: ExpiringProductDecision, trigger: HTMLButtonElement) => {
+        setActionDialog({ decision, trigger });
+    };
+
+    const handleCloseAction = () => {
+        const trigger = actionDialog?.trigger;
+        setActionDialog(null);
+        window.requestAnimationFrame(() => trigger?.focus());
+    };
+
+    const decisionColumns = createDecisionColumns(handleViewAction);
 
     const filteredDecisions = decisionData.filter((decision) => (
         (!filters.riskLevel || decision.riskLevel === filters.riskLevel)
@@ -141,6 +163,9 @@ function ExpiringProducts() {
                     />
                 </div>
             </div>
+            {actionDialog && (
+                <EngineActionModal decision={actionDialog.decision} onClose={handleCloseAction} />
+            )}
         </section>
     );
 }

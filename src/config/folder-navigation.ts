@@ -7,10 +7,10 @@ export const FOLDER_NAVIGATION_ITEMS = [
 ] as const satisfies readonly FolderNavigationItem[];
 
 export const STOCK_FOLDER_NAVIGATION_ITEMS = [
-    { label: 'Inventário/contagem', to: '/stock', end: false },
+    { label: 'Inventário/contagem', to: '/stock', end: true },
     { label: 'Avarias e consumo interno', to: '/stock/damages' },
-    { label: 'Transferência de lojas', to: '/stock/transfers' },
-    { label: 'Fornecedores', to: '/stock/suppliers' },
+    { label: 'Transferência de lojas', to: '/stock/transfers', end: false },
+    { label: 'Fornecedores', to: '/stock/suppliers', end: false },
 ] as const satisfies readonly FolderNavigationItem[];
 
 export const FOLDER_NAVIGATION_PATHS: string[] = FOLDER_NAVIGATION_ITEMS.map((item) => item.to);

@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 
 export type TableCellTone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 
@@ -6,9 +6,11 @@ export interface ReusableTableColumn<T extends object> {
     id: string;
     header: string;
     renderCell: (row: T) => ReactNode;
-    display?: 'text' | 'badge';
+    display?: 'text' | 'badge' | 'action';
     tone?: (row: T) => TableCellTone;
     align?: 'start' | 'center' | 'end';
+    onAction?: (row: T, event: MouseEvent<HTMLButtonElement>) => void;
+    actionLabel?: (row: T) => string;
 }
 
 export interface ReusableTableProps<T extends object> {

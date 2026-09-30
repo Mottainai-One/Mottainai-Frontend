@@ -19,6 +19,11 @@ import ManagementReports from "@/pages/ManagementReports";
 import Stock from "@/pages/Stock";
 import StockSectionPlaceholder from "@/pages/StockSectionPlaceholder";
 import CashClosingReport from "@/pages/CashClosingReport";
+import StockTransfers from "@/pages/StockTransfers";
+import NewTransfer from "@/pages/NewTransfer";
+import Suppliers from "@/pages/Suppliers";
+import SupplierForm from "@/pages/SupplierForm";
+import StockAdjustments from "@/pages/StockAdjustments";
 
 export default function AppRoutes() {
   return (
@@ -59,31 +64,18 @@ export default function AppRoutes() {
             />
             <Route
               path="/stock/damages"
-              element={
-                <StockSectionPlaceholder
-                  title="Avarias e consumo interno"
-                  description="Acompanhamento de avarias e consumo interno será desenvolvido nesta pasta."
-                />
-              }
+              element={<StockAdjustments />}
             />
             <Route
               path="/stock/transfers"
-              element={
-                <StockSectionPlaceholder
-                  title="Transferência de lojas"
-                  description="O fluxo de transferência entre lojas será desenvolvido nesta pasta."
-                />
-              }
+              element={<StockTransfers />}
             />
+            <Route path="/stock/transfers/new" element={<NewTransfer />} />
             <Route
               path="/stock/suppliers"
-              element={
-                <StockSectionPlaceholder
-                  title="Fornecedores"
-                  description="A gestão de fornecedores será desenvolvida nesta pasta."
-                />
-              }
+              element={<Suppliers />}
             />
+            <Route path="/stock/suppliers/new" element={<SupplierForm />} />
             <Route path="/managementReports" element={<ManagementReports />} />
             <Route
               path="/productsRegistration"

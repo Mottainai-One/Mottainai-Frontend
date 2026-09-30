@@ -1,0 +1,241 @@
+.page {
+  width: 100%;
+  min-width: 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.searchField {
+  width: min(20rem, 100%);
+}
+
+.searchField input {
+  width: 100%;
+  min-height: 2.35rem;
+  box-sizing: border-box;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(20, 50, 28, 0.14);
+  border-radius: 0.6rem;
+  background: var(--main-white);
+  color: #625d58;
+  font: inherit;
+}
+
+.searchField input:focus-visible,
+.newSupplierButton:focus-visible,
+.viewButton:focus-visible {
+  outline: 3px solid #235f2d;
+  outline-offset: 3px;
+}
+
+.newSupplierButton {
+  display: inline-flex;
+  min-height: 2.6rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.25rem;
+  border-radius: 0.6rem;
+  background: var(--motta-green);
+  color: var(--main-white);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.newSupplierButton:hover {
+  background: #296439;
+}
+
+.tableSection {
+  margin-top: 1.5rem;
+}
+
+.feedback {
+  margin: 0.75rem 0 0;
+  color: #205c1c;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.feedbackError {
+  color: #8f1d18;
+}
+
+.editPanel {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(20, 50, 28, 0.14);
+  border-radius: 0.65rem;
+  background: var(--main-white);
+  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.06);
+}
+
+.editHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.editHeader h2 {
+  margin: 0;
+  color: #3f852f;
+  font-size: 1rem;
+}
+
+.editHeader span {
+  color: #827a73;
+  font-size: 0.75rem;
+}
+
+.editFields {
+  display: flex;
+  align-items: end;
+  gap: 1rem;
+}
+
+.editField {
+  display: grid;
+  flex: 1;
+  gap: 0.35rem;
+  color: #373431;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.editField input {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #bcb5ae;
+  border-radius: 0.45rem;
+  background: #f5f1ee;
+  color: #625d58;
+  font: inherit;
+}
+
+.editCheckbox {
+  display: flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.5rem;
+  color: #373431;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.editCheckbox input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--motta-green);
+}
+
+.editField input:focus-visible,
+.editCheckbox input:focus-visible,
+.cancelEditButton:focus-visible,
+.saveEditButton:focus-visible {
+  outline: 3px solid #235f2d;
+  outline-offset: 2px;
+}
+
+.editActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.cancelEditButton,
+.saveEditButton {
+  min-height: 2.25rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.cancelEditButton {
+  border: 1px solid #9b3035;
+  background: #fff2f2;
+  color: #8f151b;
+}
+
+.saveEditButton {
+  border: 0;
+  background: var(--motta-green);
+  color: var(--main-white);
+}
+
+.cancelEditButton:hover {
+  background: #ffe1e1;
+}
+
+.saveEditButton:hover {
+  background: #296439;
+}
+
+.viewButton {
+  min-width: 4.5rem;
+  min-height: 2rem;
+  padding: 0.3rem 0.75rem;
+  border: 0;
+  border-radius: 0.35rem;
+  background: #ded8d0;
+  color: #373431;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.viewButton:hover {
+  background: #cfc7be;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .searchField,
+  .newSupplierButton {
+    width: 100%;
+  }
+
+  .newSupplierButton {
+    justify-content: center;
+  }
+
+  .editHeader,
+  .editFields {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .editActions {
+    flex-direction: column;
+  }
+
+  .cancelEditButton,
+  .saveEditButton {
+    width: 100%;
+  }
+}

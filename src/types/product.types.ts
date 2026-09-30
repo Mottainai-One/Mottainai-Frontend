@@ -1,4 +1,5 @@
 export type ProductTrafficLight = "regular" | "attention" | "critical";
+export type EngineActionLevel = "Crítico" | "Alto" | "Moderado";
 
 export interface Product {
   id: string;

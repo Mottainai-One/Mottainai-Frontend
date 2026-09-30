@@ -4,13 +4,13 @@ const MOCK_DELAY_MS = 350;
 
 // mock
 const MOCK_RANKING: RankingItem[] = [
-    { id: 'joao', name: 'João Cabello JS', value: 7.3 },
-    { id: 'ricardo', name: 'Ricardo Cilindro Jesus', value: 1000 },
-    { id: 'tutu', name: 'Tutu (FR) actually', value: 1001 },
-    { id: 'peres', name: 'Peres pereraldo', value: 9 },
-    { id: 'samuel', name: 'Ex Segundo I Samuca', value: 9.9 },
-    { id: 'boberto', name: 'Arthur Roberto', value: 0 },
-    { id: 'Babiii', name: 'Gaburiela', value: 0.1 },
+    { id: '1', name: 'Lanche de Frango', value: 800 },
+    { id: '2', name: 'Pizza mussarela', value: 7806 },
+    { id: '3', name: 'Strogonoff de Frango', value: 9754 },
+    { id: '4', name: 'Feijoada', value: 1452 },
+    { id: '5', name: 'Okonomiyaki', value: 3223 },
+    { id: '6', name: 'Macarrão com Carne', value: 1322 },
+    { id: '7', name: 'Alfajor', value: 190 },
 ];
 
 export async function getRanking(signal?: AbortSignal): Promise<RankingItem[]> {
