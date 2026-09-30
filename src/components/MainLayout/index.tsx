@@ -24,7 +24,9 @@ const PAGE_TITLES: Record<string, string> = {
   "/stock/counts/new": "Nova contagem",
   "/stock/damages": "Avarias e consumo interno",
   "/stock/transfers": "Transferência de lojas",
+  "/stock/transfers/new": "Nova transferência",
   "/stock/suppliers": "Fornecedores",
+  "/stock/suppliers/new": "Novo fornecedor",
   "/managementReports": "Relatórios Gerenciais",
 };
 

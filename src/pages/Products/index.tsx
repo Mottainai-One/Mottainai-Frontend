@@ -5,15 +5,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ProductsFilters from "@/components/ProductsFilters";
 import { products } from "@/data/products";
 import type {
+  EngineActionLevel,
   ProductFilterState,
   ProductTrafficLight,
 } from "@/types/product.types";
 import styles from "./style.module.css";
 
-const trafficLightLabels: Record<ProductTrafficLight, string> = {
-  regular: "Estoque regular",
-  attention: "Estoque requer atenção",
-  critical: "Estoque crítico",
+const engineActionLevels: Record<ProductTrafficLight, EngineActionLevel> = {
+  regular: "Moderado",
+  attention: "Alto",
+  critical: "Crítico",
 };
 
 const initialFilters: ProductFilterState = { search: "", category: "" };
@@ -90,7 +91,7 @@ function Products() {
                 <th scope="col">Gôndola</th>
                 <th scope="col">Preço</th>
                 <th className={styles.center} scope="col">
-                  Farol
+                  Nível
                 </th>
                 <th className={styles.center} scope="col">
                   Ações
@@ -110,11 +111,9 @@ function Products() {
                     {currencyFormatter.format(product.priceInCents / 100)}
                   </td>
                   <td className={styles.center}>
-                    <span
-                      className={`${styles.signal} ${styles[product.trafficLight]}`}
-                      role="img"
-                      aria-label={trafficLightLabels[product.trafficLight]}
-                    />
+                    <span className={`${styles.levelBadge} ${styles[product.trafficLight]}`}>
+                      {engineActionLevels[product.trafficLight]}
+                    </span>
                   </td>
                   <td className={styles.center}>
                     <Link

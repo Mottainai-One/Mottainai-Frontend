@@ -68,6 +68,15 @@ function ReusableTable<T extends object>({
                                                 <span className={`${styles.badge} ${toneClasses[column.tone?.(row) ?? 'neutral']}`}>
                                                     {content}
                                                 </span>
+                                            ) : column.display === 'action' ? (
+                                                <button
+                                                    type="button"
+                                                    className={styles.actionButton}
+                                                    onClick={(event) => column.onAction?.(row, event)}
+                                                    aria-label={column.actionLabel?.(row) ?? 'Ver ação'}
+                                                >
+                                                    Ver
+                                                </button>
                                             ) : content}
                                         </td>
                                     );

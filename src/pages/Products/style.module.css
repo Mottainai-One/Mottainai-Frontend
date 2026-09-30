@@ -100,27 +100,30 @@
   text-align: center;
 }
 
-.signal {
-  display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid transparent;
-  border-radius: 50%;
+.levelBadge {
+  display: inline-flex;
+  min-width: 7rem;
+  min-height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 500;
 }
 
 .regular {
-  border-color: #1c6b3b;
-  background: #347d50;
+  color: #08645d;
+  background: #bff5f0;
 }
 
 .attention {
-  border-color: #9b6500;
-  background: #ffc94f;
+  color: #8a5200;
+  background: #ffe7b0;
 }
 
 .critical {
-  border-color: #8f151b;
-  background: #bb2930;
+  color: #8f151b;
+  background: #f9dfe1;
 }
 
 .view-button {

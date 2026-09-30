@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import EngineActionModal from '@/components/EngineActionModal';
 import ReusableTable from '@/components/ReusableTable';
 import type { EngineDecision, EngineDecisionStatus } from '@/types/engine-decision.types';
+import type { EngineActionDialogState } from '@/types/engine-action-modal.types';
 import type { ReusableTableColumn, TableCellTone } from '@/types/reusable-table.types';
 import InfoCard from "@/components/InfoCard"
 import styles from './style.module.css';
@@ -12,13 +15,10 @@ const statusTones: Record<EngineDecisionStatus, TableCellTone> = {
     Editado: 'info',
 };
 
-const decisionColumns: ReusableTableColumn<EngineDecision>[] = [
-    {
-        id: 'time',
-        header: 'Hora',
-        renderCell: (decision) => decision.time,
-        align: 'center',
-    },
+function createDecisionColumns(
+    onViewAction: (decision: EngineDecision, trigger: HTMLButtonElement) => void,
+): ReusableTableColumn<EngineDecision>[] {
+    return [
     {
         id: 'sku',
         header: 'SKU',
@@ -37,7 +37,17 @@ const decisionColumns: ReusableTableColumn<EngineDecision>[] = [
         tone: (decision) => statusTones[decision.status],
         align: 'center',
     },
-];
+    {
+        id: 'action',
+        header: 'Ação',
+        renderCell: (decision) => decision.tactic,
+        display: 'action',
+        actionLabel: (decision) => `Ver ação sugerida pelo motor para o SKU ${decision.sku}`,
+        onAction: (decision, event) => onViewAction(decision, event.currentTarget),
+        align: 'center',
+    },
+    ];
+}
 
 const decisionData: EngineDecision[] = [
     { id: 'decision-01', time: '14:32', sku: 'NIK-CAM-ESP-BRC-G', tactic: 'Desconto de 30%', status: 'Sem ação' },
@@ -55,6 +65,20 @@ const decisionData: EngineDecision[] = [
 ];
 
 function Overview() {
+    const [actionDialog, setActionDialog] = useState<EngineActionDialogState | null>(null);
+
+    const handleViewAction = (decision: EngineDecision, trigger: HTMLButtonElement) => {
+        setActionDialog({ decision, trigger });
+    };
+
+    const handleCloseAction = () => {
+        const trigger = actionDialog?.trigger;
+        setActionDialog(null);
+        window.requestAnimationFrame(() => trigger?.focus());
+    };
+
+    const decisionColumns = createDecisionColumns(handleViewAction);
+
     return (
         <section aria-labelledby="overview-title">
             <h1 className={styles['sr-only']} id="overview-title">Visão geral</h1>
@@ -73,6 +97,9 @@ function Overview() {
                     rowKey={(decision) => decision.id}
                 />
             </div>
+            {actionDialog && (
+                <EngineActionModal decision={actionDialog.decision} onClose={handleCloseAction} />
+            )}
         </section>
     );
 }

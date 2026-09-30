@@ -204,7 +204,7 @@
     bottom: calc(100% + 12px);
     left: 50%;
     transform:translateX(-50%) translateY(10px);
-    background-color: var(--motta-green);
+    background-color: var(--motta-light-green);
     color: var(--main-white);
     padding: 8px 12px;
     border-radius: 6px;
@@ -230,7 +230,7 @@
     border-width: 6px;
     border-style: solid;
     border-color:
-        var(--motta-green)
+        var(--motta-light-green)
         transparent
         transparent
         transparent;

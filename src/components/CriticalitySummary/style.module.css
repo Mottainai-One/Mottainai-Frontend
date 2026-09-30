@@ -1,0 +1,25 @@
+.levelBadge {
+    display: inline-flex;
+    min-width: 7rem;
+    min-height: 1.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-weight: 500;
+}
+
+.regular {
+    color: #08645d;
+    background-color: #bff5f0;
+}
+
+.attention {
+    color: #8a5200;
+    background-color: #ffe7b0;
+}
+
+.critical {
+    color: #8f151b;
+    background-color: #f9dfe1;
+}
