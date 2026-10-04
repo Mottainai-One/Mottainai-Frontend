@@ -28,10 +28,11 @@
   gap: 0.5rem;
   padding: 0.55rem 1.25rem;
   border-radius: 0.6rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 700;
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .searchField {
@@ -44,7 +45,7 @@
   min-height: 2.35rem;
   box-sizing: border-box;
   padding: 0.45rem 0.8rem;
-  border: 1px solid rgba(20, 50, 28, 0.14);
+  border: 1px solid rgba(16, 42, 67, 0.14);
   border-radius: 0.6rem;
   background: var(--main-white);
   color: #625d58;
@@ -52,16 +53,16 @@
 }
 
 .searchField input:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 
 .newTransferButton:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .newTransferButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 

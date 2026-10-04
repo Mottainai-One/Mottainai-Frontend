@@ -3,7 +3,7 @@
     margin-top: -1px;
     overflow-x: auto;
     overflow-y: hidden;
-    background-color: var(--motta-green);
+    background-color: var(--motta-blue);
     scrollbar-width: thin;
 }
 
@@ -73,18 +73,18 @@
 
 .link:hover {
     background-color: #ffffff;
-    color: var(--motta-green);
+    color: var(--motta-blue);
     opacity: 1;
 }
 
 .link:focus-visible {
     outline: none;
-    box-shadow: inset 0 0 0 3px #235f2d;
+    box-shadow: inset 0 0 0 3px var(--motta-light-blue);
 }
 
 .active {
     background-color: var(--main-white);
-    color: var(--motta-green);
+    color: var(--motta-blue);
     opacity: 1 !important;
 }
 

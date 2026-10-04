@@ -6,10 +6,11 @@
     height: 112px;
     padding: 14px 20px;
     background-color: var(--main-white);
-    border: 1px solid rgba(20, 50, 28, 0.12);
+    border: 1px solid rgba(16, 42, 67, 0.12);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
-    color: var(--motta-green);
+    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    color: var(--motta-blue);
+    cursor: default;
 }
 .header {
     margin-bottom: 12px;
@@ -17,7 +18,7 @@
 .header h2 {
     overflow: hidden;
     margin: 0;
-    color: var(--motta-green);
+    color: var(--motta-blue);
     font-size: 0.95rem;
     font-weight: 500;
     line-height: 1.2;
@@ -34,7 +35,7 @@
     color: black;
 }
 .success {
-    color: var(--motta-light-green);
+    color: var(--motta-light-blue);
 }
 .warning {
     color: #f5a623;

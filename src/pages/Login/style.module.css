@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 :root {
-    --motta-green: rgba(20, 50, 28, 1);
-    --motta-light-green: rgba(75, 155, 98, 1);
+    --motta-blue: rgba(16, 42, 67, 1);
+    --motta-light-blue: rgba(45, 87, 120, 1);
     --main-gray: rgba(168, 164, 164, 1);
     --main-white: rgba(255, 255, 255, 1);
 }
@@ -38,7 +38,7 @@ img {
     margin-bottom: 0.5rem;
     font-size: 2.2rem;
     font-weight: 700;
-    color: var(--motta-green);
+    color: var(--motta-blue);
     text-align: center;
 }
 .subtitle {
@@ -76,14 +76,14 @@ img {
     background-color: transparent;
     font-size: 1rem;
     font-family: inherit;
-    color: var(--motta-green);
+    color: var(--motta-blue);
 }
 .input::placeholder {
     color: var(--main-gray);
 }
 .input:focus-visible {
-    border-color: var(--motta-light-green);
-    outline: 2px solid var(--motta-light-green);
+    border-color: var(--motta-light-blue);
+    outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
 .passwordField {
@@ -110,7 +110,7 @@ img {
     cursor: pointer;
 }
 .togglePasswordButton:focus-visible {
-    outline: 2px solid var(--motta-light-green);
+    outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
 .forgotPasswordButton {
@@ -120,18 +120,18 @@ img {
     border: none;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--motta-green);
+    color: var(--motta-blue);
     text-decoration: underline;
     cursor: pointer;
 }
 .forgotPasswordButton:focus-visible {
-    outline: 2px solid var(--motta-light-green);
+    outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
 .submitButton {
     padding: 18px;
     margin-top: 1.5rem;
-    background-color: var(--motta-green);
+    background-color: var(--motta-blue);
     border: none;
     border-radius: 50px;
     color: var(--main-white);
@@ -143,8 +143,8 @@ img {
 }
 .submitButton:hover,
 .submitButton:focus-visible {
-    background-color: var(--motta-light-green);
-    outline: 2px solid var(--motta-green);
+    background-color: var(--motta-light-blue);
+    outline: 2px solid var(--motta-blue);
     outline-offset: 2px;
 }
 .submitButton:disabled {
@@ -160,7 +160,7 @@ img {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--motta-green);
+    background-color: var(--motta-blue);
 }
 .mascotImage {
     width: 100%;

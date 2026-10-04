@@ -21,7 +21,7 @@
   gap: 0.5rem;
   padding: 0.55rem 1.25rem;
   border-radius: 0.6rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 600;
   text-decoration: none;
@@ -29,13 +29,13 @@
 }
 
 .new-product:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .new-product:focus-visible,
 .view-button:focus-visible,
 .table-region:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 
@@ -44,17 +44,17 @@
   min-width: 0;
   margin-top: clamp(1rem, 2vw, 1.5rem);
   padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 1.5rem;
-  border: 1px solid rgba(20, 50, 28, 0.15);
+  border: 1px solid rgba(16, 42, 67, 0.15);
   border-radius: 0.75rem;
   background: var(--main-white);
-  box-shadow: 0 2px 7px rgba(20, 50, 28, 0.08);
+  box-shadow: 0 2px 7px rgba(16, 42, 67, 0.08);
 }
 
 .list-title {
   margin: 0;
   padding: 0.5rem clamp(1rem, 3vw, 2rem) 0.75rem;
   border-bottom: 1px solid #ded8d1;
-  color: var(--motta-green);
+  color: var(--motta-blue);
   font-size: 0.95rem;
   font-weight: 500;
 }
@@ -87,7 +87,7 @@
 .table th,
 .table td {
   padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid #74a55f;
+  border-bottom: 1px solid var(--motta-light-blue);
   text-align: left;
   white-space: nowrap;
 }
@@ -142,7 +142,7 @@
 }
 
 .view-button:hover {
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
 }
 
