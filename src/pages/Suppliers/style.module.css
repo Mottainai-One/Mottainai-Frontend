@@ -19,7 +19,7 @@
   min-height: 2.35rem;
   box-sizing: border-box;
   padding: 0.45rem 0.8rem;
-  border: 1px solid rgba(20, 50, 28, 0.14);
+  border: 1px solid rgba(16, 42, 67, 0.14);
   border-radius: 0.6rem;
   background: var(--main-white);
   color: #625d58;
@@ -29,7 +29,7 @@
 .searchField input:focus-visible,
 .newSupplierButton:focus-visible,
 .viewButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 
@@ -40,14 +40,15 @@
   gap: 0.5rem;
   padding: 0.55rem 1.25rem;
   border-radius: 0.6rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 700;
   text-decoration: none;
+  transition: all 0.3s ease-in-out;
 }
 
 .newSupplierButton:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .tableSection {
@@ -70,10 +71,10 @@
   gap: 1rem;
   margin-top: 1rem;
   padding: 1rem 1.25rem;
-  border: 1px solid rgba(20, 50, 28, 0.14);
+  border: 1px solid rgba(16, 42, 67, 0.14);
   border-radius: 0.65rem;
   background: var(--main-white);
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.06);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.06);
 }
 
 .editHeader {
@@ -85,7 +86,7 @@
 
 .editHeader h2 {
   margin: 0;
-  color: #3f852f;
+  color: var(--motta-light-blue);
   font-size: 1rem;
 }
 
@@ -132,14 +133,14 @@
 .editCheckbox input {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--motta-green);
+  accent-color: var(--motta-blue);
 }
 
 .editField input:focus-visible,
 .editCheckbox input:focus-visible,
 .cancelEditButton:focus-visible,
 .saveEditButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 2px;
 }
 
@@ -168,7 +169,7 @@
 
 .saveEditButton {
   border: 0;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
 }
 
@@ -177,7 +178,7 @@
 }
 
 .saveEditButton:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .viewButton {

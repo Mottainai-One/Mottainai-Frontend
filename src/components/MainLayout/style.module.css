@@ -11,7 +11,7 @@
 .content {
   min-height: calc(100vh - 64px);
   padding: 32px 40px;
-  color: var(--motta-green);
+  color: var(--motta-blue);
 }
 
 .content-with-folders {
@@ -48,11 +48,11 @@
   transform: translateY(-150%);
   border-radius: 0.4rem;
   background: #fff;
-  color: #14321c;
+  color: #102a43;
   font-weight: 700;
 }
 
 .skip-link:focus {
   transform: translateY(0);
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
 }

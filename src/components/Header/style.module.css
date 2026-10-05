@@ -5,7 +5,7 @@
     width: 100%;
     min-height: 64px;
     padding: 12px 24px;
-    background-color: var(--motta-green);
+    background-color: var(--motta-blue);
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     color: var(--main-white);
 }
@@ -19,7 +19,7 @@
     white-space: nowrap;
 }
 .session-divider {
-    color: var(--motta-light-green);
+    color: var(--motta-light-blue);
 }
 .account-icon {
     position: relative;
@@ -42,7 +42,7 @@
     outline-offset: 2px;
 }
 .account-icon:hover{
-    border: var(--motta-light-green) 3px solid;
+    border: var(--motta-light-blue) 3px solid;
 }
 .tooltip {
     position: absolute;
@@ -51,7 +51,7 @@
     z-index: 1200;
     padding: 8px 12px;
     border-radius: 6px;
-    background-color: var(--motta-light-green);
+    background-color: var(--motta-light-blue);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     opacity: 0;
     color: var(--main-white);
@@ -69,7 +69,7 @@
     content: '';
     border-width: 6px;
     border-style: solid;
-    border-color: transparent transparent var(--motta-light-green);
+    border-color: transparent transparent var(--motta-light-blue);
 }
 .account-icon:hover .tooltip,
 .account-icon:focus-visible .tooltip {

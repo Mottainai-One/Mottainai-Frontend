@@ -7,15 +7,15 @@
 
 .card {
   padding: clamp(1.25rem, 3vw, 2.5rem);
-  border: 1px solid rgba(20, 50, 28, 0.14);
+  border: 1px solid rgba(16, 42, 67, 0.14);
   border-radius: 0.75rem;
   background: var(--main-white);
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
 }
 
 .card h1 {
   margin: 0 0 1.25rem;
-  color: var(--motta-green);
+  color: var(--motta-blue);
   font-size: clamp(1.25rem, 2.5vw, 1.75rem);
 }
 
@@ -38,8 +38,8 @@
 }
 
 .tabs .active {
-  border-bottom-color: #568f43;
-  color: var(--motta-green);
+  border-bottom-color: var(--motta-light-blue);
+  color: var(--motta-blue);
 }
 
 .file-input {
@@ -71,13 +71,13 @@
 .dropzone:hover,
 .dropzone:focus-within,
 .dragging {
-  border-color: var(--motta-green);
-  background: #eef5ec;
+  border-color: var(--motta-blue);
+  background: rgba(45, 87, 120, 0.08);
 }
 
 .dropzone.has-file {
   border-style: solid;
-  border-color: #3f852f;
+  border-color: var(--motta-light-blue);
   background: #e8f4e4;
   color: #174b20;
 }
@@ -89,7 +89,7 @@
 .modal header button:focus-visible,
 select:focus-visible,
 input:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 
@@ -101,7 +101,7 @@ input:focus-visible {
   justify-content: center;
   border-radius: 50%;
   background: #d9d9d9;
-  color: var(--motta-green);
+  color: var(--motta-blue);
   font-size: 2rem;
 }
 
@@ -168,8 +168,8 @@ input:focus-visible {
 }
 
 .primary {
-  border: 1px solid var(--motta-green);
-  background: var(--motta-green);
+  border: 1px solid var(--motta-blue);
+  background: var(--motta-blue);
   color: var(--main-white);
 }
 
@@ -275,7 +275,7 @@ input:focus-visible {
 
 .modal header h2 {
   margin: 0;
-  color: #3f852f;
+  color: var(--motta-light-blue);
 }
 
 .modal header button {

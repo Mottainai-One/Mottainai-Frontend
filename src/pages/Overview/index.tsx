@@ -83,10 +83,10 @@ function Overview() {
         <section aria-labelledby="overview-title">
             <h1 className={styles['sr-only']} id="overview-title">Visão geral</h1>
             <div className={styles['container-card']}>
-                <InfoCard title="Vendas deste mês" value="R$100.00" footer="vendeu 10% a mais do que mês passado" tone="danger"/>
-                <InfoCard title="O quanto a babella é legal" value="100%" footer="90% a mais do que ano passado" tone="success"/>
-                <InfoCard title="Nota de IA" value="00000000" footer="Parabéns, você zerou" tone="warning"/>
-                <InfoCard title="Tokens Gastos" value="10000.00" footer="Chat GPT Sol Alto na conta da PICpAY gastou 10% só" tone="neutral"/>
+                <InfoCard title="Última varredura" value="há 50min" footer="Falta 10min para a próxima" tone="danger"/>
+                <InfoCard title="Número de SKUs escaneados" value="1201" footer="De 1203 SKUs totais" tone="neutral"/>
+                <InfoCard title="Alertas Emitidos" value="104" footer="5% a mais comparado a útima varredura" tone="warning"/>
+                <InfoCard title="Assertividade do Motor" value="64,32%" footer="Quanto mais dados mais acertivo" tone="success"/>
             </div>
 
             <div className={styles.page}>

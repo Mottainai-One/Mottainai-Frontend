@@ -7,7 +7,6 @@ import Overview from "@/pages/Overview";
 import Users from "@/pages/Users";
 import ExpiringProducts from "@/pages/ExpiringProducts";
 import PasswordRecovery from "@/pages/PasswordRecovery";
-import ProductTransfer from "@/pages/ProductTransfer";
 import UsageHistory from "@/pages/UsageHistory";
 import ProductsRegistration from "@/pages/ProductsRegistration";
 import Settings from "@/pages/Settings";
@@ -43,7 +42,6 @@ export default function AppRoutes() {
             <Route path="/overview" element={<Overview />} />
             <Route path="/home" element={<Home />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/productTransfer" element={<ProductTransfer />} />
             <Route path="/usageHistory" element={<UsageHistory />} />
             <Route path="/expiringProducts" element={<ExpiringProducts />} />
             <Route path="/products" element={<Products />} />

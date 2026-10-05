@@ -7,10 +7,10 @@
   width: 100%;
   box-sizing: border-box;
   padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid rgba(20, 50, 28, 0.12);
+  border: 1px solid rgba(16, 42, 67, 0.12);
   border-radius: 0.75rem;
   background: var(--main-white);
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
 }
 
 .formHeader {
@@ -23,7 +23,7 @@
 
 .eyebrow {
   margin: 0 0 0.35rem;
-  color: #568f43;
+  color: var(--motta-light-blue);
   font-size: 0.8rem;
   font-weight: 700;
 }
@@ -81,7 +81,7 @@
 .checkboxField input {
   width: 1rem;
   height: 1rem;
-  accent-color: var(--motta-green);
+  accent-color: var(--motta-blue);
 }
 
 .formField input:focus-visible,
@@ -89,7 +89,7 @@
 .checkboxField input:focus-visible,
 .cancelButton:focus-visible,
 .submitButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 2px;
 }
 
@@ -132,7 +132,7 @@
 
 .submitButton {
   border: 0;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   cursor: pointer;
 }
@@ -142,7 +142,7 @@
 }
 
 .submitButton:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 @media (max-width: 640px) {

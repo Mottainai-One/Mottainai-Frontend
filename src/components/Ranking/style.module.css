@@ -7,14 +7,14 @@
     margin-top: 32px;
     padding: 20px 32px 24px;
     background-color: var(--main-white);
-    border: 1px solid rgba(20, 50, 28, 0.12);
+    border: 1px solid rgba(16, 42, 67, 0.12);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
-    color: var(--motta-green);
+    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    color: var(--motta-blue);
 }
 .card h2 {
     margin: 0 0 16px;
-    color: var(--motta-light-green);
+    color: var(--motta-light-blue);
     font-size: 1rem;
     font-weight: 500;
 }
@@ -35,8 +35,8 @@
 
 .tableHeader {
     padding: 10px 14px;
-    background-color: rgba(20, 50, 28, 0.03);
-    border-bottom: 1px solid var(--motta-light-green);
+    background-color: rgba(16, 42, 67, 0.03);
+    border-bottom: 1px solid var(--motta-light-blue);
     color: #6f6862;
     font-size: 0.875rem;
     font-weight: 500;
@@ -46,7 +46,7 @@
 .row {
     min-height: 42px;
     padding: 7px 14px;
-    border-bottom: 1px solid rgba(20, 50, 28, 0.14);
+    border-bottom: 1px solid rgba(16, 42, 67, 0.14);
     color: #6f6862;
     font-size: 0.875rem;
 }

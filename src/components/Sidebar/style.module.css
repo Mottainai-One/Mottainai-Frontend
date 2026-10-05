@@ -6,8 +6,8 @@
     left: 0;
     width: var(--sidebar-width);
     height: 100vh;
-    background-color: var(--motta-green);
-    border-right: green 0.2px solid;
+    background-color: var(--motta-blue);
+    border-right: var(--motta-light-blue) 0.2px solid;
     color: var(--main-white);
     padding: 24px 20px;
     display: flex;
@@ -159,7 +159,7 @@
     min-height: 44px;
     padding: 0 10px;
     background-color: var(--main-white) !important;
-    color: var(--motta-green) !important;
+    color: var(--motta-blue) !important;
     border-radius: 30px;
     font-size: 0.85rem;
     font-weight: 700;
@@ -187,7 +187,7 @@
     flex-shrink: 0;
     padding: 0;
     background-color: var(--main-white) !important;
-    color: var(--motta-green) !important;
+    color: var(--motta-blue) !important;
     border-radius: 10px;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
 }
@@ -204,7 +204,7 @@
     bottom: calc(100% + 12px);
     left: 50%;
     transform:translateX(-50%) translateY(10px);
-    background-color: var(--motta-light-green);
+    background-color: var(--motta-light-blue);
     color: var(--main-white);
     padding: 8px 12px;
     border-radius: 6px;
@@ -230,7 +230,7 @@
     border-width: 6px;
     border-style: solid;
     border-color:
-        var(--motta-light-green)
+        var(--motta-light-blue)
         transparent
         transparent
         transparent;
@@ -244,7 +244,7 @@
 }
 
 .sidebar-logout:hover {
-    background-color: var(--motta-light-green) !important;
+    background-color: var(--motta-light-blue) !important;
     color: var(--main-white) !important;
 }
 
@@ -266,7 +266,7 @@
         height: 50px;
         border: 0;
         border-radius: 50%;
-        background-color: var(--motta-green);
+        background-color: var(--motta-blue);
         color: var(--main-white);
         cursor: pointer;
         font-size: 1.25rem;

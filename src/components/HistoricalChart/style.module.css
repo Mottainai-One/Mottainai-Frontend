@@ -6,10 +6,10 @@
   margin-top: 32px;
   padding: 24px;
   background-color: var(--main-white);
-  border: 1px solid rgba(20, 50, 28, 0.12);
+  border: 1px solid rgba(16, 42, 67, 0.12);
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
-  color: var(--motta-green);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+  color: var(--motta-blue);
 }
 
 .heading {
@@ -34,9 +34,9 @@
 
 .period {
   padding: 6px 10px;
-  background-color: rgba(75, 155, 98, 0.12);
+  background-color: rgba(45, 87, 120, 0.12);
   border-radius: 999px;
-  color: var(--motta-green);
+  color: var(--motta-blue);
   font-size: 0.75rem;
   font-weight: 700;
   white-space: nowrap;
@@ -46,6 +46,10 @@
   position: relative;
   flex: 1;
   min-height: 260px;
+}
+
+.chartArea canvas {
+  cursor: default;
 }
 
 .compact {
@@ -66,13 +70,13 @@
 
 .dataDetails summary {
   width: fit-content;
-  color: var(--motta-green);
-  cursor: pointer;
+  color: var(--motta-blue);
+  cursor: pointer !important;
   font-weight: 700;
 }
 
 .dataDetails summary:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 
@@ -86,13 +90,42 @@
 }
 
 .dataDetails li {
+  min-width: 0;
+}
+
+.dataPoint {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   gap: 12px;
+  padding: 4px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+}
+
+.dataPoint,
+.dataPoint * {
+  cursor: pointer;
+}
+
+.dataPoint:hover,
+.dataPoint:focus-visible {
+  border-color: rgba(16, 42, 67, 0.2);
+  background-color: #f2f6f3;
+}
+
+.dataPoint:focus-visible {
+  outline: 3px solid var(--motta-light-blue);
+  outline-offset: 2px;
 }
 
 .dataDetails time {
-  color: var(--motta-green);
+  color: var(--motta-blue);
   font-weight: 700;
 }
 

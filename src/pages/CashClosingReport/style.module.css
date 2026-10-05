@@ -1,22 +1,22 @@
 .page {
   width: 100%;
   min-width: 0;
-  color: var(--motta-green);
+  color: var(--motta-blue);
 }
 
 .summaryCard,
 .productsCard {
   width: 100%;
   padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid rgba(20, 50, 28, 0.12);
+  border: 1px solid rgba(16, 42, 67, 0.12);
   border-radius: 0.75rem;
   background: var(--main-white);
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
 }
 
 .summaryCard h1 {
   margin: 0 0 1rem;
-  color: #3f852f;
+  color: var(--motta-light-blue);
   font-size: 1rem;
 }
 
@@ -29,7 +29,7 @@
   grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
   align-items: center;
   min-height: 2.25rem;
-  border-bottom: 1px solid #74a55f;
+  border-bottom: 1px solid var(--motta-light-blue);
   color: #625d58;
   font-size: 0.8rem;
 }
@@ -65,7 +65,7 @@
 .saveButton:focus-visible,
 .cancelButton:focus-visible,
 .backButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 2px;
 }
 
@@ -97,20 +97,20 @@
   flex-shrink: 0;
   align-items: center;
   padding: 0.10rem 0.6rem;
-  border: 1px solid #4b9b62;
+  border: 1px solid #2d5778;
   border-radius: 0.45rem;
-  background: #f0f7f1;
-  color: var(--motta-green);
+  background: rgba(45, 87, 120, 0.08);
+  color: var(--motta-blue);
   cursor: pointer;
   font: inherit;
   font-size: 0.75rem;
   font-weight: 700;
-  box-shadow: 0 1px 2px rgba(20, 50, 28, 0.12);
+  box-shadow: 0 1px 2px rgba(16, 42, 67, 0.12);
 }
 
 .changeButton:hover {
-  background: #d6fac9;
-  box-shadow: 0 2px 5px rgba(20, 50, 28, 0.16);
+  background: rgba(45, 87, 120, 0.16);
+  box-shadow: 0 2px 5px rgba(16, 42, 67, 0.16);
 }
 
 .productsCard {
@@ -151,13 +151,13 @@
 .saveButton,
 .backButton {
   border: 0;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
 }
 
 .saveButton:hover,
 .backButton:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .actions {
@@ -195,14 +195,14 @@
   margin-top: 1.25rem;
   padding: 0.55rem 1rem;
   border-radius: 0.55rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 700;
   text-decoration: none;
 }
 
 .backLink:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 

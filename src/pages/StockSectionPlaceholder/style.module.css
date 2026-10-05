@@ -1,11 +1,11 @@
 .page {
   width: 100%;
   padding: clamp(1.25rem, 3vw, 2rem);
-  border: 1px solid rgba(20, 50, 28, 0.12);
+  border: 1px solid rgba(16, 42, 67, 0.12);
   border-radius: 0.75rem;
   background-color: var(--main-white);
-  box-shadow: 0 2px 8px rgba(20, 50, 28, 0.08);
-  color: var(--motta-green);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+  color: var(--motta-blue);
 }
 
 .page h1 {
@@ -25,17 +25,17 @@
   align-items: center;
   padding: 0.55rem 1rem;
   border-radius: 0.55rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 700;
   text-decoration: none;
 }
 
 .backLink:hover {
-  background: #296439;
+  background: var(--motta-light-blue);
 }
 
 .backLink:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }

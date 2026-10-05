@@ -20,7 +20,7 @@
   gap: 0.5rem;
   padding: 0.55rem 1.25rem;
   border-radius: 0.6rem;
-  background: var(--motta-green);
+  background: var(--motta-blue);
   color: var(--main-white);
   font-weight: 700;
   text-decoration: none;
@@ -29,13 +29,13 @@
 
 .newCountButton:hover,
 .reportButton:hover {
-  background: var(--motta-green);
+  background: var(--motta-light-blue);
   color: var(--main-white);
 }
 
 .newCountButton:focus-visible,
 .reportButton:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
 }
 

@@ -32,7 +32,7 @@
 
 .field input:focus-visible,
 .field select:focus-visible {
-  outline: 3px solid #235f2d;
+  outline: 3px solid var(--motta-light-blue);
   outline-offset: 2px;
 }
 
