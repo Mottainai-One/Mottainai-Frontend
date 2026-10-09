@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DetailsModal from "@/components/DetailsModal";
 import ProductsFilters from "@/components/ProductsFilters";
 import { products } from "@/data/products";
+import type { DetailsModalField, OpenDetailsDialog } from "@/types/details-modal.types";
 import type {
   EngineActionLevel,
   ProductFilterState,
+  Product,
   ProductTrafficLight,
 } from "@/types/product.types";
 import styles from "./style.module.css";
@@ -33,6 +36,9 @@ const normalize = (value: string) =>
 
 function Products() {
   const [filters, setFilters] = useState<ProductFilterState>(initialFilters);
+  const [detailsDialog, setDetailsDialog] =
+    useState<OpenDetailsDialog<Product> | null>(null);
+  const handleCloseDetails = useCallback(() => setDetailsDialog(null), []);
 
   const categories = Array.from(
     new Set(products.map((product) => product.category)),
@@ -116,16 +122,15 @@ function Products() {
                     </span>
                   </td>
                   <td className={styles.center}>
-                    <Link
+                    <button
                       className={styles["view-button"]}
-                      to={`/products/${product.id}`}
+                      type="button"
+                      onClick={(event) => setDetailsDialog({ record: product, trigger: event.currentTarget })}
+                      aria-label={`Ver detalhes de ${product.name}`}
+                      aria-haspopup="dialog"
                     >
                       Ver
-                      <span className={styles["sr-only"]}>
-                        {" "}
-                        detalhes de {product.name}
-                      </span>
-                    </Link>
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -140,6 +145,27 @@ function Products() {
           </table>
         </div>
       </section>
+      {detailsDialog && (
+        <DetailsModal
+          title={detailsDialog.record.name}
+          description="Resumo cadastral do produto; o diagnóstico completo permanece disponível na página detalhada."
+          fields={[
+            { id: "barcode", label: "Código de barras", value: detailsDialog.record.barcode },
+            { id: "category", label: "Categoria", value: detailsDialog.record.category },
+            { id: "supplier", label: "Fornecedor", value: detailsDialog.record.supplier },
+            { id: "stock", label: "Estoque", value: `${detailsDialog.record.stockQuantity} unidades` },
+            { id: "shelf", label: "Gôndola", value: `${detailsDialog.record.shelfQuantity} unidades` },
+            { id: "price", label: "Preço atual", value: currencyFormatter.format(detailsDialog.record.priceInCents / 100) },
+            { id: "level", label: "Nível", value: engineActionLevels[detailsDialog.record.trafficLight] },
+          ] satisfies DetailsModalField[]}
+          triggerElement={detailsDialog.trigger}
+          onClose={handleCloseDetails}
+        >
+          <Link className={styles["link"]} to={`/products/${detailsDialog.record.id}`}>
+            Abrir diagnóstico detalhado
+          </Link>
+        </DetailsModal>
+      )}
     </section>
   );
 }

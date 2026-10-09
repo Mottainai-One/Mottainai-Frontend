@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DetailsModal from "@/components/DetailsModal";
 import HistoricalChart from "@/components/HistoricalChart";
 import ReusableTable from "@/components/ReusableTable";
 import { getProductDetails } from "@/services/productDetailsService";
@@ -11,6 +12,7 @@ import type {
   ProductDetailsState,
   ProductSummaryRow,
 } from "@/types/product-details.types";
+import type { DetailsModalField, OpenDetailsDialog } from "@/types/details-modal.types";
 import type { ReusableTableColumn } from "@/types/reusable-table.types";
 import styles from "./style.module.css";
 
@@ -43,18 +45,31 @@ const summaryColumns: ReusableTableColumn<ProductSummaryRow>[] = [
   },
 ];
 
-const historyColumns: ReusableTableColumn<ProductActionHistory>[] = [
-  { id: "date", header: "Data", renderCell: (item) => item.date },
-  { id: "tactic", header: "Tática", renderCell: (item) => item.tactic },
-  { id: "decision", header: "Decisão", renderCell: (item) => item.decision },
-  {
-    id: "efficacy",
-    header: "Eficácia",
-    renderCell: (item) => item.efficacy,
-    display: "badge",
-    tone: (item) => item.efficacyTone,
-  },
-];
+function createHistoryColumns(
+  onViewAction: (item: ProductActionHistory, trigger: HTMLButtonElement) => void,
+): ReusableTableColumn<ProductActionHistory>[] {
+  return [
+    { id: "date", header: "Data", renderCell: (item) => item.date },
+    { id: "tactic", header: "Tática", renderCell: (item) => item.tactic },
+    { id: "decision", header: "Decisão", renderCell: (item) => item.decision },
+    {
+      id: "efficacy",
+      header: "Eficácia",
+      renderCell: (item) => item.efficacy,
+      display: "badge",
+      tone: (item) => item.efficacyTone,
+    },
+    {
+      id: "action",
+      header: "Ação",
+      renderCell: () => null,
+      display: "action",
+      actionLabel: (item) => `Ver ação ${item.tactic}`,
+      onAction: (item, event) => onViewAction(item, event.currentTarget),
+      align: "center",
+    },
+  ];
+}
 
 const initialState: ProductDetailsState = {
   status: "loading",
@@ -114,6 +129,12 @@ function createSummary(product: ProductDetail): ProductSummaryRow[] {
 function ProductDetails() {
   const { productId } = useParams<{ productId: string }>();
   const [state, setState] = useState<ProductDetailsState>(initialState);
+  const [detailsDialog, setDetailsDialog] =
+    useState<OpenDetailsDialog<ProductActionHistory> | null>(null);
+  const handleCloseDetails = useCallback(() => setDetailsDialog(null), []);
+  const handleViewAction = (item: ProductActionHistory, trigger: HTMLButtonElement) => {
+    setDetailsDialog({ record: item, trigger });
+  };
 
   useEffect(() => {
     if (!productId) return undefined;
@@ -176,6 +197,17 @@ function ProductDetails() {
     );
 
   const product = state.data;
+  const historyColumns = createHistoryColumns(handleViewAction);
+  const actionFields: DetailsModalField[] = detailsDialog
+    ? [
+        { id: "product", label: "Produto", value: product.name },
+        { id: "sku", label: "SKU", value: product.sku },
+        { id: "date", label: "Data", value: detailsDialog.record.date },
+        { id: "tactic", label: "Ação do motor", value: detailsDialog.record.tactic },
+        { id: "decision", label: "Decisão", value: detailsDialog.record.decision },
+        { id: "efficacy", label: "Resultado registrado", value: detailsDialog.record.efficacy },
+      ]
+    : [];
 
   return (
     <section className={styles.page} aria-labelledby="product-title">
@@ -214,6 +246,15 @@ function ProductDetails() {
         data={product.actionHistory}
         rowKey={(item) => item.id}
       />
+      {detailsDialog && (
+        <DetailsModal
+          title="Detalhes da ação do motor"
+          description="Dados registrados no histórico de ações deste produto."
+          fields={actionFields}
+          triggerElement={detailsDialog.trigger}
+          onClose={handleCloseDetails}
+        />
+      )}
     </section>
   );
 }

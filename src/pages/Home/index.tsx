@@ -8,21 +8,29 @@ import { wastedItemsByCategory } from '@/data/wastedItemsByCategory';
 import { useHistoricalMetrics } from '@/hooks/useHistoricalMetrics';
 import { useRanking } from '@/hooks/useRanking';
 import { summarizeProductCriticality } from '@/utils/criticalitySummary';
+import type { DonutChartSegment } from '@/types/donut-chart.types';
 import type { HistoricalMetric } from '@/types/historical-metric.types';
+import type { ProductTrafficLight } from '@/types/product.types';
 import styles from './style.module.css'
 
 const criticalitySummary = summarizeProductCriticality(products);
-const criticalityColors = {
-    regular: '#4b9b62',
-    attention: '#d78b25',
-    critical: '#c64c49',
-} as const;
-const criticalitySegments = criticalitySummary.map((item) => ({
+const criticalityChartColors: Record<ProductTrafficLight, string> = {
+    regular: '#0f766e',
+    attention: '#a15c00',
+    critical: '#b4232d',
+};
+const criticalityDonutSegments: DonutChartSegment[] = criticalitySummary.map((item) => ({
     id: item.id,
     label: item.status,
     value: item.quantity,
-    color: criticalityColors[item.id],
+    color: criticalityChartColors[item.id],
 }));
+const criticalityStatusClasses = {
+    regular: styles.moderate,
+    attention: styles.high,
+    critical: styles.critical,
+} as const;
+const orderedCriticalitySummary = [...criticalitySummary].reverse();
 const weeklySalesValues = [64, 68, 72, 76, 91, 118, 83, 86];
 
 function toLocalDateString(date: Date): string {
@@ -103,13 +111,58 @@ function Home(){
                 {/* ranking */}
                 {isRankingLoading && <p className={styles.feedback} role="status">Carregando ranking...</p>}
                 {rankingError && <p className={styles.feedback} role="alert">{rankingError}</p>}
-                {!isRankingLoading && !rankingError && <Ranking data={rankingData} />}
+                {!isRankingLoading && !rankingError && (
+                    <Ranking
+                        data={rankingData}
+                        title="Top 5 produtos que mais saíram"
+                        itemLabel="Produto"
+                        valueLabel="Unidades vendidas"
+                        valueFormat="decimal"
+                        valueSuffix=" un"
+                        maxItems={5}
+                    />
+                )}
             </div>
-            <section className={styles.donutGrid} aria-label="Criticidade e desperdício por categoria">
+            <section className={styles.criticalityCard} aria-labelledby="criticality-title">
+                <h2 id="criticality-title">Nível de criticidade – SKUs monitorados</h2>
+                <div
+                    className={styles.criticalityTableRegion}
+                    role="region"
+                    aria-labelledby="criticality-title"
+                    tabIndex={0}
+                >
+                    <table className={styles.criticalityTable}>
+                        <caption className={styles.visuallyHidden}>
+                            Quantidade de SKUs em cada nível e faixa de ação correspondente.
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Status</th>
+                                <th scope="col">Quantidade</th>
+                                <th scope="col">Faixa</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {orderedCriticalitySummary.map((item) => (
+                                <tr key={item.id}>
+                                    <th scope="row">
+                                        <span className={`${styles.criticalityStatus} ${criticalityStatusClasses[item.id]}`}>
+                                            {item.status}
+                                        </span>
+                                    </th>
+                                    <td>{item.quantity.toLocaleString('pt-BR')}</td>
+                                    <td>{item.guidance}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section className={styles.donutGrid} aria-label="Gráficos de criticidade e desperdício">
                 <DonutChart
-                    title="Níveis de criticidade – SKUs monitorados"
-                    description="Distribuição dos produtos por nível de criticidade."
-                    segments={criticalitySegments}
+                    title="Nível de criticidade – SKUs monitorados"
+                    description="Distribuição dos produtos monitorados entre os níveis Crítico, Alto e Moderado."
+                    segments={criticalityDonutSegments}
                     centerLabel="SKUs"
                     valueLabel="SKUs"
                 />

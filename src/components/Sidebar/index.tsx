@@ -30,6 +30,8 @@ function Sidebar({ overviewPaths }: SidebarProps) {
     normalizedPathname.startsWith("/products/");
   const isStockFlowActive =
     normalizedPathname === "/stock" || normalizedPathname.startsWith("/stock/");
+  const isAccountingFlowActive =
+    normalizedPathname === "/managementReports" || normalizedPathname === "/accounting/sped";
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -146,16 +148,17 @@ function Sidebar({ overviewPaths }: SidebarProps) {
               </Link>
             </li>
             <li>
-              <NavLink
+              <Link
                 to="/managementReports"
                 className={styles["sidebar-item"]}
+                aria-current={isAccountingFlowActive ? "location" : undefined}
                 onClick={closeSidebar}
               >
                 <span className={styles.icon} aria-hidden="true">
                   <FontAwesomeIcon icon={faMoneyBill} />
                 </span>
                 <span className={styles.text}>Contabilidade/SPED</span>
-              </NavLink>
+              </Link>
             </li>
             <li>
               <NavLink

@@ -253,6 +253,12 @@ input:focus-visible {
   justify-content: center;
   padding: 1rem;
   background: rgba(10, 20, 13, 0.55);
+  animation: registrationBackdropFadeIn 180ms ease-out both;
+}
+
+.backdropClosing {
+  pointer-events: none;
+  animation: registrationBackdropFadeOut 180ms ease-in both;
 }
 
 .modal {
@@ -263,6 +269,32 @@ input:focus-visible {
   border-radius: 0.75rem;
   background: #fff;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  animation: registrationModalFadeIn 180ms ease-out both;
+}
+
+.modalClosing {
+  pointer-events: none;
+  animation: registrationModalFadeOut 180ms ease-in both;
+}
+
+@keyframes registrationBackdropFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes registrationBackdropFadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes registrationModalFadeIn {
+  from { opacity: 0; transform: translateY(0.5rem) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes registrationModalFadeOut {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to { opacity: 0; transform: translateY(0.35rem) scale(0.985); }
 }
 
 .modal header {
@@ -293,6 +325,15 @@ input:focus-visible {
 .success {
   width: min(30rem, 100%);
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .backdropClosing,
+  .modal,
+  .modalClosing {
+    animation: none;
+  }
 }
 
 .success h2 {

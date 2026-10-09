@@ -16,8 +16,13 @@
 }
 
 .logo {
+  display: block;
   width: 120px;
+  aspect-ratio: 1;
   margin-bottom: 1.5rem;
+  background-color: var(--motta-blue);
+  -webkit-mask: url('../../assets/icons/Logo.png') center / contain no-repeat;
+  mask: url('../../assets/icons/Logo.png') center / contain no-repeat;
 }
 
 .title {

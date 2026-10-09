@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import EngineActionModal from '@/components/EngineActionModal';
 import ReusableTable from '@/components/ReusableTable';
 import type { EngineDecision, EngineDecisionStatus } from '@/types/engine-decision.types';
@@ -71,11 +71,7 @@ function Overview() {
         setActionDialog({ decision, trigger });
     };
 
-    const handleCloseAction = () => {
-        const trigger = actionDialog?.trigger;
-        setActionDialog(null);
-        window.requestAnimationFrame(() => trigger?.focus());
-    };
+    const handleCloseAction = useCallback(() => setActionDialog(null), []);
 
     const decisionColumns = createDecisionColumns(handleViewAction);
 
@@ -98,7 +94,11 @@ function Overview() {
                 />
             </div>
             {actionDialog && (
-                <EngineActionModal decision={actionDialog.decision} onClose={handleCloseAction} />
+                <EngineActionModal
+                    decision={actionDialog.decision}
+                    triggerElement={actionDialog.trigger}
+                    onClose={handleCloseAction}
+                />
             )}
         </section>
     );

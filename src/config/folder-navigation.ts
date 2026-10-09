@@ -13,4 +13,9 @@ export const STOCK_FOLDER_NAVIGATION_ITEMS = [
     { label: 'Fornecedores', to: '/stock/suppliers', end: false },
 ] as const satisfies readonly FolderNavigationItem[];
 
+export const ACCOUNTING_FOLDER_NAVIGATION_ITEMS = [
+    { label: 'Relatórios/exportação', to: '/managementReports', end: true },
+    { label: 'Contabilidade/SPED', to: '/accounting/sped', end: true },
+] as const satisfies readonly FolderNavigationItem[];
+
 export const FOLDER_NAVIGATION_PATHS: string[] = FOLDER_NAVIGATION_ITEMS.map((item) => item.to);

@@ -74,8 +74,9 @@ function ReusableTable<T extends object>({
                                                     className={styles.actionButton}
                                                     onClick={(event) => column.onAction?.(row, event)}
                                                     aria-label={column.actionLabel?.(row) ?? 'Ver ação'}
+                                                    aria-haspopup={column.actionHasPopup === false ? undefined : 'dialog'}
                                                 >
-                                                    Ver
+                                                    {column.actionText?.(row) ?? 'Ver'}
                                                 </button>
                                             ) : content}
                                         </td>

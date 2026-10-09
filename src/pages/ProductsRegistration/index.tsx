@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { ChangeEvent, DragEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImmer } from "use-immer";
@@ -32,6 +32,9 @@ import {
   validateProductImportFile,
 } from "@/utils/productImportValidation";
 import styles from "./style.module.css";
+
+const MODAL_CLOSE_ANIMATION_DURATION_MS = 180;
+type RegistrationModalKind = "preview" | "success";
 
 const initialState: ProductImportState = {
   mode: "bulk",
@@ -181,22 +184,66 @@ function ProductsRegistration() {
   const formatSelectId = useId();
   const navigate = useNavigate();
   const modalPrimaryRef = useRef<HTMLButtonElement>(null);
+  const modalCloseTimeoutRef = useRef<number | null>(null);
+  const closingModalRef = useRef<RegistrationModalKind | null>(null);
+  const [closingModal, setClosingModal] = useState<RegistrationModalKind | null>(null);
 
   const previewOpen = state.previewItems.length > 0;
   const modalOpen = previewOpen || successModal.isOpen;
   const busy = state.status === "processing" || state.status === "registering";
+
+  const requestModalClose = useCallback((
+    modal: RegistrationModalKind,
+    afterClose?: () => void,
+  ) => {
+    if (closingModalRef.current !== null) return;
+
+    closingModalRef.current = modal;
+    const finishClose = () => {
+      modalCloseTimeoutRef.current = null;
+      closingModalRef.current = null;
+      setClosingModal(null);
+
+      if (afterClose) {
+        afterClose();
+      } else if (modal === "preview") {
+        updateState((draft) => {
+          draft.previewItems = [];
+          draft.status = "idle";
+        });
+      } else {
+        updateSuccessModal(initialSuccessModal);
+      }
+    };
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finishClose();
+      return;
+    }
+
+    setClosingModal(modal);
+    modalCloseTimeoutRef.current = window.setTimeout(
+      finishClose,
+      MODAL_CLOSE_ANIMATION_DURATION_MS,
+    );
+  }, [updateState, updateSuccessModal]);
+
+  useEffect(() => () => {
+    if (modalCloseTimeoutRef.current !== null) {
+      window.clearTimeout(modalCloseTimeoutRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     if (!modalOpen) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && state.status !== "registering") {
-        updateState((draft) => {
-          draft.previewItems = [];
-          draft.status = "idle";
-        });
-
-        updateSuccessModal(initialSuccessModal);
+        if (successModal.isOpen) {
+          requestModalClose("success");
+        } else if (previewOpen) {
+          requestModalClose("preview");
+        }
       }
       if (event.key !== "Tab") return;
       const dialog = modalPrimaryRef.current?.closest('[role="dialog"]');
@@ -226,7 +273,7 @@ function ProductsRegistration() {
       document.body.style.overflow = "";
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [modalOpen, state.status, updateState, updateSuccessModal]);
+  }, [modalOpen, previewOpen, requestModalClose, state.status, successModal.isOpen]);
 
   function updateMode(mode: ProductRegistrationMode) {
     updateState((draft) => {
@@ -329,15 +376,19 @@ function ProductsRegistration() {
 
       updateState((draft) => {
         draft.status = "success";
-        draft.previewItems = [];
         draft.file = null;
         draft.message = "Produtos cadastrados.";
       });
 
-      updateSuccessModal((draft) => {
-        draft.isOpen = true;
-        draft.title = "Produtos cadastrados com sucesso";
-        draft.message = `${count} produtos foram inseridos no banco de dados.`;
+      requestModalClose("preview", () => {
+        updateState((draft) => {
+          draft.previewItems = [];
+        });
+        updateSuccessModal((draft) => {
+          draft.isOpen = true;
+          draft.title = "Produtos cadastrados com sucesso";
+          draft.message = `${count} produtos foram inseridos no banco de dados.`;
+        });
       });
     } catch (error) {
       updateState((draft) => {
@@ -681,9 +732,9 @@ function ProductsRegistration() {
         rowKey={(item) => item.id}
       />
       {previewOpen && (
-        <div className={styles.backdrop}>
+        <div className={`${styles.backdrop} ${closingModal === "preview" ? styles.backdropClosing : ""}`}>
           <section
-            className={styles.modal}
+            className={`${styles.modal} ${closingModal === "preview" ? styles.modalClosing : ""}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="preview-title"
@@ -693,11 +744,7 @@ function ProductsRegistration() {
               <button
                 type="button"
                 aria-label="Fechar prévia"
-                onClick={() =>
-                  updateState((draft) => {
-                    draft.previewItems = [];
-                  })
-                }
+                onClick={() => requestModalClose("preview")}
               >
                 <FontAwesomeIcon icon={faXmark} />
               </button>
@@ -725,7 +772,7 @@ function ProductsRegistration() {
               <button
                 className={styles.secondary}
                 type="button"
-                onClick={reviewFirstProduct}
+                onClick={() => requestModalClose("preview", reviewFirstProduct)}
               >
                 Revisar e editar primeiro produto
               </button>
@@ -734,9 +781,9 @@ function ProductsRegistration() {
         </div>
       )}
       {successModal.isOpen && (
-        <div className={styles.backdrop}>
+        <div className={`${styles.backdrop} ${closingModal === "success" ? styles.backdropClosing : ""}`}>
           <section
-            className={`${styles.modal} ${styles.success}`}
+            className={`${styles.modal} ${styles.success} ${closingModal === "success" ? styles.modalClosing : ""}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="success-title"
@@ -751,14 +798,14 @@ function ProductsRegistration() {
                 ref={modalPrimaryRef}
                 className={styles.primary}
                 type="button"
-                onClick={() => updateSuccessModal(initialSuccessModal)}
+                onClick={() => requestModalClose("success")}
               >
                 Continuar cadastrando
               </button>
               <button
                 className={styles.secondary}
                 type="button"
-                onClick={() => navigate("/products")}
+                onClick={() => requestModalClose("success", () => navigate("/products"))}
               >
                 Voltar para produtos
               </button>

@@ -33,7 +33,6 @@
 }
 
 .new-product:focus-visible,
-.view-button:focus-visible,
 .table-region:focus-visible {
   outline: 3px solid var(--motta-light-blue);
   outline-offset: 3px;
@@ -127,16 +126,21 @@
 }
 
 .view-button {
-  display: inline-flex;
+  display: flex;
   min-width: 2.75rem;
-  min-height: 1.75rem;
+  max-width: 300px;
+  max-height: 5rem;
   align-items: center;
   justify-content: center;
   padding: 0.3rem 0.65rem;
   border-radius: 0.3rem;
-  background: #ddd7d0;
+  background: #ded8d0;
   color: #373431;
+  border: 1px solid #ded8d0;
+  cursor: pointer;
+  font: inherit;
   font-weight: 500;
+  line-height: 1.2;
   text-decoration: none;
   transition: all 0.3s ease-in-out;
 }
@@ -144,6 +148,30 @@
 .view-button:hover {
   background: var(--motta-blue);
   color: var(--main-white);
+  border-color: var(--motta-blue);
+}
+
+.view-button:focus-visible {
+  outline: 3px solid var(--motta-blue);
+  outline-offset: 3px;
+}
+
+.link {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.625rem 1rem;
+  border-radius: 999px;
+  background: var(--motta-blue);
+  color: var(--main-white);
+  cursor: pointer;
+  font: inherit;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.link:hover {
+  background: var(--motta-light-blue);
 }
 
 .empty {

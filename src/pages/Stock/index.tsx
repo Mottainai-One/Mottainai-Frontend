@@ -51,7 +51,6 @@ function Stock() {
 
   const columns: ReusableTableColumn<CashClosingDiscrepancy>[] = [
     { id: "date", header: "Data", renderCell: (record) => record.date },
-    { id: "time", header: "Hora", renderCell: (record) => record.time },
     { id: "store", header: "Loja", renderCell: (record) => record.store },
     {
       id: "responsible",

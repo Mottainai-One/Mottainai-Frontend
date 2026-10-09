@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import EngineActionModal from '@/components/EngineActionModal';
 import ExpiringProductsFilters from '@/components/ExpiringProductsFilters';
 import ReusableTable from '@/components/ReusableTable';
@@ -108,14 +108,18 @@ function ExpiringProducts() {
     const [actionDialog, setActionDialog] = useState<EngineActionDialogState | null>(null);
 
     const handleViewAction = (decision: ExpiringProductDecision, trigger: HTMLButtonElement) => {
-        setActionDialog({ decision, trigger });
+        setActionDialog({
+            decision,
+            trigger,
+            contextFields: [
+                { id: 'store', label: 'Loja', value: decision.store },
+                { id: 'category', label: 'Categoria', value: decision.category },
+                { id: 'level', label: 'Nível', value: decision.riskLevel },
+            ],
+        });
     };
 
-    const handleCloseAction = () => {
-        const trigger = actionDialog?.trigger;
-        setActionDialog(null);
-        window.requestAnimationFrame(() => trigger?.focus());
-    };
+    const handleCloseAction = useCallback(() => setActionDialog(null), []);
 
     const decisionColumns = createDecisionColumns(handleViewAction);
 
@@ -164,7 +168,12 @@ function ExpiringProducts() {
                 </div>
             </div>
             {actionDialog && (
-                <EngineActionModal decision={actionDialog.decision} onClose={handleCloseAction} />
+                <EngineActionModal
+                    decision={actionDialog.decision}
+                    contextFields={actionDialog.contextFields}
+                    triggerElement={actionDialog.trigger}
+                    onClose={handleCloseAction}
+                />
             )}
         </section>
     );
