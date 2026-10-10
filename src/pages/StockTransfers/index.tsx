@@ -1,12 +1,16 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import DetailsModal from "@/components/DetailsModal";
 import ReusableTable from "@/components/ReusableTable";
 import { stockTransferHistory, stockTransferRisks } from "@/data/stock-transfers";
+import type { DetailsModalField } from "@/types/details-modal.types";
 import type { ReusableTableColumn, TableCellTone } from "@/types/reusable-table.types";
 import type {
   StockTransferHistory,
+  StockTransferDetailsDialogState,
   StockTransferPageState,
   StockTransferRisk,
   TransferLevel,
@@ -28,9 +32,8 @@ const statusTones: Record<TransferStatus, TableCellTone> = {
 function StockTransfers() {
   const [state, setState] = useState<StockTransferPageState>({
     search: "",
-    selectedRiskId: "",
-    feedback: "",
   });
+  const [detailsDialog, setDetailsDialog] = useState<StockTransferDetailsDialogState | null>(null);
 
   const normalizedSearch = state.search.trim().toLocaleLowerCase("pt-BR");
   const filteredRisks = useMemo(
@@ -69,13 +72,13 @@ function StockTransfers() {
     [normalizedSearch],
   );
 
-  const handleViewAction = (risk: StockTransferRisk) => {
-    setState((currentState) => ({
-      ...currentState,
-      selectedRiskId: risk.id,
-      feedback: `Ação recomendada para ${risk.product}: transferir ${risk.suggestedQuantity} antes do vencimento.`,
-    }));
+  const handleViewRecommendation = (risk: StockTransferRisk, event: MouseEvent<HTMLButtonElement>) => {
+    setDetailsDialog({ kind: "recommendation", record: risk, trigger: event.currentTarget });
   };
+  const handleViewTransfer = (transfer: StockTransferHistory, event: MouseEvent<HTMLButtonElement>) => {
+    setDetailsDialog({ kind: "history", record: transfer, trigger: event.currentTarget });
+  };
+  const handleCloseDetails = useCallback(() => setDetailsDialog(null), []);
 
   const riskColumns: ReusableTableColumn<StockTransferRisk>[] = [
     { id: "product", header: "Produto", renderCell: (risk) => risk.product },
@@ -101,10 +104,10 @@ function StockTransfers() {
     },
     {
       id: "action",
-      header: "",
+      header: "Ação",
       renderCell: () => null,
       display: "action",
-      onAction: handleViewAction,
+      onAction: handleViewRecommendation,
       actionLabel: (risk) => `Ver ação para ${risk.product}, ${risk.batch}`,
       align: "center",
     },
@@ -125,7 +128,38 @@ function StockTransfers() {
       align: "center",
     },
     { id: "responsible", header: "Responsável", renderCell: (transfer) => transfer.responsible },
+    {
+      id: "action",
+      header: "Ação",
+      renderCell: () => null,
+      display: "action",
+      onAction: handleViewTransfer,
+      actionLabel: (transfer) => `Ver detalhes da transferência ${transfer.id}`,
+      align: "center",
+    },
   ];
+
+  const detailFields: DetailsModalField[] = !detailsDialog
+    ? []
+    : detailsDialog.kind === "recommendation"
+      ? [
+          { id: "product", label: "Produto", value: detailsDialog.record.product },
+          { id: "batch", label: "Lote", value: detailsDialog.record.batch },
+          { id: "validity", label: "Validade", value: detailsDialog.record.validity },
+          { id: "origin", label: "Loja de origem", value: detailsDialog.record.originStore },
+          { id: "destination", label: "Loja de destino", value: detailsDialog.record.destinationStore },
+          { id: "quantity", label: "Unidades a transferir", value: detailsDialog.record.suggestedQuantity },
+          { id: "level", label: "Nível", value: detailsDialog.record.level },
+        ]
+      : [
+          { id: "date", label: "Data", value: detailsDialog.record.date },
+          { id: "requestedBy", label: "Solicitante", value: detailsDialog.record.requestedBy },
+          { id: "origin", label: "Loja de origem", value: detailsDialog.record.originStore },
+          { id: "destination", label: "Loja de destino", value: detailsDialog.record.destinationStore },
+          { id: "quantity", label: "Quantidade", value: detailsDialog.record.quantity },
+          { id: "status", label: "Status", value: detailsDialog.record.status },
+          { id: "responsible", label: "Responsável", value: detailsDialog.record.responsible },
+        ];
 
   return (
     <section className={styles.page} aria-labelledby="stock-transfers-title">
@@ -152,12 +186,6 @@ function StockTransfers() {
         </Link>
       </div>
 
-      {state.feedback && (
-        <p className={styles.feedback} role="status" aria-live="polite">
-          {state.feedback}
-        </p>
-      )}
-
       <div className={styles.tableSection}>
         <ReusableTable
           title="Lotes com risco de vencimento"
@@ -178,9 +206,17 @@ function StockTransfers() {
         />
       </div>
 
-      <span className={styles["sr-only"]} aria-live="polite">
-        {state.selectedRiskId}
-      </span>
+      {detailsDialog && (
+        <DetailsModal
+          title={detailsDialog.kind === "recommendation" ? "Transferência recomendada" : "Detalhes da transferência"}
+          description={detailsDialog.kind === "recommendation"
+            ? "Confira a recomendação do motor para este lote antes de abrir o fluxo de transferência."
+            : "Dados registrados no histórico da transferência, incluindo o status atual."}
+          fields={detailFields}
+          triggerElement={detailsDialog.trigger}
+          onClose={handleCloseDetails}
+        />
+      )}
     </section>
   );
 }

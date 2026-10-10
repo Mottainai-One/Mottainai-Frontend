@@ -15,9 +15,10 @@ import NewPassword from "@/pages/NewPassword";
 import Products from "@/pages/Products";
 import ProductDetails from "@/pages/ProductDetails";
 import ManagementReports from "@/pages/ManagementReports";
+import AccountingSped from "@/pages/AccountingSped";
 import Stock from "@/pages/Stock";
-import StockSectionPlaceholder from "@/pages/StockSectionPlaceholder";
 import CashClosingReport from "@/pages/CashClosingReport";
+import NewStockCount from "@/pages/NewStockCount";
 import StockTransfers from "@/pages/StockTransfers";
 import NewTransfer from "@/pages/NewTransfer";
 import Suppliers from "@/pages/Suppliers";
@@ -53,12 +54,7 @@ export default function AppRoutes() {
             />
             <Route
               path="/stock/counts/new"
-              element={
-                <StockSectionPlaceholder
-                  title="Nova contagem"
-                  description="Este é o ponto de entrada para registrar uma nova contagem de estoque."
-                />
-              }
+              element={<NewStockCount />}
             />
             <Route
               path="/stock/damages"
@@ -75,6 +71,7 @@ export default function AppRoutes() {
             />
             <Route path="/stock/suppliers/new" element={<SupplierForm />} />
             <Route path="/managementReports" element={<ManagementReports />} />
+            <Route path="/accounting/sped" element={<AccountingSped />} />
             <Route
               path="/productsRegistration"
               element={<ProductsRegistration />}

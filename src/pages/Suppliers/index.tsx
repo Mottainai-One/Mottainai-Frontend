@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,6 +20,17 @@ function Suppliers() {
     feedback: "",
     feedbackIsError: false,
   });
+  const editInputRef = useRef<HTMLInputElement>(null);
+  const editTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const isEditing = Boolean(state.editDraft);
+
+  useEffect(() => {
+    if (isEditing) {
+      editInputRef.current?.focus();
+    } else if (editTriggerRef.current?.isConnected) {
+      editTriggerRef.current.focus();
+    }
+  }, [isEditing]);
 
   const filteredSuppliers = useMemo(() => {
     const normalizedSearch = state.search.trim().toLocaleLowerCase("pt-BR");
@@ -52,29 +63,25 @@ function Suppliers() {
     },
     {
       id: "action",
-      header: "",
-      renderCell: (supplier) => (
-        <button
-          className={styles.viewButton}
-          type="button"
-          onClick={() =>
-            setState((currentState) => ({
-              ...currentState,
-              selectedSupplierId: supplier.id,
-              editDraft: {
-                tradeName: supplier.tradeName,
-                active: supplier.active,
-              },
-              feedback: "",
-              feedbackIsError: false,
-            }))
-          }
-          aria-pressed={state.selectedSupplierId === supplier.id}
-          aria-label={`Ver fornecedor ${supplier.tradeName}`}
-        >
-          Ver
-        </button>
-      ),
+      header: "Ação",
+      renderCell: () => null,
+      display: "action",
+      actionText: () => "Editar",
+      actionHasPopup: false,
+      onAction: (supplier, event) => {
+        editTriggerRef.current = event.currentTarget;
+        setState((currentState) => ({
+          ...currentState,
+          selectedSupplierId: supplier.id,
+          editDraft: {
+            tradeName: supplier.tradeName,
+            active: supplier.active,
+          },
+          feedback: "",
+          feedbackIsError: false,
+        }));
+      },
+      actionLabel: (supplier) => `Editar fornecedor ${supplier.tradeName}`,
       align: "center",
     },
   ];
@@ -120,6 +127,7 @@ function Suppliers() {
             }
           : supplier,
       ),
+      selectedSupplierId: "",
       editDraft: null,
       feedback: "Fornecedor atualizado com sucesso.",
       feedbackIsError: false,
@@ -190,6 +198,7 @@ function Suppliers() {
             <label className={styles.editField} htmlFor="supplier-edit-nickname">
               <span>Apelido</span>
               <input
+                ref={editInputRef}
                 id="supplier-edit-nickname"
                 value={state.editDraft.tradeName}
                 onChange={(event) => handleEditDraftChange("tradeName", event.target.value)}

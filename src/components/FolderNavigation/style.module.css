@@ -88,6 +88,19 @@
     opacity: 1 !important;
 }
 
+.disabled {
+    border: 0;
+    opacity: 0.62;
+    cursor: not-allowed;
+    font: inherit;
+}
+
+.disabled:hover {
+    background-color: #f7f6f5;
+    color: #6b655f;
+    opacity: 0.62;
+}
+
 @media (max-width: 768px) {
     .link {
         min-height: 38px;

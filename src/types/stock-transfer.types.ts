@@ -33,9 +33,11 @@ export interface StockTransferHistory {
 
 export interface StockTransferPageState {
   search: string;
-  selectedRiskId: string;
-  feedback: string;
 }
+
+export type StockTransferDetailsDialogState =
+  | { kind: "recommendation"; record: StockTransferRisk; trigger: HTMLButtonElement }
+  | { kind: "history"; record: StockTransferHistory; trigger: HTMLButtonElement };
 
 export interface TransferFormState {
   suggestedActionId: string;

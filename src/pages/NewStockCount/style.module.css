@@ -1,0 +1,236 @@
+.page {
+  width: 100%;
+  min-width: 0;
+  color: var(--motta-blue);
+}
+
+.summaryCard,
+.productsCard {
+  width: 100%;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid rgba(16, 42, 67, 0.12);
+  border-radius: 0.75rem;
+  background: var(--main-white);
+  box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+}
+
+.eyebrow {
+  margin: 0 0 1rem;
+  color: var(--motta-orange);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.summaryList {
+  margin: 0;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(0, 3fr);
+  align-items: center;
+  min-height: 2.25rem;
+  border-bottom: 1px solid var(--motta-light-blue);
+  color: #625d58;
+  font-size: 0.8rem;
+}
+
+.summaryRow dt {
+  color: #373431;
+  font-weight: 700;
+}
+
+.summaryRow dd {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.inlineField,
+.inlineField select {
+  width: min(14rem, 100%);
+}
+
+.inlineField select {
+  min-height: 2rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #d5d0ca;
+  border-radius: 0.45rem;
+  background: var(--main-white);
+  color: #625d58;
+  font: inherit;
+}
+
+.status {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  background: #fff0e3;
+  color: #c56a20;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.productsCard {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem 1.25rem;
+}
+
+.barcodeFooter {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(19rem, 1fr);
+  gap: 1.5rem;
+  align-items: end;
+  margin-top: 1rem;
+}
+
+.barcodeFeedback,
+.barcodeForm {
+  display: grid;
+  gap: 0.45rem;
+  color: #625d58;
+  font-size: 0.8rem;
+}
+
+.barcodeFeedback p {
+  margin: 0;
+}
+
+.barcodeFeedback strong {
+  color: #373431;
+}
+
+.barcodeForm label {
+  color: #373431;
+  font-weight: 700;
+}
+
+.barcodeControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.barcodeControls input {
+  min-width: 0;
+  flex: 1;
+  min-height: 2.3rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid #d5d0ca;
+  border-radius: 0.45rem;
+  color: #373431;
+  font: inherit;
+}
+
+.barcodeControls button,
+.finalizeButton,
+.cancelButton {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 1rem;
+  border-radius: 0.45rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.barcodeControls button,
+.finalizeButton {
+  border: 0;
+  background: var(--motta-blue);
+  color: var(--main-white);
+}
+
+.barcodeControls button:hover,
+.finalizeButton:hover:not(:disabled) {
+  background: var(--motta-light-blue);
+}
+
+.finalizeButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cancelButton {
+  border: 2px solid #9b3035;
+  background: #fff2f2;
+  color: #8f151b;
+}
+
+.cancelButton:hover {
+  background: #f9dfe1;
+}
+
+.successMessage {
+  color: #205c1c;
+  font-weight: 700;
+}
+
+.errorMessage {
+  color: #8f1d18;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.summaryRow select:focus-visible,
+.barcodeControls input:focus-visible,
+.barcodeControls button:focus-visible,
+.finalizeButton:focus-visible,
+.cancelButton:focus-visible {
+  outline: 3px solid var(--motta-light-blue);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 700px) {
+  .summaryRow {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+    padding: 0.65rem 0;
+  }
+
+  .barcodeFooter {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .productsCard {
+    padding-inline: 0.75rem;
+  }
+
+  .barcodeControls,
+  .actions {
+    flex-direction: column;
+  }
+
+  .barcodeControls button,
+  .finalizeButton,
+  .cancelButton {
+    width: 100%;
+  }
+}

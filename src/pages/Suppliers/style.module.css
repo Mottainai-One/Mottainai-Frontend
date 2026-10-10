@@ -196,7 +196,13 @@
 }
 
 .viewButton:hover {
-  background: #cfc7be;
+  background: var(--motta-blue);
+  color: var(--main-white);
+}
+
+.viewButton:focus-visible {
+  outline: 3px solid var(--motta-blue);
+  outline-offset: 3px;
 }
 
 .sr-only {

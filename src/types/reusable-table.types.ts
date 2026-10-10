@@ -11,6 +11,8 @@ export interface ReusableTableColumn<T extends object> {
     align?: 'start' | 'center' | 'end';
     onAction?: (row: T, event: MouseEvent<HTMLButtonElement>) => void;
     actionLabel?: (row: T) => string;
+    actionText?: (row: T) => string;
+    actionHasPopup?: boolean;
 }
 
 export interface ReusableTableProps<T extends object> {

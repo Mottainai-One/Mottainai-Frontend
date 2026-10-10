@@ -6,6 +6,7 @@ import {
   FOLDER_NAVIGATION_PATHS,
   FOLDER_NAVIGATION_ITEMS,
   STOCK_FOLDER_NAVIGATION_ITEMS,
+  ACCOUNTING_FOLDER_NAVIGATION_ITEMS,
 } from "@/config/folder-navigation";
 import styles from "./style.module.css";
 
@@ -28,6 +29,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/stock/suppliers": "Fornecedores",
   "/stock/suppliers/new": "Novo fornecedor",
   "/managementReports": "Relatórios Gerenciais",
+  "/accounting/sped": "Contabilidade/SPED",
 };
 
 function MainLayout() {
@@ -40,11 +42,15 @@ function MainLayout() {
     : (PAGE_TITLES[normalizedPathname] ?? "Mottainai");
   const isStockFlowActive =
     normalizedPathname === "/stock" || normalizedPathname.startsWith("/stock/");
+  const isAccountingFlowActive =
+    normalizedPathname === "/managementReports" || normalizedPathname === "/accounting/sped";
   const showFolderNavigation =
-    isStockFlowActive || FOLDER_NAVIGATION_PATHS.includes(normalizedPathname);
+    isStockFlowActive || isAccountingFlowActive || FOLDER_NAVIGATION_PATHS.includes(normalizedPathname);
   const folderNavigationItems = isStockFlowActive
     ? STOCK_FOLDER_NAVIGATION_ITEMS
-    : FOLDER_NAVIGATION_ITEMS;
+    : isAccountingFlowActive
+      ? ACCOUNTING_FOLDER_NAVIGATION_ITEMS
+      : FOLDER_NAVIGATION_ITEMS;
 
   return (
     <div className={styles.layout}>
@@ -57,7 +63,11 @@ function MainLayout() {
         {showFolderNavigation && (
           <FolderNavigation
             items={folderNavigationItems}
-            ariaLabel={isStockFlowActive ? "Seções de estoque" : "Seções de análise"}
+            ariaLabel={isStockFlowActive
+              ? "Seções de estoque"
+              : isAccountingFlowActive
+                ? "Seções de contabilidade"
+                : "Seções de análise"}
           />
         )}
         <main

@@ -12,13 +12,19 @@ function FolderNavigation({
             <ul className={styles.list}>
                 {items.map((folder) => (
                     <li className={styles.item} key={folder.to}>
-                        <NavLink
-                            className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
-                            end={folder.end ?? true}
-                            to={folder.to}
-                        >
-                            {folder.label}
-                        </NavLink>
+                        {folder.disabled ? (
+                            <button className={`${styles.link} ${styles.disabled}`} type="button" disabled>
+                                {folder.label}
+                            </button>
+                        ) : (
+                            <NavLink
+                                className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+                                end={folder.end ?? true}
+                                to={folder.to}
+                            >
+                                {folder.label}
+                            </NavLink>
+                        )}
                     </li>
                 ))}
             </ul>

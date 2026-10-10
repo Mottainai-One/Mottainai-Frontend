@@ -2,6 +2,8 @@
 :root {
     --motta-blue: rgba(16, 42, 67, 1);
     --motta-light-blue: rgba(45, 87, 120, 1);
+    --motta-orange: rgba(197, 105, 32, 1);
+    --motta-light-orange:rgba(221, 123, 45, 1);
     --main-gray: rgba(168, 164, 164, 1);
     --main-white: rgba(255, 255, 255, 1);
     --sidebar-width: 220px;
@@ -25,6 +27,6 @@ img {
 p, span, h1, h2, h3, h4, h5, h6, div, li, time, dt, dd, label, td, th, strong, em, small {
     cursor: default;
 }
-button{
+button, a{
     transition: all 0.3s ease-in-out;
 }
