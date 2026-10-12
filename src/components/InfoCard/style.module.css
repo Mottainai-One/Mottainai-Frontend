@@ -12,9 +12,11 @@
     color: var(--motta-blue);
     cursor: default;
 }
+
 .header {
     margin-bottom: 12px;
 }
+
 .header h2 {
     overflow: hidden;
     margin: 0;
@@ -25,24 +27,30 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .body {
     margin-bottom: 8px;
     font-size: 1.5rem;
     font-weight: 700;
     line-height: 1;
 }
+
 .neutral {
     color: black;
 }
+
 .success {
     color: var(--motta-light-blue);
 }
+
 .warning {
     color: #f5a623;
 }
+
 .danger {
     color: #b3261e;
 }
+
 .footer {
     overflow: hidden;
     margin-top: auto;
@@ -52,14 +60,16 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 @media (max-width: 1024px) {
-  .card {
-    height: 116px;
+    .card {
+        height: 116px;
+    }
 }
-}
+
 @media (max-width: 600px) {
-  .card {
-    height: 112px;
-    padding: 14px 16px;
-}
+    .card {
+        height: 112px;
+        padding: 14px 16px;
+    }
 }

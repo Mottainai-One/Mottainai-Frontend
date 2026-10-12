@@ -1,4 +1,4 @@
-.container-card{
+.container-card {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 28px;
@@ -14,13 +14,13 @@
 
 .sr-only {
     position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     width: 1px;
     height: 1px;
     padding: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
     border: 0;
+    white-space: nowrap;
 }
 
 @media (max-width: 1024px) {

@@ -1,9 +1,9 @@
 .card {
     display: flex;
     flex-direction: column;
+    justify-self: end;
     width: 100%;
     max-width: 420px;
-    justify-self: end;
     margin-top: 32px;
     padding: 20px 32px 24px;
     background-color: var(--main-white);
@@ -12,6 +12,7 @@
     box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
     color: var(--motta-blue);
 }
+
 .card h2 {
     margin: 0 0 16px;
     color: var(--motta-light-blue);
@@ -19,21 +20,22 @@
     font-weight: 500;
 }
 
-
 .table {
     display: flex;
     flex: 1;
     flex-direction: column;
+    overflow: hidden;
     width: 100%;
     min-height: 0;
-    overflow: hidden;
     border-radius: 4px;
 }
+
 .table [role="rowgroup"] {
     display: flex;
     flex: 1;
     flex-direction: column;
 }
+
 .tableHeader,
 .row {
     display: grid;
@@ -51,7 +53,6 @@
     font-weight: 500;
 }
 
-
 .row {
     flex: 1 1 0;
     min-height: 42px;
@@ -60,6 +61,7 @@
     color: #6f6862;
     font-size: 0.875rem;
 }
+
 .row:last-child {
     border-bottom: 0;
 }
@@ -69,6 +71,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 .value {
     padding: 4px 9px;
     border-radius: 999px;
@@ -76,15 +79,16 @@
     white-space: nowrap;
 }
 
-
 .high {
     background-color: #fbe3e5;
     color: #9e2f33;
 }
+
 .medium {
     background-color: #ffe5ad;
     color: #a86500;
 }
+
 .low {
     background-color: #dedede;
     color: #686868;
@@ -92,8 +96,8 @@
 
 @media (max-width: 1024px) {
     .card {
-        max-width: none;
         justify-self: stretch;
+        max-width: none;
     }
 }
 

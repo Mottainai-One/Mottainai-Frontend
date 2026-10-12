@@ -1,81 +1,81 @@
 .page {
-  display: grid;
-  gap: clamp(1rem, 2.2vw, 1.5rem);
-  width: 100%;
-  min-width: 0;
-  color: var(--motta-blue);
+    display: grid;
+    gap: clamp(1rem, 2.2vw, 1.5rem);
+    width: 100%;
+    min-width: 0;
+    color: var(--motta-blue);
 }
 
 .page header h1 {
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  line-height: 1.2;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.2;
 }
 
 .eyebrow {
-  margin-bottom: 0.35rem;
-  color: #8a3b00;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+    margin-bottom: 0.35rem;
+    color: #8a3b00;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
 }
 
 .intro,
 .card > p {
-  margin-top: 0.5rem;
-  color: #4f5f6d;
-  line-height: 1.5;
+    margin-top: 0.5rem;
+    color: #4f5f6d;
+    line-height: 1.5;
 }
 
 .card {
-  min-width: 0;
-  padding: clamp(1rem, 2.5vw, 1.5rem);
-  border: 1px solid #e7ddd4;
-  border-radius: 0.75rem;
-  background: #fff;
-  box-shadow: 0 2px 8px rgb(16 42 67 / 7%);
+    min-width: 0;
+    padding: clamp(1rem, 2.5vw, 1.5rem);
+    border: 1px solid #e7ddd4;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(16 42 67 / 7%);
 }
 
 .card h2 {
-  margin-bottom: 0.75rem;
-  font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.15rem;
 }
 
 .limitation {
-  margin-bottom: 1rem;
-  padding: 0.85rem 1rem;
-  border-left: 4px solid #a94600;
-  border-radius: 0.25rem;
-  background: #fff6ef;
-  color: #60300d;
-  line-height: 1.55;
+    margin-bottom: 1rem;
+    padding: 0.85rem 1rem;
+    border-left: 4px solid #a94600;
+    border-radius: 0.25rem;
+    background: #fff6ef;
+    color: #60300d;
+    line-height: 1.55;
 }
 
 .filters {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
 }
 
 .field {
-  display: grid;
-  gap: 0.45rem;
-  min-width: 0;
+    display: grid;
+    gap: 0.45rem;
+    min-width: 0;
 }
 
 .field label {
-  font-weight: 700;
+    font-weight: 700;
 }
 
 .field select {
-  width: 100%;
-  min-height: 2.75rem;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid #8a969f;
-  border-radius: 0.5rem;
-  background: #fff;
-  color: #183247;
-  font: inherit;
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #8a969f;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #183247;
+    font: inherit;
 }
 
 .field select:focus-visible,
@@ -84,288 +84,279 @@
 .reportActions button:focus-visible,
 .formatOption:focus-within,
 .formatSelected:focus-within {
-  outline: 3px solid #bd5700;
-  outline-offset: 2px;
+    outline: 3px solid #bd5700;
+    outline-offset: 2px;
 }
 
 .formatPicker {
-  display: grid;
-  gap: 0.5rem;
-  margin-top: 1.25rem;
-  padding: 0;
-  border: 0;
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding: 0;
+    border: 0;
 }
 
 .formatPicker legend {
-  margin-bottom: 0.5rem;
-  font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
 }
 
 .formatOptions {
-  display: inline-flex;
-  width: fit-content;
-  padding: 0.2rem;
-  gap: 0.25rem;
-  border: 1px solid #8a969f;
-  border-radius: 0.55rem;
-  background: #f2f4f5;
+    display: inline-flex;
+    gap: 0.25rem;
+    width: fit-content;
+    padding: 0.2rem;
+    border: 1px solid #8a969f;
+    border-radius: 0.55rem;
+    background: #f2f4f5;
 }
 
 .formatOption,
 .formatSelected {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-width: 5.5rem;
-  min-height: 2.5rem;
-  padding: 0.5rem 0.85rem;
-  border: 1px solid transparent;
-  border-radius: 0.35rem;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 5.5rem;
+    min-height: 2.5rem;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: 0.35rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .formatOption {
-  color: #183247;
+    color: #183247;
 }
 
 .formatSelected {
-  background: var(--motta-blue);
-  color: #fff;
+    background: var(--motta-blue);
+    color: #fff;
 }
 
 .formatPicker input {
-  accent-color: #bd5700;
+    accent-color: #bd5700;
 }
 
 .actions {
-  display: flex;
-  flex-wrap: wrap;
-  margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
 }
 
 .primaryButton,
 .downloadButton {
-  min-height: 2.5rem;
-  padding: 0.55rem 1rem;
-  border: 1px solid #a94600;
-  border-radius: 0.45rem;
-  background: var(--motta-blue);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border: 1px solid #a94600;
+    border-radius: 0.45rem;
+    background: var(--motta-blue);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
 }
 
 .primaryButton:hover:not(:disabled) {
-  background: #234b68;
+    background: #234b68;
 }
 
 .downloadButton {
-  background: #fff;
-  color: #793500;
+    background: #fff;
+    color: #793500;
 }
 
 .downloadButton:hover {
-  background: #fff2e8;
+    background: #fff2e8;
 }
 
 .reportActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
 .viewButton {
-  min-height: 2.25rem;
-  padding: 0.375rem 0.75rem;
-  border: 1px solid #ded8d0;
-  border-radius: 0.375rem;
-  background: #ded8d0;
-  color: #373431;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 700;
-  line-height: 1.2;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid #ded8d0;
+    border-radius: 0.375rem;
+    background: #ded8d0;
+    color: #373431;
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
 }
 
 .viewButton:hover {
-  border-color: var(--motta-blue);
-  background: var(--motta-blue);
-  color: var(--main-white);
+    border-color: var(--motta-blue);
+    background: var(--motta-blue);
+    color: var(--main-white);
 }
 
 .viewButton:focus-visible {
-  outline: 3px solid var(--motta-blue);
-  outline-offset: 3px;
+    outline: 3px solid var(--motta-blue);
+    outline-offset: 3px;
 }
 
 .primaryButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.62;
+    opacity: 0.62;
+    cursor: not-allowed;
 }
 
 .helper,
 .emptyState {
-  margin-top: 1rem;
-  color: #4f5f6d;
-  font-size: 0.875rem;
-  line-height: 1.5;
+    margin-top: 1rem;
+    color: #4f5f6d;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 .summary {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-  margin: 1rem 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin: 1rem 0;
 }
 
 .summary > div {
-  padding: 0.9rem 1rem;
-  border: 1px solid #d7e0e5;
-  border-radius: 0.5rem;
-  background: #f7fafc;
+    padding: 0.9rem 1rem;
+    border: 1px solid #d7e0e5;
+    border-radius: 0.5rem;
+    background: #f7fafc;
 }
 
 .summary dt {
-  color: #4f5f6d;
-  font-size: 0.875rem;
+    color: #4f5f6d;
+    font-size: 0.875rem;
 }
 
 .summary dd {
-  margin-top: 0.35rem;
-  font-size: 1.15rem;
-  font-weight: 700;
+    margin-top: 0.35rem;
+    font-size: 1.15rem;
+    font-weight: 700;
 }
 
 .success,
 .error {
-  margin-top: 0.85rem;
-  font-weight: 700;
+    margin-top: 0.85rem;
+    font-weight: 700;
 }
 
 .success {
-  color: #176b3a;
+    color: #176b3a;
 }
 
 .error {
-  color: #a12622;
+    color: #a12622;
 }
 
 .tableWrap {
-  width: 100%;
-  overflow-x: auto;
-  border: 1px solid #e2e7ea;
-  border-radius: 0.5rem;
+    overflow-x: auto;
+    width: 100%;
+    border: 1px solid #e2e7ea;
+    border-radius: 0.5rem;
 }
 
 .tableWrap table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
 }
 
 .tableWrap th,
 .tableWrap td {
-  padding: 0.75rem 0.85rem;
-  border-bottom: 1px solid #d7e0e5;
-  vertical-align: middle;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid #d7e0e5;
+    vertical-align: middle;
 }
 
 .tableWrap thead {
-  background: #f7f3ef;
+    background: #f7f3ef;
 }
 
 .tableWrap thead th {
-  color: #344c5e;
-  font-size: 0.85rem;
+    color: #344c5e;
+    font-size: 0.85rem;
 }
 
 .tableWrap tbody tr:last-child th,
 .tableWrap tbody tr:last-child td {
-  border-bottom: 0;
+    border-bottom: 0;
 }
 
 .tableWrap tbody th {
-  font-weight: 500;
+    font-weight: 500;
 }
 
 .srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
 }
 
 .printArea {
-  display: none;
+    display: none;
 }
 
 @media (max-width: 640px) {
-  .filters,
+    .filters,
   .summary {
-    grid-template-columns: minmax(0, 1fr);
-  }
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 @media print {
-  @page {
-    margin: 16mm;
-  }
-
-  :global(body *) {
-    visibility: hidden !important;
-  }
-
-  .page {
-    position: fixed;
-    inset: 0;
-    display: block;
-    background: #fff;
-    color: #000;
-  }
-
-  .page > :not(.printArea) {
-    display: none !important;
-  }
-
-  .printArea,
+    @page {
+        margin: 16mm;
+    }
+    :global(body *) {
+        visibility: hidden !important;
+    }
+    .page {
+        position: fixed;
+        inset: 0;
+        display: block;
+        background: #fff;
+        color: #000;
+    }
+    .page > :not(.printArea) {
+        display: none !important;
+    }
+    .printArea,
   .printArea * {
-    visibility: visible !important;
-  }
-
-  .printArea {
-    position: fixed;
-    inset: 0;
-    display: block;
-    padding: 1rem;
-    background: #fff;
-    color: #000;
-  }
-
-  .printArea h1 {
-    margin-bottom: 1rem;
-  }
-
-  .printArea p {
-    margin-bottom: 0.4rem;
-  }
-
-  .printArea table {
-    width: 100%;
-    margin-top: 1.25rem;
-    border-collapse: collapse;
-  }
-
-  .printArea th,
+        visibility: visible !important;
+    }
+    .printArea {
+        position: fixed;
+        inset: 0;
+        display: block;
+        padding: 1rem;
+        background: #fff;
+        color: #000;
+    }
+    .printArea h1 {
+        margin-bottom: 1rem;
+    }
+    .printArea p {
+        margin-bottom: 0.4rem;
+    }
+    .printArea table {
+        width: 100%;
+        margin-top: 1.25rem;
+        border-collapse: collapse;
+    }
+    .printArea th,
   .printArea td {
-    padding: 0.5rem;
-    border: 1px solid #777;
-    text-align: left;
-  }
+        padding: 0.5rem;
+        border: 1px solid #777;
+        text-align: left;
+    }
 }
