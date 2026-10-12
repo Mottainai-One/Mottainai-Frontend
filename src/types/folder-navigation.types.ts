@@ -3,6 +3,7 @@ export interface FolderNavigationItem {
   to: string;
   end?: boolean;
   disabled?: boolean;
+  activePaths?: readonly string[];
 }
 
 export interface FolderNavigationProps {

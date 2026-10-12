@@ -1,9 +1,295 @@
-function Users(){
-    return(
-        <>
-        Hii, I'm de users pages
-        </>
-    )
+.page {
+    width: 100%;
+    min-width: 0;
+    color: #34433b;
 }
 
-export default Users
+.addButton:focus-visible, .closeButton:focus-visible, .cancelButton:focus-visible {
+    outline: 3px solid #49834d;
+    outline-offset: 2px;
+}
+
+.toolbar {
+    display: grid;
+    grid-template-columns: minmax(14rem, 1fr) minmax(10rem, 12rem) auto;
+    gap: 1rem;
+    align-items: center;
+    margin: 1.25rem 0 .5rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    min-height: 2.75rem;
+    padding: 0 .85rem;
+    border: 1px solid #dedbd6;
+    border-radius: .65rem;
+    color: #77736e;
+}
+
+.searchBox:focus-within, .filterLabel select:focus-visible, .modal input:focus-visible, .modal select:focus-visible {
+    outline: 3px solid #8dbb75;
+    outline-offset: 2px;
+}
+
+.searchBox input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    font: inherit;
+    color: #34433b;
+}
+
+.searchBox input::placeholder {
+    color: #77736e;
+}
+
+.filterLabel select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0 .8rem;
+    border: 1px solid #dedbd6;
+    border-radius: .65rem;
+    background: #fff;
+    color: #55514d;
+    font: inherit;
+}
+
+.addButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .55rem;
+    min-height: 2.75rem;
+    padding: .6rem 1.15rem;
+    border: 0;
+    border-radius: .6rem;
+    background: var(--motta-blue);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.addButton:hover {
+    background: var(--motta-light-blue);
+}
+
+.sessionNote {
+    margin: 0 0 1.2rem;
+    color: #615d56;
+    font-size: .82rem;
+}
+
+.tableCard, .infoPanel {
+    padding: clamp(1rem, 2vw, 1.6rem);
+    border: 1px solid #e3ded7;
+    border-radius: .85rem;
+    background: #fff;
+    box-shadow: 0 1px 3px #30271912;
+}
+
+.tableCard h2, .infoPanel h2 {
+    margin-bottom: 1rem;
+    color: #55843d;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.roleBadge, .statusBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 5.4rem;
+    min-height: 1.65rem;
+    padding: .15rem .55rem;
+    border-radius: 99px;
+    font-size: .78rem;
+    white-space: nowrap;
+}
+
+.gerente {
+    background: #c9f5f1;
+    color: #154c45;
+}
+
+.estoquista {
+    background: #ddf5ce;
+    color: #355423;
+}
+
+.caixa {
+    background: #f9d4d2;
+    color: #682f30;
+}
+
+.active {
+    background: #d9f6cc;
+    color: #315525;
+}
+
+.inactive {
+    background: #ffd2bd;
+    color: #6c3926;
+}
+
+.editButton, .cancelButton {
+    min-height: 2rem;
+    padding: .35rem .75rem;
+    border: 0;
+    border-radius: .35rem;
+    background: #e4ded5;
+    color: #45403a;
+    font: inherit;
+    font-size: .78rem;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.editButton:hover, .cancelButton:hover {
+    background: #d4ccbf;
+}
+
+.empty {
+    padding: 2.5rem 1rem;
+    color: #625e58;
+    text-align: center;
+}
+
+.infoPanel {
+    min-height: 13rem;
+}
+
+.infoPanel p {
+    color: #625e58;
+    line-height: 1.6;
+}
+
+.modalBackdrop {
+    position: fixed;
+    z-index: 1500;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: #14211799;
+}
+
+.modal {
+    overflow-y: auto;
+    width: min(100%, 34rem);
+    max-height: min(90vh, 48rem);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border-radius: .9rem;
+    background: #fff;
+    box-shadow: 0 1rem 3rem #0003;
+}
+
+.modalHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.4rem;
+}
+
+.modalHeading h2 {
+    font-size: 1.25rem;
+    color: #234c31;
+}
+
+.closeButton {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    background: #f2f0ec;
+    color: #38352f;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.modal form, .modal form label {
+    display: grid;
+    gap: .5rem;
+}
+
+.modal form {
+    gap: 1rem;
+}
+
+.modal form label {
+    color: #49453f;
+    font-size: .9rem;
+    font-weight: 600;
+}
+
+.modal input, .modal select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: .55rem .7rem;
+    border: 1px solid #c9c3b9;
+    border-radius: .45rem;
+    background: #fff;
+    color: #282722;
+    font: inherit;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.formError {
+    color: #a32720;
+    font-size: .9rem;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.visuallyHidden {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .toolbar {
+        grid-template-columns: minmax(0, 1fr) minmax(9rem, .7fr);
+    }
+    .searchBox {
+        grid-column: 1 / -1;
+    }
+    .addButton {
+        grid-column: 1 / -1;
+        justify-self: end;
+    }
+}
+
+@media (max-width: 520px) {
+    .toolbar {
+        grid-template-columns: 1fr;
+    }
+    .searchBox, .addButton {
+        grid-column: auto;
+    }
+    .addButton {
+        width: 100%;
+    }
+    .formRow {
+        grid-template-columns: 1fr;
+    }
+}
