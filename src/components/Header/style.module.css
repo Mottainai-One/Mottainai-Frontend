@@ -9,6 +9,7 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
     color: var(--main-white);
 }
+
 .session-info {
     display: flex;
     align-items: center;
@@ -18,9 +19,11 @@
     font-size: 0.8rem;
     white-space: nowrap;
 }
+
 .session-divider {
     color: var(--motta-light-blue);
 }
+
 .account-icon {
     position: relative;
     display: inline-flex;
@@ -37,18 +40,22 @@
     cursor: default;
     transition: ease-in-out 0.3s border;
 }
+
 .account-icon:focus-visible {
     outline: 3px solid var(--main-white);
     outline-offset: 2px;
 }
-.account-icon:hover{
+
+.account-icon:hover {
     border: var(--motta-light-blue) 3px solid;
 }
+
 .tooltip {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
     z-index: 1200;
+    visibility: hidden;
     padding: 8px 12px;
     border-radius: 6px;
     background-color: var(--motta-light-blue);
@@ -58,46 +65,49 @@
     font-size: 0.8rem;
     font-weight: 500;
     white-space: nowrap;
-    visibility: hidden;
     transform: translateY(-4px);
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 }
+
 .tooltip::before {
     position: absolute;
     right: 12px;
     bottom: 100%;
-    content: '';
     border-width: 6px;
     border-style: solid;
     border-color: transparent transparent var(--motta-light-blue);
+    content: '';
 }
+
 .account-icon:hover .tooltip,
 .account-icon:focus-visible .tooltip {
-    opacity: 1;
     visibility: visible;
+    opacity: 1;
     transform: translateY(0);
 }
+
 @media (max-width: 768px) {
     .header {
-    padding: 12px 16px 12px 72px;
-}
+        padding: 12px 16px 12px 72px;
+    }
     .session-info {
-    gap: 6px;
-    font-size: 0.65rem;
-}
+        gap: 6px;
+        font-size: 0.65rem;
+    }
     .session-divider {
-    display: none;
-}
+        display: none;
+    }
     .title {
-    font-size: clamp(0.95rem, 4vw, 1.2rem);
-}
+        font-size: clamp(0.95rem, 4vw, 1.2rem);
+    }
     .account-icon {
-    width: 32px;
-    height: 32px;
+        width: 32px;
+        height: 32px;
+    }
 }
-}
+
 @media (prefers-reduced-motion: reduce) {
     .tooltip {
-    transition: none;
-}
+        transition: none;
+    }
 }

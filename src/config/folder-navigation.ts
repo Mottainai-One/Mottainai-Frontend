@@ -18,4 +18,9 @@ export const ACCOUNTING_FOLDER_NAVIGATION_ITEMS = [
     { label: 'Contabilidade/SPED', to: '/accounting/sped', end: true },
 ] as const satisfies readonly FolderNavigationItem[];
 
+export const USERS_FOLDER_NAVIGATION_ITEMS = [
+    { label: 'Funcionários', to: '/users', end: true, activePaths: ['/users/new'] },
+    { label: 'Log de auditoria', to: '/users/audit', end: true },
+] as const satisfies readonly FolderNavigationItem[];
+
 export const FOLDER_NAVIGATION_PATHS: string[] = FOLDER_NAVIGATION_ITEMS.map((item) => item.to);

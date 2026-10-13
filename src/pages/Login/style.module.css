@@ -1,27 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
 :root {
     --motta-blue: rgba(16, 42, 67, 1);
     --motta-light-blue: rgba(45, 87, 120, 1);
     --main-gray: rgba(168, 164, 164, 1);
     --main-white: rgba(255, 255, 255, 1);
 }
+
 body {
     min-height: 100vh;
     height: 100%;
     margin: 0;
     font-family: "DM Sans", sans-serif;
 }
+
 img {
     flex-shrink: 0;
     aspect-ratio: 1 / 1;
     object-fit: contain;
 }
+
 .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
     background-color: var(--main-white);
 }
+
 .loginSection {
     display: flex;
     flex-direction: column;
@@ -30,10 +35,12 @@ img {
     padding: 2rem;
     background-color: var(--main-white);
 }
+
 .logo {
     width: 120px;
     margin-bottom: 1.5rem;
 }
+
 .title {
     margin-bottom: 0.5rem;
     font-size: 2.2rem;
@@ -41,6 +48,7 @@ img {
     color: var(--motta-blue);
     text-align: center;
 }
+
 .subtitle {
     max-width: 320px;
     margin-bottom: 3rem;
@@ -49,6 +57,7 @@ img {
     text-align: center;
     line-height: 1.4;
 }
+
 .form {
     display: flex;
     flex-direction: column;
@@ -56,17 +65,19 @@ img {
     width: 100%;
     max-width: 400px;
 }
+
 .visuallyHidden {
     position: absolute;
     overflow: hidden;
+    clip: rect(0, 0, 0, 0);
     width: 1px;
     height: 1px;
     padding: 0;
     margin: -1px;
     border: 0;
     white-space: nowrap;
-    clip: rect(0, 0, 0, 0);
 }
+
 .input {
     width: 100%;
     padding: 16px 24px;
@@ -78,23 +89,28 @@ img {
     font-family: inherit;
     color: var(--motta-blue);
 }
+
 .input::placeholder {
     color: var(--main-gray);
 }
+
 .input:focus-visible {
     border-color: var(--motta-light-blue);
     outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
+
 .passwordField {
     position: relative;
     display: flex;
     align-items: center;
     width: 100%;
 }
+
 .passwordField .input {
     padding-right: 50px;
 }
+
 .togglePasswordButton {
     position: absolute;
     right: 12px;
@@ -109,10 +125,12 @@ img {
     color: var(--main-gray);
     cursor: pointer;
 }
+
 .togglePasswordButton:focus-visible {
     outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
+
 .forgotPasswordButton {
     align-self: flex-end;
     margin-top: -4px;
@@ -124,10 +142,12 @@ img {
     text-decoration: underline;
     cursor: pointer;
 }
+
 .forgotPasswordButton:focus-visible {
     outline: 2px solid var(--motta-light-blue);
     outline-offset: 2px;
 }
+
 .submitButton {
     padding: 18px;
     margin-top: 1.5rem;
@@ -141,43 +161,50 @@ img {
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, outline-offset 0.2s ease;
 }
+
 .submitButton:hover,
 .submitButton:focus-visible {
     background-color: var(--motta-light-blue);
     outline: 2px solid var(--motta-blue);
     outline-offset: 2px;
 }
+
 .submitButton:disabled {
     opacity: 0.7;
     cursor: not-allowed;
 }
+
 .errorMessage {
     color: #b3261e;
     font-size: 0.9rem;
     text-align: center;
 }
+
 .mascotSection {
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: var(--motta-blue);
 }
+
 .mascotImage {
     width: 100%;
     max-width: 500px;
     aspect-ratio: 1 / 1;
     object-fit: contain;
 }
+
 @media (max-width: 768px) {
-  .container {
-    grid-template-columns: 1fr;
+    .container {
+        grid-template-columns: 1fr;
+    }
+    .mascotSection {
+        display: none;
+    }
 }
-  .mascotSection {
-    display: none;
-}
-}
+
 @media (prefers-reduced-motion: reduce) {
-  .submitButton {
-    transition: none;
-}
+    .submitButton {
+        transition: none;
+    }
 }

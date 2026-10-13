@@ -42,7 +42,7 @@ export default function AppRoutes() {
           <Route element={<MainLayout />}>
             <Route path="/overview" element={<Overview />} />
             <Route path="/home" element={<Home />} />
-            <Route path="/users" element={<Users />} />
+            <Route path="/users/*" element={<Users />} />
             <Route path="/usageHistory" element={<UsageHistory />} />
             <Route path="/expiringProducts" element={<ExpiringProducts />} />
             <Route path="/products" element={<Products />} />

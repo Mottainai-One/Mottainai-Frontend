@@ -1,32 +1,64 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
 :root {
     --motta-blue: rgba(16, 42, 67, 1);
     --motta-light-blue: rgba(45, 87, 120, 1);
     --motta-orange: rgba(197, 105, 32, 1);
-    --motta-light-orange:rgba(221, 123, 45, 1);
+    --motta-light-orange: rgba(221, 123, 45, 1);
     --main-gray: rgba(168, 164, 164, 1);
     --main-white: rgba(255, 255, 255, 1);
     --sidebar-width: 220px;
     --bottom-nav-height: 64px;
     --sidebar-transition: 0.3s ease;
 }
+
 * {
     box-sizing: border-box;
     margin: 0;
+    scrollbar-color: var(--motta-light-blue) #e8edf1;
+    scrollbar-width: auto;
 }
+
+*::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+*::-webkit-scrollbar-track {
+    border-radius: 999px;
+    background-color: #e8edf1;
+}
+
+*::-webkit-scrollbar-thumb {
+    border: 2px solid #e8edf1;
+    border-radius: 999px;
+    background-color: var(--motta-blue);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--motta-light-blue);
+}
+
+*::-webkit-scrollbar-corner {
+    background-color: #e8edf1;
+}
+
 body {
     background-color: var(--main-white);
     font-family: "DM Sans", sans-serif;
     cursor: default;
 }
+
 img {
     flex-shrink: 0;
     aspect-ratio: 1 / 1;
     object-fit: contain;
 }
+
 p, span, h1, h2, h3, h4, h5, h6, div, li, time, dt, dd, label, td, th, strong, em, small {
     cursor: default;
 }
-button, a{
+
+button, a {
     transition: all 0.3s ease-in-out;
 }
