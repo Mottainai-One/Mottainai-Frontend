@@ -36,7 +36,7 @@
 
 .table {
     width: 100%;
-    min-width: 36rem;
+    min-width: min(36rem, 100%);
     border-collapse: collapse;
     color: #625d58;
     font-size: 0.8125rem;
@@ -183,5 +183,17 @@
     }
     .scrollArea {
         max-height: 22rem;
+    }
+    .table {
+        min-width: 30rem;
+        font-size: 0.75rem;
+    }
+    .table th,
+    .table td {
+        padding: 0.45rem 0.55rem;
+    }
+    .badge {
+        min-width: 0;
+        padding-inline: 0.5rem;
     }
 }

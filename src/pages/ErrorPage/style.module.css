@@ -1,7 +1,33 @@
-body {
-    background-color: aliceblue;
+.errorPage {
+    width: min(100% - 2rem, 42rem);
+    margin: clamp(1rem, 5vh, 3rem) auto;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    color: var(--motta-blue);
+    background: var(--main-white);
+    border-radius: 0.75rem;
 }
 
-.paragrafo {
-    display: block;
+.errorPage button {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.65rem 1rem;
+    color: var(--motta-blue);
+    background: var(--main-white);
+    border: 2px solid var(--motta-blue);
+    border-radius: 0.4rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.errorPage button:focus-visible {
+    outline: 3px solid var(--motta-orange);
+    outline-offset: 3px;
+}
+
+@media (max-width: 420px) {
+    .errorPage {
+        width: calc(100% - 1.25rem);
+        margin: 0.75rem auto;
+        padding: 1rem;
+    }
 }

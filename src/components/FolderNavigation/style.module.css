@@ -109,19 +109,24 @@
 }
 
 @media (max-width: 624px) {
+    .navigation {
+        overscroll-behavior-x: contain;
+        scrollbar-width: thin;
+    }
     .list {
-        width: 100%;
+        width: max-content;
+        max-width: none;
     }
     .item {
-        flex: 1 1 0;
+        flex: 0 0 auto;
     }
     .link {
-        min-height: 58px;
+        min-height: 44px;
         margin: 0 3px;
-        padding: 6px 4px 5px;
+        padding: 6px 0.75rem 5px;
         border-radius: 12px 12px 0 0;
         font-size: 0.75rem;
-        white-space: normal;
+        white-space: nowrap;
     }
     .link::before,
     .link::after {

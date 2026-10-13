@@ -1,21 +1,27 @@
 .layout {
     min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--main-white);
 }
 
 .content-shell {
     min-height: 100vh;
+    min-height: 100dvh;
     margin-left: var(--sidebar-width);
+    min-width: 0;
 }
 
 .content {
     min-height: calc(100vh - 64px);
-    padding: 32px 40px;
+    min-height: calc(100dvh - 64px);
+    min-width: 0;
+    padding: clamp(1rem, 2.4vw, 2rem) clamp(1rem, 3vw, 2.5rem);
     color: var(--motta-blue);
 }
 
 .content-with-folders {
     min-height: calc(100vh - 98px);
+    min-height: calc(100dvh - 98px);
 }
 
 @media (max-width: 768px) {
@@ -24,16 +30,22 @@
     }
     .content {
         min-height: calc(100vh - 64px);
-        padding: 24px;
+        min-height: calc(100dvh - 64px);
+        padding: clamp(1rem, 3vw, 1.5rem);
     }
     .content-with-folders {
         min-height: calc(100vh - 102px);
+        min-height: calc(100dvh - 102px);
     }
 }
 
 @media (max-width: 624px) {
     .content-with-folders {
         min-height: calc(100vh - 122px);
+        min-height: calc(100dvh - 122px);
+    }
+    .content {
+        padding: 1rem;
     }
 }
 

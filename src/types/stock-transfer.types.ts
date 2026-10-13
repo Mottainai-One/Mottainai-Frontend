@@ -52,6 +52,7 @@ export interface TransferFormState {
 
 export interface NewTransferPageState {
   form: TransferFormState;
+  errors: Partial<Record<keyof TransferFormState, string>>;
   feedback: string;
   feedbackIsError: boolean;
 }

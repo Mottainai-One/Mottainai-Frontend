@@ -10,6 +10,7 @@ import type {
   TransferFormState,
   TransferFormStatus,
 } from "@/types/stock-transfer.types";
+import { sanitizeTransferForm, validateTransferForm } from '@/utils/transferFormValidation';
 import styles from "./style.module.css";
 
 const transferStatusOptions: readonly { value: TransferFormStatus; label: string }[] = [
@@ -34,6 +35,7 @@ const initialForm: TransferFormState = {
 function NewTransfer() {
   const [state, setState] = useState<NewTransferPageState>({
     form: initialForm,
+    errors: {},
     feedback: "",
     feedbackIsError: false,
   });
@@ -45,6 +47,7 @@ function NewTransfer() {
     setState((currentState) => ({
       ...currentState,
       form: { ...currentState.form, [field]: value },
+      errors: { ...currentState.errors, [field]: undefined },
       feedback: "",
       feedbackIsError: false,
     }));
@@ -52,37 +55,23 @@ function NewTransfer() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { form } = state;
-
-    if (!form.sourceStoreId || !form.destinationStoreId || !form.employeeId) {
+    const errors = validateTransferForm(state.form);
+    if (Object.keys(errors).length > 0) {
       setState((currentState) => ({
         ...currentState,
-        feedback: "Selecione loja de origem, loja de destino e responsável.",
+        errors,
+        feedback: "Revise os campos destacados antes de salvar a transferência.",
         feedbackIsError: true,
       }));
       return;
     }
 
-    if (form.sourceStoreId === form.destinationStoreId) {
-      setState((currentState) => ({
-        ...currentState,
-        feedback: "A loja de origem deve ser diferente da loja de destino.",
-        feedbackIsError: true,
-      }));
-      return;
-    }
-
-    if (form.completionDate && form.completionDate < form.requestDate) {
-      setState((currentState) => ({
-        ...currentState,
-        feedback: "A data de conclusão deve ser posterior à data de solicitação.",
-        feedbackIsError: true,
-      }));
-      return;
-    }
+    const validatedForm = sanitizeTransferForm(state.form);
+    if (!validatedForm.employeeId || !validatedForm.sourceStoreId || !validatedForm.destinationStoreId) return;
 
     setState({
       form: initialForm,
+      errors: {},
       feedback: "Transferência registrada com sucesso.",
       feedbackIsError: false,
     });
@@ -120,6 +109,8 @@ function NewTransfer() {
               id="transfer-employee"
               value={state.form.employeeId}
               onChange={(event) => updateForm("employeeId", event.target.value)}
+              aria-invalid={Boolean(state.errors.employeeId)}
+              aria-describedby={state.errors.employeeId ? "transfer-employee-error" : undefined}
               required
             >
               <option value="">Selecione um responsável</option>
@@ -127,6 +118,7 @@ function NewTransfer() {
                 <option key={employee.id} value={employee.id}>{employee.label}</option>
               ))}
             </select>
+            {state.errors.employeeId && <p className={styles.fieldError} id="transfer-employee-error" role="alert">{state.errors.employeeId}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -135,6 +127,8 @@ function NewTransfer() {
               id="transfer-source-store"
               value={state.form.sourceStoreId}
               onChange={(event) => updateForm("sourceStoreId", event.target.value)}
+              aria-invalid={Boolean(state.errors.sourceStoreId)}
+              aria-describedby={state.errors.sourceStoreId ? "transfer-source-error" : undefined}
               required
             >
               <option value="">Selecione a loja de origem</option>
@@ -142,6 +136,7 @@ function NewTransfer() {
                 <option key={store.id} value={store.id}>{store.label}</option>
               ))}
             </select>
+            {state.errors.sourceStoreId && <p className={styles.fieldError} id="transfer-source-error" role="alert">{state.errors.sourceStoreId}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -150,6 +145,8 @@ function NewTransfer() {
               id="transfer-destination-store"
               value={state.form.destinationStoreId}
               onChange={(event) => updateForm("destinationStoreId", event.target.value)}
+              aria-invalid={Boolean(state.errors.destinationStoreId)}
+              aria-describedby={state.errors.destinationStoreId ? "transfer-destination-error" : undefined}
               required
             >
               <option value="">Selecione a loja de destino</option>
@@ -157,6 +154,7 @@ function NewTransfer() {
                 <option key={store.id} value={store.id}>{store.label}</option>
               ))}
             </select>
+            {state.errors.destinationStoreId && <p className={styles.fieldError} id="transfer-destination-error" role="alert">{state.errors.destinationStoreId}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -166,8 +164,11 @@ function NewTransfer() {
               type="datetime-local"
               value={state.form.requestDate}
               onChange={(event) => updateForm("requestDate", event.target.value)}
+              aria-invalid={Boolean(state.errors.requestDate)}
+              aria-describedby={state.errors.requestDate ? "transfer-request-date-error" : undefined}
               required
             />
+            {state.errors.requestDate && <p className={styles.fieldError} id="transfer-request-date-error" role="alert">{state.errors.requestDate}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -177,7 +178,10 @@ function NewTransfer() {
               type="datetime-local"
               value={state.form.completionDate}
               onChange={(event) => updateForm("completionDate", event.target.value)}
+              aria-invalid={Boolean(state.errors.completionDate)}
+              aria-describedby={state.errors.completionDate ? "transfer-completion-date-error" : undefined}
             />
+            {state.errors.completionDate && <p className={styles.fieldError} id="transfer-completion-date-error" role="alert">{state.errors.completionDate}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -200,9 +204,13 @@ function NewTransfer() {
               id="transfer-observation"
               value={state.form.observation}
               onChange={(event) => updateForm("observation", event.target.value)}
+              maxLength={500}
+              aria-invalid={Boolean(state.errors.observation)}
+              aria-describedby={state.errors.observation ? "transfer-observation-error" : undefined}
               placeholder="Descreva o motivo ou as orientações da transferência"
               rows={4}
             />
+            {state.errors.observation && <p className={styles.fieldError} id="transfer-observation-error" role="alert">{state.errors.observation}</p>}
           </div>
         </div>
 
