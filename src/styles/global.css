@@ -19,6 +19,19 @@
     scrollbar-width: auto;
 }
 
+html {
+    min-width: 320px;
+    min-height: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+#root {
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
 *::-webkit-scrollbar {
     width: 0.75rem;
     height: 0.75rem;
@@ -44,15 +57,34 @@
 }
 
 body {
+    min-width: 320px;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
     background-color: var(--main-white);
     font-family: "DM Sans", sans-serif;
     cursor: default;
 }
 
 img {
+    max-width: 100%;
     flex-shrink: 0;
     aspect-ratio: 1 / 1;
     object-fit: contain;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+}
+
+@media (max-width: 480px) {
+    *::-webkit-scrollbar {
+        width: 0.55rem;
+        height: 0.55rem;
+    }
 }
 
 p, span, h1, h2, h3, h4, h5, h6, div, li, time, dt, dd, label, td, th, strong, em, small {

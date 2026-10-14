@@ -494,8 +494,18 @@ function ProductsRegistration() {
           <button
             type="button"
             role="tab"
+            id="bulk-registration-tab"
+            aria-controls="bulk-registration-panel"
             aria-selected={state.mode === "bulk"}
+            tabIndex={state.mode === "bulk" ? 0 : -1}
             className={state.mode === "bulk" ? styles.active : ""}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowRight") {
+                event.preventDefault();
+                updateMode("single");
+                document.getElementById("single-registration-tab")?.focus();
+              }
+            }}
             onClick={() => updateMode("bulk")}
           >
             Importação em massa
@@ -503,8 +513,18 @@ function ProductsRegistration() {
           <button
             type="button"
             role="tab"
+            id="single-registration-tab"
+            aria-controls="single-registration-panel"
             aria-selected={state.mode === "single"}
+            tabIndex={state.mode === "single" ? 0 : -1}
             className={state.mode === "single" ? styles.active : ""}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowLeft") {
+                event.preventDefault();
+                updateMode("bulk");
+                document.getElementById("bulk-registration-tab")?.focus();
+              }
+            }}
             onClick={() => updateMode("single")}
           >
             Nova SKU
@@ -512,7 +532,13 @@ function ProductsRegistration() {
         </div>
 
         {state.mode === "bulk" ? (
-          <form onSubmit={handleProcessFile}>
+          <form
+            id="bulk-registration-panel"
+            role="tabpanel"
+            aria-labelledby="bulk-registration-tab"
+            tabIndex={0}
+            onSubmit={handleProcessFile}
+          >
             <input
               className={styles["file-input"]}
               id={fileInputId}
@@ -620,7 +646,14 @@ function ProductsRegistration() {
             )}
           </form>
         ) : (
-          <form onSubmit={handleSingleSubmit} className={styles["single-form"]}>
+          <form
+            id="single-registration-panel"
+            role="tabpanel"
+            aria-labelledby="single-registration-tab"
+            tabIndex={0}
+            onSubmit={handleSingleSubmit}
+            className={styles["single-form"]}
+          >
             <div className={styles["form-grid"]}>
               <label>
                 SKU

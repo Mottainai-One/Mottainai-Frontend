@@ -40,5 +40,19 @@ export interface AuthProviderProps {
 export interface AuthState {
   token: string | null;
   user: User | null;
+  isLoggingIn: boolean;
+  error: string | null;
+}
+
+export type AuthAction =
+  | { type: 'login-started' }
+  | { type: 'login-succeeded'; token: string; user: User }
+  | { type: 'login-failed'; error: string }
+  | { type: 'logged-out' }
+  | { type: 'error-cleared' };
+
+export interface StoredAuthToken {
+  _versao: 1;
+  token: string;
 }
 import type { ReactNode } from 'react';

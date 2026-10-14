@@ -34,6 +34,7 @@ export interface SupplierEditState {
 
 export interface SupplierFormPageState {
   form: SupplierFormState;
+  errors: Partial<Record<keyof SupplierFormState, string>>;
   feedback: string;
   feedbackIsError: boolean;
 }

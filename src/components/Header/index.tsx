@@ -18,17 +18,10 @@ function Header({ storeCnpj = 'Não informado' }: HeaderProps) {
                 <span>
                     CNPJ da Loja: <strong>{storeCnpj}</strong>
                 </span>
-                <span
-                    className={styles['account-icon']}
-                    role="img"
-                    aria-label="Conta do usuário"
-                    tabIndex={0}
-                >
+                <NavLink className={styles.accountLink} to="/account" aria-label="Ver minha conta">
                     <FontAwesomeIcon icon={faUser} aria-hidden="true" />
-                    <NavLink className={styles.tooltip} role="tooltip" to='/account'>
-                        Ver conta
-                    </NavLink>
-                </span>
+                    <span className={styles.accountTooltip} aria-hidden="true">Ver conta</span>
+                </NavLink>
             </div>
         </header>
     );

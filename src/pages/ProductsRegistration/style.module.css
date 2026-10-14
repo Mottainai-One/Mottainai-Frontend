@@ -265,6 +265,7 @@ input:focus-visible {
     overflow: auto;
     width: min(68rem, 100%);
     max-height: calc(100vh - 2rem);
+    max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     padding: clamp(1rem, 3vw, 2rem);
     border-radius: 0.75rem;
     background: #fff;
@@ -413,6 +414,27 @@ input:focus-visible {
     }
     .selected-file {
         padding: 0.9rem;
+    }
+}
+
+@media (max-width: 420px) {
+    .card {
+        padding: 1rem 0.75rem;
+    }
+    .dropzone {
+        min-height: 11rem;
+    }
+    .upload-icon {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.5rem;
+    }
+    .selected-file {
+        gap: 0.65rem;
+        font-size: 1.2rem;
+    }
+    .modal {
+        padding: 1rem 0.75rem;
     }
 }
 

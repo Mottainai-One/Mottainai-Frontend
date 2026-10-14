@@ -1,6 +1,6 @@
 .page {
     width: 100%;
-    height: 100vh;
+    min-height: 0;
     min-width: 0;
 }
 
@@ -205,5 +205,23 @@
 @media (max-width: 640px) {
     .new-product {
         width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 1rem 0.65rem;
+    }
+    .table {
+        min-width: 46rem;
+        font-size: 0.72rem;
+    }
+    .table th,
+    .table td {
+        padding: 0.55rem 0.5rem;
+    }
+    .levelBadge {
+        min-width: 5.5rem;
+        padding-inline: 0.5rem;
     }
 }

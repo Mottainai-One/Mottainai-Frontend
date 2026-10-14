@@ -1,0 +1,63 @@
+.page {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2rem);
+  color: var(--motta-blue);
+}
+
+.heading {
+  margin-bottom: 1.5rem;
+}
+
+.heading h1 {
+  margin: 0.25rem 0 0.5rem;
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+}
+
+.heading > p:last-child {
+  margin: 0;
+  color: #514b45;
+  line-height: 1.5;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #514b45;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.detail {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid rgba(16, 42, 67, 0.14);
+  border-radius: 0.75rem;
+  background: var(--main-white);
+}
+
+.detail dt {
+  margin-bottom: 0.5rem;
+  color: #514b45;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 1rem 0.75rem;
+  }
+}

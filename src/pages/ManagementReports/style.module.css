@@ -380,6 +380,10 @@
         flex: 1 1 100%;
     }
     .tableWrap table {
-        min-width: 32rem;
+        min-width: 28rem;
+    }
+    .tableWrap th,
+    .tableWrap td {
+        padding: 0.55rem 0.6rem;
     }
 }

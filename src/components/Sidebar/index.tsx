@@ -23,6 +23,7 @@ function Sidebar({ overviewPaths }: SidebarProps) {
   const { pathname } = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
   const normalizedPathname = pathname.replace(/\/+$/, "") || "/";
   const isOverviewFlowActive = overviewPaths.includes(normalizedPathname);
   const isProductsFlowActive =
@@ -46,12 +47,16 @@ function Sidebar({ overviewPaths }: SidebarProps) {
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? "hidden" : "";
+    if (isOpen) sidebarRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
     return () => {
       document.body.style.overflow = "";
     };
   }, [isOpen]);
 
-  const closeSidebar = () => setIsOpen(false);
+  const closeSidebar = () => {
+    setIsOpen(false);
+    menuButtonRef.current?.focus();
+  };
 
   return (
     <>
@@ -79,6 +84,7 @@ function Sidebar({ overviewPaths }: SidebarProps) {
       )}
 
       <nav
+        ref={sidebarRef}
         id="sidebar"
         className={`${styles.sidebar} ${isOpen ? styles["sidebar-open"] : ""}`}
         aria-label="Navegação principal"
@@ -169,7 +175,7 @@ function Sidebar({ overviewPaths }: SidebarProps) {
                 <span className={styles.icon} aria-hidden="true">
                   <FontAwesomeIcon icon={faGear} />
                 </span>
-                <span className={styles.text}>Configurações</span>
+                <span className={styles.text}>Usuários</span>
               </NavLink>
             </li>
           </ul>
@@ -186,10 +192,8 @@ function Sidebar({ overviewPaths }: SidebarProps) {
               <span className={styles.icon} aria-hidden="true">
                 <FontAwesomeIcon icon={faUser} />
               </span>
-
               <span className={styles.text}>Conta</span>
             </NavLink>
-
             <button
               type="button"
               className={styles["sidebar-logout"]}

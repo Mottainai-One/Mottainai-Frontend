@@ -190,7 +190,12 @@ function CashClosingReport() {
                 type="button"
                 className={styles.changeButton}
                 aria-expanded={state.isStatusEditorOpen}
-                onClick={() => updateState({ isStatusEditorOpen: !state.isStatusEditorOpen })}
+                aria-controls={statusId}
+                onClick={() => {
+                  const willOpen = !state.isStatusEditorOpen;
+                  updateState({ isStatusEditorOpen: willOpen });
+                  if (willOpen) window.requestAnimationFrame(() => document.getElementById(statusId)?.focus());
+                }}
               >
                 Alterar status
               </button>
@@ -219,7 +224,12 @@ function CashClosingReport() {
                 type="button"
                 className={styles.changeButton}
                 aria-expanded={state.isResponsibleEditorOpen}
-                onClick={() => updateState({ isResponsibleEditorOpen: !state.isResponsibleEditorOpen })}
+                aria-controls={responsibleId}
+                onClick={() => {
+                  const willOpen = !state.isResponsibleEditorOpen;
+                  updateState({ isResponsibleEditorOpen: willOpen });
+                  if (willOpen) window.requestAnimationFrame(() => document.getElementById(responsibleId)?.focus());
+                }}
               >
                 Alterar responsável
               </button>

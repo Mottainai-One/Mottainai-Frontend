@@ -4,6 +4,7 @@
     justify-content: end;
     width: 100%;
     min-height: 64px;
+    min-width: 0;
     padding: 12px 24px;
     background-color: var(--motta-blue);
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
@@ -17,14 +18,15 @@
     gap: 20px;
     color: var(--main-white);
     font-size: 0.8rem;
-    white-space: nowrap;
+    min-width: 0;
+    text-align: right;
 }
 
 .session-divider {
     color: var(--motta-light-blue);
 }
 
-.account-icon {
+.accountLink {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -37,20 +39,20 @@
     outline: none;
     color: var(--main-white);
     font-size: 1rem;
-    cursor: default;
+    text-decoration: none;
     transition: ease-in-out 0.3s border;
 }
 
-.account-icon:focus-visible {
+.accountLink:focus-visible {
     outline: 3px solid var(--main-white);
     outline-offset: 2px;
 }
 
-.account-icon:hover {
+.accountLink:hover {
     border: var(--motta-light-blue) 3px solid;
 }
 
-.tooltip {
+.accountTooltip {
     position: absolute;
     top: calc(100% + 10px);
     right: 0;
@@ -69,7 +71,7 @@
     transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 }
 
-.tooltip::before {
+.accountTooltip::before {
     position: absolute;
     right: 12px;
     bottom: 100%;
@@ -79,8 +81,8 @@
     content: '';
 }
 
-.account-icon:hover .tooltip,
-.account-icon:focus-visible .tooltip {
+.accountLink:hover .accountTooltip,
+.accountLink:focus-visible .accountTooltip {
     visibility: visible;
     opacity: 1;
     transform: translateY(0);
@@ -88,26 +90,49 @@
 
 @media (max-width: 768px) {
     .header {
-        padding: 12px 16px 12px 72px;
+        min-height: 60px;
+        padding: 10px 14px 10px 76px;
     }
     .session-info {
-        gap: 6px;
-        font-size: 0.65rem;
+        flex-wrap: wrap;
+        gap: 2px 10px;
+        font-size: clamp(0.68rem, 2vw, 0.78rem);
+        line-height: 1.35;
     }
     .session-divider {
         display: none;
     }
-    .title {
-        font-size: clamp(0.95rem, 4vw, 1.2rem);
-    }
-    .account-icon {
+    .accountLink {
         width: 32px;
         height: 32px;
     }
 }
 
+@media (max-width: 420px) {
+    .header {
+        min-height: 68px;
+        padding-right: 10px;
+        padding-left: 72px;
+    }
+    .session-info {
+        max-width: 100%;
+        width: 100%;
+        font-size: 0.66rem;
+    }
+    .session-info > span {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+    .accountLink {
+        width: 28px;
+        height: 28px;
+        border-width: 2px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .tooltip {
+    .accountTooltip {
         transition: none;
     }
 }

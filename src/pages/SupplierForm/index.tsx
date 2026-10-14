@@ -5,6 +5,7 @@ import type {
   SupplierFormPageState,
   SupplierFormState,
 } from "@/types/supplier.types";
+import { sanitizeSupplierForm, validateSupplierForm } from '@/utils/supplierFormValidation';
 import styles from "./style.module.css";
 
 const initialForm: SupplierFormState = {
@@ -31,6 +32,7 @@ function formatCnpj(value: string) {
 function SupplierForm() {
   const [state, setState] = useState<SupplierFormPageState>({
     form: initialForm,
+    errors: {},
     feedback: "",
     feedbackIsError: false,
   });
@@ -42,6 +44,7 @@ function SupplierForm() {
     setState((currentState) => ({
       ...currentState,
       form: { ...currentState.form, [field]: value },
+      errors: { ...currentState.errors, [field]: undefined },
       feedback: "",
       feedbackIsError: false,
     }));
@@ -49,19 +52,23 @@ function SupplierForm() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const cnpjDigits = digitsOnly(state.form.cnpj);
-
-    if (!state.form.tradeName.trim() || !state.form.addressId || cnpjDigits.length !== 14) {
+    const errors = validateSupplierForm(state.form);
+    if (Object.keys(errors).length > 0) {
       setState((currentState) => ({
         ...currentState,
-        feedback: "Informe nome fantasia, endereço e um CNPJ com 14 dígitos.",
+        errors,
+        feedback: "Revise os campos destacados antes de cadastrar o fornecedor.",
         feedbackIsError: true,
       }));
       return;
     }
 
+    const validatedForm = sanitizeSupplierForm(state.form);
+    if (!validatedForm.tradeName || !validatedForm.addressId || validatedForm.cnpj.length !== 14) return;
+
     setState({
       form: initialForm,
+      errors: {},
       feedback: "Fornecedor cadastrado com sucesso.",
       feedbackIsError: false,
     });
@@ -85,9 +92,13 @@ function SupplierForm() {
               id="supplier-trade-name"
               value={state.form.tradeName}
               onChange={(event) => updateForm("tradeName", event.target.value)}
+              maxLength={100}
+              aria-invalid={Boolean(state.errors.tradeName)}
+              aria-describedby={state.errors.tradeName ? "supplier-trade-name-error" : undefined}
               placeholder="Digite o nome do fornecedor"
               required
             />
+            {state.errors.tradeName && <p className={styles.fieldError} id="supplier-trade-name-error" role="alert">{state.errors.tradeName}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -96,11 +107,14 @@ function SupplierForm() {
               id="supplier-cnpj"
               inputMode="numeric"
               maxLength={18}
+              aria-invalid={Boolean(state.errors.cnpj)}
+              aria-describedby={state.errors.cnpj ? "supplier-cnpj-error" : undefined}
               value={state.form.cnpj}
               onChange={(event) => updateForm("cnpj", formatCnpj(event.target.value))}
               placeholder="00.000.000/0000-00"
               required
             />
+            {state.errors.cnpj && <p className={styles.fieldError} id="supplier-cnpj-error" role="alert">{state.errors.cnpj}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -110,8 +124,12 @@ function SupplierForm() {
               type="email"
               value={state.form.email}
               onChange={(event) => updateForm("email", event.target.value)}
+              maxLength={254}
+              aria-invalid={Boolean(state.errors.email)}
+              aria-describedby={state.errors.email ? "supplier-email-error" : undefined}
               placeholder="contato@empresa.com"
             />
+            {state.errors.email && <p className={styles.fieldError} id="supplier-email-error" role="alert">{state.errors.email}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -121,8 +139,12 @@ function SupplierForm() {
               type="tel"
               value={state.form.phone}
               onChange={(event) => updateForm("phone", event.target.value)}
+              maxLength={20}
+              aria-invalid={Boolean(state.errors.phone)}
+              aria-describedby={state.errors.phone ? "supplier-phone-error" : undefined}
               placeholder="(11) 99999-9999"
             />
+            {state.errors.phone && <p className={styles.fieldError} id="supplier-phone-error" role="alert">{state.errors.phone}</p>}
           </div>
 
           <div className={styles.formField}>
@@ -131,6 +153,8 @@ function SupplierForm() {
               id="supplier-address"
               value={state.form.addressId}
               onChange={(event) => updateForm("addressId", event.target.value)}
+              aria-invalid={Boolean(state.errors.addressId)}
+              aria-describedby={state.errors.addressId ? "supplier-address-error" : undefined}
               required
             >
               <option value="">Selecione um endereço</option>
@@ -140,6 +164,7 @@ function SupplierForm() {
                 </option>
               ))}
             </select>
+            {state.errors.addressId && <p className={styles.fieldError} id="supplier-address-error" role="alert">{state.errors.addressId}</p>}
           </div>
 
           <label className={styles.checkboxField} htmlFor="supplier-active">
