@@ -77,7 +77,6 @@ function getInitialAuthState(): AuthState {
       token = parsedValue;
     }
   } catch {
-    // Tokens saved before the versioned schema were raw strings.
     token = storedValue;
   }
 
