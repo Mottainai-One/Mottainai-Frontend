@@ -272,9 +272,12 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
         const color = getSegmentDisplayColor(segment, index, dark, highContrastEnabled);
         return highContrastEnabled ? createHatchPattern(chart.ctx, color, index) : color;
       });
-      chart.options.layout.padding = highContrastEnabled
-        ? { top: 14, right: 92, bottom: 14, left: 92 }
-        : 0;
+      chart.options.layout = {
+        ...chart.options.layout,
+        padding: highContrastEnabled
+          ? { top: 14, right: 92, bottom: 14, left: 92 }
+          : 0,
+      };
       const dataset = chart.data.datasets[0];
       if (dataset) {
         dataset.hoverBorderColor = highContrastEnabled ? "#fff" : surface;
