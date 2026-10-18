@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import type { ChangeEvent, ReactNode } from 'react';
 
 export interface DropdownSelectProps {
     id?: string;
     value: string;
-    onChange: (event: { target: { value: string } }) => void;
+    onChange: (event: ChangeEvent<HTMLSelectElement>) => void;
     children: ReactNode;
     className?: string;
     labelledBy?: string;
