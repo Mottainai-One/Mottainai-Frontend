@@ -5,10 +5,10 @@
     min-width: 0;
     height: 112px;
     padding: 14px 20px;
-    background-color: var(--main-white);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    background-color: var(--a11y-surface, var(--main-white));
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
     color: var(--motta-blue);
     cursor: default;
 }
@@ -36,25 +36,25 @@
 }
 
 .neutral {
-    color: black;
+    color: var(--a11y-text-muted, #373431) !important;
 }
 
 .success {
-    color: var(--motta-light-blue);
+    color: var(--motta-light-blue) !important;
 }
 
 .warning {
-    color: #f5a623;
+    color: #783800 !important;
 }
 
 .danger {
-    color: #b3261e;
+    color: #b3261e !important;
 }
 
 .footer {
     overflow: hidden;
     margin-top: auto;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.6875rem;
     line-height: 1.2;
     text-overflow: ellipsis;

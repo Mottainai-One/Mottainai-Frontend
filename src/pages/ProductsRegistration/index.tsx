@@ -1,5 +1,6 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import type { ChangeEvent, DragEvent, FormEvent } from "react";
+import type { ChangeEvent, DragEvent, FormEvent, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useImmer } from "use-immer";
 import {
@@ -28,8 +29,11 @@ import type {
 } from "@/types/product-import.types";
 import type { ReusableTableColumn } from "@/types/reusable-table.types";
 import {
+  sanitizeProductDraft,
+  sanitizeProductImportPreview,
   validateProductDraft,
   validateProductImportFile,
+  validateProductImportPreview,
 } from "@/utils/productImportValidation";
 import styles from "./style.module.css";
 
@@ -56,6 +60,7 @@ const initialProductDraft: ProductDraftState = {
     measurementUnit: "",
     supplier: "",
   },
+  errors: {},
   status: "idle",
   message: "",
 };
@@ -186,6 +191,9 @@ function ProductsRegistration() {
   const modalPrimaryRef = useRef<HTMLButtonElement>(null);
   const modalCloseTimeoutRef = useRef<number | null>(null);
   const closingModalRef = useRef<RegistrationModalKind | null>(null);
+  const modalWasOpenRef = useRef(false);
+  const modalReturnFocusRef = useRef<HTMLElement | null>(null);
+  const activeModalRef = useRef<RegistrationModalKind | null>(null);
   const [closingModal, setClosingModal] = useState<RegistrationModalKind | null>(null);
 
   const previewOpen = state.previewItems.length > 0;
@@ -235,7 +243,30 @@ function ProductsRegistration() {
   }, []);
 
   useEffect(() => {
-    if (!modalOpen) return;
+    if (!modalOpen) {
+      if (modalWasOpenRef.current) {
+        modalWasOpenRef.current = false;
+        activeModalRef.current = null;
+        const returnTarget = modalReturnFocusRef.current;
+        modalReturnFocusRef.current = null;
+        window.requestAnimationFrame(() => {
+          if (returnTarget?.isConnected) returnTarget.focus();
+          else document.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.focus();
+        });
+      }
+      return;
+    }
+
+    const modalKind: RegistrationModalKind = successModal.isOpen ? "success" : "preview";
+    if (!modalWasOpenRef.current) {
+      modalReturnFocusRef.current = document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+      modalWasOpenRef.current = true;
+    }
+    const shouldMoveFocus = activeModalRef.current !== modalKind;
+    activeModalRef.current = modalKind;
+    const previousOverflow = document.body.style.overflow;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && state.status !== "registering") {
@@ -250,9 +281,9 @@ function ProductsRegistration() {
       const elements = dialog
         ? Array.from(
             dialog.querySelectorAll<HTMLElement>(
-              'button:not(:disabled), [href], [tabindex="0"]',
+              'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
             ),
-          )
+          ).filter((element) => !element.hidden && element.getAttribute("aria-hidden") !== "true")
         : [];
       const first = elements[0];
       const last = elements[elements.length - 1];
@@ -265,13 +296,25 @@ function ProductsRegistration() {
       }
     };
 
+    const handleFocusIn = (event: FocusEvent) => {
+      const dialog = modalPrimaryRef.current?.closest('[role="dialog"]');
+      if (dialog && !dialog.contains(event.target as Node)) {
+        const firstFocusable = dialog.querySelector<HTMLElement>(
+          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+        );
+        (firstFocusable ?? modalPrimaryRef.current)?.focus();
+      }
+    };
+
     document.body.style.overflow = "hidden";
-    modalPrimaryRef.current?.focus();
+    if (shouldMoveFocus) window.requestAnimationFrame(() => modalPrimaryRef.current?.focus());
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
     };
   }, [modalOpen, previewOpen, requestModalClose, state.status, successModal.isOpen]);
 
@@ -279,6 +322,19 @@ function ProductsRegistration() {
     updateState((draft) => {
       Object.assign(draft, initialState, { mode });
     });
+  }
+
+  function handleRegistrationTabKeyDown(
+    currentMode: ProductRegistrationMode,
+    event: ReactKeyboardEvent<HTMLButtonElement>,
+  ) {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    event.preventDefault();
+    const nextMode: ProductRegistrationMode = currentMode === "bulk"
+      ? event.key === "Home" ? "bulk" : "single"
+      : event.key === "End" ? "single" : "bulk";
+    updateMode(nextMode);
+    document.getElementById(`${nextMode}-registration-tab`)?.focus();
   }
 
   function selectFile(file?: File) {
@@ -327,8 +383,18 @@ function ProductsRegistration() {
 
     try {
       const items = await processProductImport(state.file, state.format);
+      const previewError = validateProductImportPreview(items);
+      if (previewError) {
+        updateState((draft) => {
+          draft.status = "error";
+          draft.message = previewError;
+        });
+        return;
+      }
+      const sanitizedItems = sanitizeProductImportPreview(items);
       updateProductDraft((draft) => {
-        draft.values = draftFromImport(items[0]);
+        draft.values = sanitizeProductDraft(draftFromImport(sanitizedItems[0]));
+        draft.errors = {};
         draft.status = "idle";
         draft.message =
           "Campos preenchidos automaticamente. Você pode editá-los.";
@@ -337,7 +403,7 @@ function ProductsRegistration() {
       updateState((draft) => {
         draft.status = "idle";
         draft.message = "Arquivo processado.";
-        draft.previewItems = items;
+        draft.previewItems = sanitizedItems;
       });
     } catch (error) {
       updateState((draft) => {
@@ -349,18 +415,27 @@ function ProductsRegistration() {
   }
 
   async function handleRegisterProducts() {
+    const previewError = validateProductImportPreview(state.previewItems);
+    if (previewError) {
+      updateState((draft) => {
+        draft.status = "error";
+        draft.message = previewError;
+      });
+      return;
+    }
+    const sanitizedItems = sanitizeProductImportPreview(state.previewItems);
     updateState((draft) => {
       draft.status = "registering";
       draft.message = "Cadastrando produtos...";
     });
 
     try {
-      await registerImportedProducts(state.previewItems);
+      await registerImportedProducts(sanitizedItems);
 
-      const count = state.previewItems.length;
+      const count = sanitizedItems.length;
       const source = state.format.toUpperCase() as RecentProduct["source"];
 
-      const importedProducts = state.previewItems.map((item) => ({
+      const importedProducts = sanitizedItems.map((item) => ({
         id: `recent-${item.id}`,
         itemName: item.itemName,
         barcode: item.barcode,
@@ -402,32 +477,35 @@ function ProductsRegistration() {
   async function handleSingleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const error = validateProductDraft(productDraft.values);
+    const errors = validateProductDraft(productDraft.values);
 
-    if (error) {
+    if (Object.keys(errors).length > 0) {
       updateProductDraft((draft) => {
         draft.status = "error";
-        draft.message = error;
+        draft.errors = errors;
+        draft.message = Object.values(errors)[0] ?? "Revise os campos do produto.";
       });
 
       return;
     }
 
+    const sanitizedDraft = sanitizeProductDraft(productDraft.values);
     updateProductDraft((draft) => {
       draft.status = "registering";
       draft.message = "Cadastrando produto...";
+      draft.errors = {};
     });
 
     try {
-      const name = productDraft.values.name;
-      await registerSingleProduct(productDraft.values);
+      const name = sanitizedDraft.name;
+      await registerSingleProduct(sanitizedDraft);
 
       updateRecentProducts((draft) => {
         draft.unshift({
           id: `manual-${Date.now()}`,
           itemName: name,
-          barcode: productDraft.values.barcode,
-          category: productDraft.values.category,
+          barcode: sanitizedDraft.barcode,
+          category: sanitizedDraft.category,
           quantity: 1,
           source: "Cadastro manual",
           addedAt: "Agora",
@@ -458,6 +536,7 @@ function ProductsRegistration() {
   function updateDraft(field: keyof ProductDraft, value: string) {
     updateProductDraft((draft) => {
       draft.values[field] = value;
+      delete draft.errors[field];
       draft.status = "idle";
       draft.message = "";
     });
@@ -499,13 +578,7 @@ function ProductsRegistration() {
             aria-selected={state.mode === "bulk"}
             tabIndex={state.mode === "bulk" ? 0 : -1}
             className={state.mode === "bulk" ? styles.active : ""}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowRight") {
-                event.preventDefault();
-                updateMode("single");
-                document.getElementById("single-registration-tab")?.focus();
-              }
-            }}
+            onKeyDown={(event) => handleRegistrationTabKeyDown("bulk", event)}
             onClick={() => updateMode("bulk")}
           >
             Importação em massa
@@ -518,22 +591,17 @@ function ProductsRegistration() {
             aria-selected={state.mode === "single"}
             tabIndex={state.mode === "single" ? 0 : -1}
             className={state.mode === "single" ? styles.active : ""}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowLeft") {
-                event.preventDefault();
-                updateMode("bulk");
-                document.getElementById("bulk-registration-tab")?.focus();
-              }
-            }}
+            onKeyDown={(event) => handleRegistrationTabKeyDown("single", event)}
             onClick={() => updateMode("single")}
           >
             Nova SKU
           </button>
         </div>
 
-        {state.mode === "bulk" ? (
+        <>
           <form
             id="bulk-registration-panel"
+            hidden={state.mode !== "bulk"}
             role="tabpanel"
             aria-labelledby="bulk-registration-tab"
             tabIndex={0}
@@ -614,7 +682,7 @@ function ProductsRegistration() {
               </button>
               <label className={styles.format} htmlFor={formatSelectId}>
                 Formato{" "}
-                <select
+                <DropdownSelect
                   id={formatSelectId}
                   value={state.format}
                   disabled={busy}
@@ -631,7 +699,7 @@ function ProductsRegistration() {
                 >
                   <option value="xml">XML</option>
                   <option value="csv">CSV</option>
-                </select>
+                </DropdownSelect>
               </label>
             </div>
             {state.message && (
@@ -645,9 +713,9 @@ function ProductsRegistration() {
               </p>
             )}
           </form>
-        ) : (
           <form
             id="single-registration-panel"
+            hidden={state.mode !== "single"}
             role="tabpanel"
             aria-labelledby="single-registration-tab"
             tabIndex={0}
@@ -655,72 +723,103 @@ function ProductsRegistration() {
             className={styles["single-form"]}
           >
             <div className={styles["form-grid"]}>
-              <label>
+              <label htmlFor="product-sku">
                 SKU
                 <input
                   id="product-sku"
+                  maxLength={64}
                   value={productDraft.values.sku}
                   onChange={(e) => updateDraft("sku", e.target.value)}
+                  aria-invalid={Boolean(productDraft.errors.sku)}
+                  aria-describedby={productDraft.errors.sku ? "product-sku-error" : undefined}
                 />
+                {productDraft.errors.sku && <span className={styles.fieldError} id="product-sku-error" role="alert">{productDraft.errors.sku}</span>}
               </label>
-              <label>
+              <label htmlFor="product-barcode">
                 Código de barras
                 <input
+                  id="product-barcode"
+                  maxLength={32}
                   value={productDraft.values.barcode}
                   onChange={(e) => updateDraft("barcode", e.target.value)}
+                  aria-invalid={Boolean(productDraft.errors.barcode)}
+                  aria-describedby={productDraft.errors.barcode ? "product-barcode-error" : undefined}
                 />
+                {productDraft.errors.barcode && <span className={styles.fieldError} id="product-barcode-error" role="alert">{productDraft.errors.barcode}</span>}
               </label>
-              <label className={styles.wide}>
+              <label className={styles.wide} htmlFor="product-name">
                 Nome do produto
                 <input
+                  id="product-name"
+                  maxLength={120}
                   value={productDraft.values.name}
                   onChange={(e) => updateDraft("name", e.target.value)}
+                  aria-invalid={Boolean(productDraft.errors.name)}
+                  aria-describedby={productDraft.errors.name ? "product-name-error" : undefined}
                 />
+                {productDraft.errors.name && <span className={styles.fieldError} id="product-name-error" role="alert">{productDraft.errors.name}</span>}
               </label>
-              <label>
+              <label htmlFor="product-category">
                 Categoria
-                <select
+                <DropdownSelect
+                  id="product-category"
                   value={productDraft.values.category}
                   onChange={(e) => updateDraft("category", e.target.value)}
+                  ariaInvalid={Boolean(productDraft.errors.category)}
+                  ariaDescribedBy={productDraft.errors.category ? "product-category-error" : undefined}
                 >
                   <option value="">Selecione</option>
                   {categories.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
-                </select>
+                </DropdownSelect>
+                {productDraft.errors.category && <span className={styles.fieldError} id="product-category-error" role="alert">{productDraft.errors.category}</span>}
               </label>
-              <label>
+              <label htmlFor="product-brand">
                 Marca
                 <input
+                  id="product-brand"
+                  maxLength={100}
                   value={productDraft.values.brand}
                   onChange={(e) => updateDraft("brand", e.target.value)}
+                  aria-invalid={Boolean(productDraft.errors.brand)}
+                  aria-describedby={productDraft.errors.brand ? "product-brand-error" : undefined}
                 />
+                {productDraft.errors.brand && <span className={styles.fieldError} id="product-brand-error" role="alert">{productDraft.errors.brand}</span>}
               </label>
-              <label>
+              <label htmlFor="product-measurement-unit">
                 Unidade de medida
-                <select
+                <DropdownSelect
+                  id="product-measurement-unit"
                   value={productDraft.values.measurementUnit}
                   onChange={(e) =>
                     updateDraft("measurementUnit", e.target.value)
                   }
+                  ariaInvalid={Boolean(productDraft.errors.measurementUnit)}
+                  ariaDescribedBy={productDraft.errors.measurementUnit ? "product-measurement-unit-error" : undefined}
                 >
                   <option value="">Selecione</option>
                   {measurementUnits.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
-                </select>
+                </DropdownSelect>
+                {productDraft.errors.measurementUnit && <span className={styles.fieldError} id="product-measurement-unit-error" role="alert">{productDraft.errors.measurementUnit}</span>}
               </label>
-              <label>
+              <label htmlFor="product-supplier">
                 Fornecedor
-                <select
+                <DropdownSelect
+                  id="product-supplier"
                   value={productDraft.values.supplier}
                   onChange={(e) => updateDraft("supplier", e.target.value)}
+                  ariaInvalid={Boolean(productDraft.errors.supplier)}
+                  ariaDescribedBy={productDraft.errors.supplier ? "product-supplier-error" : undefined}
                 >
                   <option value="">Selecione</option>
                   {suppliers.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
-                </select>
+                </DropdownSelect>
+                {productDraft.errors.supplier && <span className={styles.fieldError} id="product-supplier-error" role="alert">{productDraft.errors.supplier}</span>}
               </label>
             </div>
             <div className={styles.actions}>
@@ -756,7 +855,7 @@ function ProductsRegistration() {
               </p>
             )}
           </form>
-        )}
+        </>
       </section>
       <ReusableTable
         title="Últimos produtos adicionados"

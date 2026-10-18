@@ -37,8 +37,11 @@ export interface ProductDraft {
   supplier: string;
 }
 
+export type ProductDraftErrors = Partial<Record<keyof ProductDraft, string>>;
+
 export interface ProductDraftState {
   values: ProductDraft;
+  errors: ProductDraftErrors;
   status: "idle" | "registering" | "success" | "error";
   message: string;
 }

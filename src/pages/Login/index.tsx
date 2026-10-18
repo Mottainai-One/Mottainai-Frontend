@@ -12,6 +12,7 @@ import {
     faEyeSlash
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { sanitizeLoginCredentials, validateLoginCredentials } from '@/utils/loginValidation';
 
 export function Login() {
     const userEmailFieldId = useId();
@@ -21,9 +22,9 @@ export function Login() {
     const [formData, setFormData] = useState<LoginFormState>({
         userEmail: '',
         password: '',
+        isPasswordVisible: false,
+        errors: {},
     });
-
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     const { login, isLoggingIn, error, isAuthenticated } = useAuth();
 
@@ -37,15 +38,15 @@ export function Login() {
     }, [isAuthenticated, navigate, location]);
 
     function handleUserEmailChange(event: ChangeEvent<HTMLInputElement>) {
-        setFormData((previous) => ({ ...previous, userEmail: event.target.value }));
+        setFormData((previous) => ({ ...previous, userEmail: event.target.value, errors: { ...previous.errors, userEmail: undefined } }));
     }
 
     function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
-        setFormData((previous) => ({ ...previous, password: event.target.value }));
+        setFormData((previous) => ({ ...previous, password: event.target.value, errors: { ...previous.errors, password: undefined } }));
     }
 
     function handleTogglePasswordVisibility() {
-        setIsPasswordVisible((previous) => !previous);
+        setFormData((previous) => ({ ...previous, isPasswordVisible: !previous.isPasswordVisible }));
     }
 
     function handleForgotPassword() {
@@ -54,7 +55,16 @@ export function Login() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        await login({ email: formData.userEmail, password: formData.password });
+        const credentials = { email: formData.userEmail, password: formData.password };
+        const validationErrors = validateLoginCredentials(credentials);
+        if (Object.keys(validationErrors).length > 0) {
+            setFormData((previous) => ({ ...previous, errors: { userEmail: validationErrors.email, password: validationErrors.password } }));
+            window.requestAnimationFrame(() => {
+                document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+            });
+            return;
+        }
+        await login(sanitizeLoginCredentials(credentials));
     }
 
     if (isLoggingIn) {
@@ -89,11 +99,15 @@ export function Login() {
             type="email"
             className={styles.input}
             placeholder="Email do Usuário"
-            autoComplete="userEmail"
+            autoComplete="email"
             required
+            maxLength={254}
             value={formData.userEmail}
             onChange={handleUserEmailChange}
+            aria-invalid={Boolean(formData.errors.userEmail)}
+            aria-describedby={formData.errors.userEmail ? `${userEmailFieldId}-error` : undefined}
             />
+            {formData.errors.userEmail && <p id={`${userEmailFieldId}-error`} className={styles.errorMessage} role="alert">{formData.errors.userEmail}</p>}
 
             <label htmlFor={passwordFieldId} className={styles.visuallyHidden}>
             Senha
@@ -102,24 +116,28 @@ export function Login() {
             <input
                 id={passwordFieldId}
                 name="password"
-                type={isPasswordVisible ? 'text' : 'password'}
+                type={formData.isPasswordVisible ? 'text' : 'password'}
                 className={styles.input}
                 placeholder="Senha"
                 autoComplete="current-password"
                 required
+                maxLength={128}
                 value={formData.password}
                 onChange={handlePasswordChange}
+                aria-invalid={Boolean(formData.errors.password)}
+                aria-describedby={formData.errors.password ? `${passwordFieldId}-error` : undefined}
             />
             <button
                 type="button"
                 className={styles.togglePasswordButton}
                 onClick={handleTogglePasswordVisibility}
-                aria-pressed={isPasswordVisible}
-                aria-label={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+                aria-pressed={formData.isPasswordVisible}
+                aria-label={formData.isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
             >
-                <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} aria-hidden="true"/>
+                <FontAwesomeIcon icon={formData.isPasswordVisible ? faEyeSlash : faEye} aria-hidden="true"/>
             </button>
             </div>
+            {formData.errors.password && <p id={`${passwordFieldId}-error`} className={styles.errorMessage} role="alert">{formData.errors.password}</p>}
 
             <button
             type="button"

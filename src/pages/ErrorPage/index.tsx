@@ -1,8 +1,13 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './style.module.css'
 
 function ErrorPage(){
     const navigate = useNavigate();
+
+    useEffect(() => {
+        document.title = 'Página não encontrada | Mottainai';
+    }, []);
 
     return(
         <main className={styles.errorPage}>

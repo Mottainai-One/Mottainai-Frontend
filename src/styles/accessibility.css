@@ -1,0 +1,416 @@
+@font-face {
+  font-family: Lexend;
+  src: url("../assets/fonts/accessibility/lexend-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Lexend;
+  src: url("../assets/fonts/accessibility/lexend-latin-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: Andika;
+  src: url("../assets/fonts/accessibility/andika-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Andika;
+  src: url("../assets/fonts/accessibility/andika-latin-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Comic Neue";
+  src: url("../assets/fonts/accessibility/comic-neue-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Comic Neue";
+  src: url("../assets/fonts/accessibility/comic-neue-latin-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: Arimo;
+  src: url("../assets/fonts/accessibility/arimo-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: Arimo;
+  src: url("../assets/fonts/accessibility/arimo-latin-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DejaVu Sans";
+  src: url("../assets/fonts/accessibility/dejavu-sans-latin-400-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DejaVu Sans";
+  src: url("../assets/fonts/accessibility/dejavu-sans-latin-700-normal.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+html[data-a11y-zoom] body {
+  /* Tamanho */
+  width: calc(100% * var(--a11y-zoom-inverse, 1));
+  min-width: calc(320px * var(--a11y-zoom-inverse, 1));
+  /* Tamanho */
+  zoom: var(--a11y-zoom, 1);
+}
+html[data-a11y-zoom] {
+  /* Tamanho */
+  min-width: calc(320px * var(--a11y-zoom-inverse, 1));
+}
+html[data-a11y-zoom] .a11y-widget {
+  /* Tamanho */
+  zoom: var(--a11y-zoom-inverse, 1);
+}
+
+html[data-a11y-theme="dark"] {
+  /* Aparência */
+  --a11y-surface: #17232e;
+  --a11y-surface-raised: #243746;
+  --a11y-card-border: #6fa8ca;
+  --a11y-on-brand: #102a43;
+  --a11y-text-muted: #c2d0da;
+  --a11y-folder-navigation: #102a43;
+  --a11y-folder-tab: #2d4557;
+  --a11y-folder-tab-text: #fff;
+  --a11y-folder-active: #17232e;
+  --a11y-folder-active-text: #fff;
+  --a11y-folder-border: #6fa8ca;
+  --a11y-report-card-border: #6fa8ca;
+  --a11y-report-table-surface: #243746;
+  --a11y-report-table-header: #2d4557;
+  --a11y-report-table-border: #6fa8ca;
+  --a11y-report-summary: #243746;
+  --a11y-report-callout: #3d3027;
+  --a11y-text-on-light: #102a43;
+  --a11y-tooltip-surface: #063652;
+  --a11y-action-hover-foreground: #ffd1a3;
+  --a11y-action-surface: #2d4353;
+  --a11y-action-text: #c2d0da;
+  --a11y-action-border: #6fa8ca;
+  --motta-light-blue: #063652;
+  --motta-lighter-blue: #2d5778;
+  --motta-blue: var(--motta-light-blue);
+  --motta-blue-rgb: 107, 174, 214;
+  --a11y-page-background: var(--a11y-surface);
+  --a11y-foreground: #fff;
+  --a11y-foreground-rgb: 255, 255, 255;
+}
+html[data-a11y-theme="dark"] body {
+  /* Aparência */
+  background-color: var(--a11y-page-background);
+}
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]) body :where(*),
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]) body :where(*)::before,
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]) body :where(*)::after {
+  /* Aparência */
+  border-color: var(--a11y-foreground) !important;
+  outline-color: var(--a11y-foreground) !important;
+  accent-color: var(--a11y-foreground) !important;
+  /* Texto */
+  color: var(--a11y-foreground) !important;
+  text-decoration-color: var(--a11y-foreground) !important;
+  caret-color: var(--a11y-foreground) !important;
+}
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]):not([data-a11y-contrast="low"]) body .a11y-table-action {
+  /* Aparência */
+  background-color: #ded8d0 !important;
+  border-color: #fff !important;
+  /* Texto */
+  color: #102a43 !important;
+}
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]):not([data-a11y-contrast="low"]) body .a11y-table-action:hover,
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]):not([data-a11y-contrast="low"]) body .a11y-table-action:focus-visible {
+  /* Aparência */
+  background-color: #063652 !important;
+  border-color: #fff !important;
+  /* Texto */
+  color: #fff !important;
+}
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]) body svg,
+html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]) body svg * {
+  /* Aparência */
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+html[data-a11y-theme="dark"][data-a11y-contrast="high"] {
+  /* Aparência */
+  --a11y-surface: #101820;
+  --a11y-surface-raised: #233a4a;
+  --a11y-card-border: #8cccf4;
+  --a11y-on-brand: #102a43;
+  --a11y-text-muted: #f5faff;
+  --a11y-folder-navigation: #102a43;
+  --a11y-folder-tab: #2d4557;
+  --a11y-folder-tab-text: #fff;
+  --a11y-folder-active: #101820;
+  --a11y-folder-active-text: #fff;
+  --a11y-folder-border: #8cccf4;
+  --a11y-report-card-border: #8cccf4;
+  --a11y-report-table-surface: #233a4a;
+  --a11y-report-table-header: #2d4557;
+  --a11y-report-table-border: #8cccf4;
+  --a11y-report-summary: #233a4a;
+  --a11y-report-callout: #3c566a;
+  --a11y-text-on-light: var(--motta-orange);
+  --a11y-tooltip-surface: #102a43;
+  --a11y-action-hover-foreground: var(--motta-orange);
+  --a11y-action-surface: #8cccf4;
+  --a11y-action-text: #102a43;
+  --a11y-action-border: #8cccf4;
+  --motta-light-blue: #d6efff;
+  --motta-lighter-blue: #e8f6ff;
+  --motta-blue: #bde6ff;
+  --motta-blue-rgb: 189, 230, 255;
+  --motta-orange: #783800;
+  --motta-light-orange: #ffd1a3;
+  --a11y-page-background: var(--a11y-surface);
+  --a11y-foreground: #fff;
+  --a11y-foreground-on-light: var(--motta-orange);
+  --a11y-foreground-on-light-rgb: 120, 56, 0;
+  --a11y-foreground-rgb: 255, 255, 255;
+}
+html[data-a11y-theme="dark"][data-a11y-contrast="high"] body svg,
+html[data-a11y-theme="dark"][data-a11y-contrast="high"] body svg * {
+  /* Aparência */
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+html[data-a11y-theme="dark"] body [data-a11y-light-surface="true"] {
+  /* Texto */
+  color: var(--a11y-text-on-light) !important;
+}
+html[data-a11y-theme="dark"][data-a11y-contrast="high"] body {
+  /* Aparência */
+  background-color: var(--a11y-page-background);
+}
+
+html[data-a11y-contrast="high"] body,
+html[data-a11y-contrast="high"] body #root,
+html[data-a11y-contrast="high"] body #root :where(*):not(img):not(video):not(svg),
+html[data-a11y-contrast="high"] body #root :where(*)::before,
+html[data-a11y-contrast="high"] body #root :where(*)::after {
+  /* Aparência */
+  background-color: #000 !important;
+  background-image: none !important;
+  border-color: #fff !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  /* Texto */
+  color: #fff !important;
+}
+html[data-a11y-contrast="high"] body #root a {
+  /* Texto */
+  color: #ffeb3b !important;
+  text-decoration: underline !important;
+}
+html[data-a11y-contrast="high"] body #root :where(button, input, select, textarea) {
+  /* Aparência */
+  border: 2px solid #fff !important;
+}
+
+/* Reduz a intensidade do texto sem filtrar o body nem alterar o layout fixo. */
+html[data-a11y-contrast="low"] body :where(p, li, dt, dd, blockquote, figcaption, label, span, a, button, input, select, textarea, h1, h2, h3, h4, h5, h6, th, td, legend, output, strong, small, time, code) {
+  /* Texto */
+  color: color-mix(in srgb, currentColor 48%, transparent) !important;
+}
+html[data-a11y-contrast="low"] body :where(a, button, input, select, textarea, summary, [role="button"]) {
+  /* Aparência */
+  border-color: color-mix(in srgb, currentColor 50%, transparent) !important;
+}
+html[data-a11y-color-vision] main { filter: var(--a11y-color-vision-filter); }
+html[data-a11y-font="verdana"] body, html[data-a11y-font="verdana"] body * {
+  /* Texto */
+  font-family: Verdana, Tahoma, "DejaVu Sans", sans-serif !important;
+}
+html[data-a11y-font="arial"] body, html[data-a11y-font="arial"] body * {
+  /* Texto */
+  font-family: Arial, Arimo, Helvetica, sans-serif !important;
+}
+html[data-a11y-font="lexend"] body, html[data-a11y-font="lexend"] body * {
+  /* Texto */
+  font-family: Lexend, Verdana, sans-serif !important;
+  font-style: normal !important;
+}
+html[data-a11y-font="andika"] body, html[data-a11y-font="andika"] body * {
+  /* Texto */
+  font-family: Andika, Verdana, sans-serif !important;
+  font-style: normal !important;
+}
+html[data-a11y-font="comic"] body, html[data-a11y-font="comic"] body * {
+  /* Texto */
+  font-family: "Comic Sans MS", "Comic Neue", "Trebuchet MS", sans-serif !important;
+}
+html[data-a11y-font="serif"] body, html[data-a11y-font="serif"] body * {
+  /* Texto */
+  font-family: Georgia, "Times New Roman", serif !important;
+}
+
+html[data-a11y-spacing] body, html[data-a11y-spacing] body * {
+  /* Texto */
+  letter-spacing: calc(var(--a11y-spacing, 0) * .03em) !important;
+  word-spacing: calc(var(--a11y-spacing, 0) * .08em) !important;
+}
+html[data-a11y-spacing] body :where(p, li, td, th, label, button, input, textarea, select) {
+  /* Texto */
+  line-height: calc(1.5 + var(--a11y-spacing, 0) * .25) !important;
+}
+html[data-a11y-align] body :where(p, li, blockquote, td, th, h1, h2, h3, h4, h5, h6) {
+  /* Tamanho */
+  max-width: 70ch;
+  /* Texto */
+  text-align: left !important;
+}
+html[data-a11y-targets] :where(button, summary, select, textarea, [role="button"], input:not([type="hidden"])) {
+  /* Tamanho */
+  min-width: 44px;
+  min-height: 44px;
+}
+html[data-a11y-targets] :where(nav a, header a, footer a, a[role="button"]) {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  /* Tamanho */
+  min-width: 44px;
+  min-height: 44px;
+}
+html[data-a11y-underline] a {
+  /* Texto */
+  text-decoration: underline !important;
+  text-underline-offset: .2em;
+}
+
+html[data-a11y-motion="25"] {
+  /* Aparência */
+  --a11y-motion-factor: .75;
+}
+html[data-a11y-motion="50"] {
+  /* Aparência */
+  --a11y-motion-factor: .5;
+}
+html[data-a11y-motion="100"] {
+  /* Aparência */
+  --a11y-motion-factor: 0;
+}
+html[data-a11y-motion="25"] *, html[data-a11y-motion="25"] *::before, html[data-a11y-motion="25"] *::after,
+html[data-a11y-motion="50"] *, html[data-a11y-motion="50"] *::before, html[data-a11y-motion="50"] *::after,
+html[data-a11y-motion="100"] *, html[data-a11y-motion="100"] *::before, html[data-a11y-motion="100"] *::after {
+  /* Efeitos */
+  scroll-behavior: auto !important;
+}
+html[data-a11y-motion="100"] *, html[data-a11y-motion="100"] *::before, html[data-a11y-motion="100"] *::after {
+  /* Efeitos */
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+html[data-a11y-border] :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])) {
+  /* Aparência */
+  outline: var(--a11y-border-width, 2px) solid currentColor !important;
+  outline-offset: 1px;
+}
+html[data-a11y-border="50"] {
+  /* Aparência */
+  --a11y-border-width: 3px;
+}
+html[data-a11y-border="100"] {
+  /* Aparência */
+  --a11y-border-width: 5px;
+}
+html[data-a11y-border] :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]):focus-visible {
+  /* Aparência */
+  outline-width: calc(var(--a11y-border-width, 2px) + 2px) !important;
+  outline-offset: 3px;
+}
+html[data-a11y-cursor], html[data-a11y-cursor] * {
+  /* Texto */
+  cursor: var(--a11y-cursor, auto) !important;
+}
+
+:where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  /* Aparência */
+  outline: 3px solid #063652 !important;
+  outline-offset: 3px;
+}
+html[data-a11y-theme="dark"] :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  /* Aparência */
+  outline-color: #fff !important;
+}
+html[data-a11y-contrast="high"]:not([data-a11y-theme="dark"]) :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  /* Aparência */
+  outline-color: #ffeb3b !important;
+}
+html[data-a11y-theme="dark"][data-a11y-contrast="high"] :where(a, button, input, select, textarea, summary, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  /* Aparência */
+  outline-color: #ffeb3b !important;
+}
+
+.a11y-skip-link {
+  /* Layout */
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2000;
+  transform: translateY(-160%);
+
+  /* Tamanho */
+  padding: 0.75rem 1rem;
+
+  /* Aparência */
+  border: 2px solid currentColor;
+  border-radius: 0.4rem;
+  background-color: #fff;
+
+  /* Texto */
+  color: #102a43;
+  font-weight: 700;
+}
+.a11y-skip-link:focus {
+  /* Layout */
+  transform: translateY(0);
+}
+
+[aria-invalid="true"] {
+  /* Aparência */
+  border-color: #a32720 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    /* Aparência */
+    --a11y-motion-factor: 0 !important;
+  }
+  html *, html *::before, html *::after {
+    /* Efeitos */
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}

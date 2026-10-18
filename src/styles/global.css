@@ -2,14 +2,31 @@
 
 :root {
     --motta-blue: rgba(16, 42, 67, 1);
+    --motta-blue-rgb: rgb(16, 42, 67);
     --motta-light-blue: rgba(45, 87, 120, 1);
-    --motta-orange: rgba(197, 105, 32, 1);
+    --motta-lighter-blue: #bde6ff;
+    --motta-orange: #a84b00;
     --motta-light-orange: rgba(221, 123, 45, 1);
     --main-gray: rgba(168, 164, 164, 1);
-    --main-white: rgba(255, 255, 255, 1);
+    --main-white: #fff;
+    --main-white-rgb: 255, 255, 255;
+    --a11y-surface: #fff;
+    --a11y-surface-raised: #f5f7f9;
+    --a11y-card-border: rgba(16, 42, 67, 0.12);
+    --a11y-on-brand: var(--main-white);
+    --a11y-text-muted: #625d58;
+    --a11y-folder-navigation: var(--motta-blue);
+    --a11y-folder-tab: #f7f6f5;
+    --a11y-folder-tab-text: #625d58;
+    --a11y-folder-active: var(--a11y-surface);
+    --a11y-folder-active-text: var(--motta-blue);
+    --a11y-folder-border: transparent;
+    --a11y-action-surface: #ded8d0;
+    --a11y-action-text: #373431;
+    --a11y-action-border: #ded8d0;
     --sidebar-width: 220px;
     --bottom-nav-height: 64px;
-    --sidebar-transition: 0.3s ease;
+    --sidebar-transition: calc(0.3s * var(--a11y-motion-factor, 1)) ease;
 }
 
 * {
@@ -61,7 +78,7 @@ body {
     min-height: 100vh;
     min-height: 100dvh;
     overflow-x: hidden;
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface);
     font-family: "DM Sans", sans-serif;
     cursor: default;
 }
@@ -92,5 +109,6 @@ p, span, h1, h2, h3, h4, h5, h6, div, li, time, dt, dd, label, td, th, strong, e
 }
 
 button, a {
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
+

@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useMemo, useState, type FormEvent } from "react";
 import ReusableTable from "@/components/ReusableTable";
 import {
@@ -14,6 +15,7 @@ import type {
   StockAdjustmentSummary,
   StockAdjustmentType,
 } from "@/types/stock-adjustment.types";
+import { sanitizeStockAdjustmentForm, validateStockAdjustmentForm } from "@/utils/stockAdjustmentValidation";
 import styles from "./style.module.css";
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
@@ -41,6 +43,7 @@ const formatCurrency = (valueInCents: number) =>
 function StockAdjustments() {
   const [state, setState] = useState<StockAdjustmentPageState>({
     form: initialForm,
+    formErrors: {},
     records: stockAdjustmentRecords,
     feedback: "",
     feedbackIsError: false,
@@ -71,40 +74,47 @@ function StockAdjustments() {
     field: K,
     value: StockAdjustmentFormState[K],
   ) => {
-    setState((currentState) => ({
-      ...currentState,
-      form: { ...currentState.form, [field]: value },
-      feedback: "",
-      feedbackIsError: false,
-    }));
+    setState((currentState) => {
+      const formErrors = { ...currentState.formErrors };
+      delete formErrors[field];
+      return {
+        ...currentState,
+        form: { ...currentState.form, [field]: value },
+        formErrors,
+        feedback: "",
+        feedbackIsError: false,
+      };
+    });
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const quantity = Number(state.form.quantity);
-
-    if (!state.form.product.trim() || !state.form.responsible.trim() || quantity < 1) {
-      setState((currentState) => ({
-        ...currentState,
-        feedback: "Informe o produto, uma quantidade maior que zero e o responsável.",
-        feedbackIsError: true,
-      }));
+    const formErrors = validateStockAdjustmentForm(state.form);
+    if (Object.keys(formErrors).length > 0) {
+      setState((currentState) => ({ ...currentState, formErrors, feedback: "Revise os campos destacados.", feedbackIsError: true }));
+      window.requestAnimationFrame(() => {
+        document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+      });
       return;
     }
+
+    const form = sanitizeStockAdjustmentForm(state.form);
+    const quantity = Number(form.quantity);
 
     const newRecord: StockAdjustmentRecord = {
       id: `adjustment-${Date.now()}`,
       date: "17/05",
-      product: state.form.product.trim(),
+      product: form.product,
       quantity,
-      type: state.form.type,
+      type: form.type,
       valueInCents: 0,
-      responsible: state.form.responsible.trim(),
-      observation: state.form.observation.trim() || "Sem observação",
+      responsible: form.responsible,
+      observation: form.observation || "Sem observação",
     };
 
     setState((currentState) => ({
       form: initialForm,
+      formErrors: {},
       records: [newRecord, ...currentState.records],
       feedback: "Baixa registrada e saldo do sistema ajustado.",
       feedbackIsError: false,
@@ -159,11 +169,15 @@ function StockAdjustments() {
             <label htmlFor="adjustment-product">Produto (busca por nome ou código de barras)</label>
             <input
               id="adjustment-product"
+              maxLength={120}
               list="adjustment-products"
               value={state.form.product}
               onChange={(event) => updateForm("product", event.target.value)}
               placeholder="Bipe ou digite o nome"
+              aria-invalid={Boolean(state.formErrors.product)}
+              aria-describedby={state.formErrors.product ? "adjustment-product-error" : undefined}
             />
+            {state.formErrors.product && <span className={styles.fieldError} id="adjustment-product-error" role="alert">{state.formErrors.product}</span>}
             <datalist id="adjustment-products">
               {stockAdjustmentProducts.map((product) => (
                 <option key={product} value={product} />
@@ -178,15 +192,19 @@ function StockAdjustments() {
                 id="adjustment-quantity"
                 min="1"
                 type="number"
+                step="any"
                 value={state.form.quantity}
                 onChange={(event) => updateForm("quantity", event.target.value)}
                 placeholder="0"
+                aria-invalid={Boolean(state.formErrors.quantity)}
+                aria-describedby={state.formErrors.quantity ? "adjustment-quantity-error" : undefined}
               />
+              {state.formErrors.quantity && <span className={styles.fieldError} id="adjustment-quantity-error" role="alert">{state.formErrors.quantity}</span>}
             </div>
 
             <div className={styles.formField}>
               <label htmlFor="adjustment-type">Tipo de baixa</label>
-              <select
+              <DropdownSelect
                 id="adjustment-type"
                 value={state.form.type}
                 onChange={(event) => updateForm("type", event.target.value as StockAdjustmentType)}
@@ -194,7 +212,7 @@ function StockAdjustments() {
                 {stockAdjustmentTypes.map((type) => (
                   <option key={type} value={type}>{type}</option>
                 ))}
-              </select>
+              </DropdownSelect>
             </div>
           </div>
 
@@ -202,22 +220,30 @@ function StockAdjustments() {
             <label htmlFor="adjustment-observation">Motivo/observação</label>
             <textarea
               id="adjustment-observation"
+              maxLength={500}
               value={state.form.observation}
               onChange={(event) => updateForm("observation", event.target.value)}
               placeholder="Ex: Embalagem rompida durante transporte..."
               rows={4}
+              aria-invalid={Boolean(state.formErrors.observation)}
+              aria-describedby={state.formErrors.observation ? "adjustment-observation-error" : undefined}
             />
+            {state.formErrors.observation && <span className={styles.fieldError} id="adjustment-observation-error" role="alert">{state.formErrors.observation}</span>}
           </div>
 
           <div className={styles.formField}>
             <label htmlFor="adjustment-responsible">Responsável</label>
             <input
               id="adjustment-responsible"
+              maxLength={100}
               list="adjustment-responsibles"
               value={state.form.responsible}
               onChange={(event) => updateForm("responsible", event.target.value)}
               placeholder="Nome do funcionário"
+              aria-invalid={Boolean(state.formErrors.responsible)}
+              aria-describedby={state.formErrors.responsible ? "adjustment-responsible-error" : undefined}
             />
+            {state.formErrors.responsible && <span className={styles.fieldError} id="adjustment-responsible-error" role="alert">{state.formErrors.responsible}</span>}
             <datalist id="adjustment-responsibles">
               {stockAdjustmentResponsibles.map((responsible) => (
                 <option key={responsible} value={responsible} />

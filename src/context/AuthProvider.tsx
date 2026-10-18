@@ -12,6 +12,7 @@ import type {
   StoredAuthToken,
   User,
 } from '@/types/auth.types';
+import { sanitizeLoginCredentials, validateLoginCredentials } from '@/utils/loginValidation';
 
 const TOKEN_KEY = '@App:token';
 
@@ -76,7 +77,6 @@ function getInitialAuthState(): AuthState {
       token = parsedValue;
     }
   } catch {
-    // Tokens saved before the versioned schema were raw strings.
     token = storedValue;
   }
 
@@ -126,7 +126,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'login-started' });
 
     try {
-      const { token } = await authService.login(credentials);
+      const errors = validateLoginCredentials(credentials);
+      if (Object.keys(errors).length > 0) {
+        throw new Error(Object.values(errors)[0] ?? 'Revise os dados de acesso.');
+      }
+      const { token } = await authService.login(sanitizeLoginCredentials(credentials));
       const decodedUser = decodeUserFromToken(token);
 
       if (!decodedUser) {

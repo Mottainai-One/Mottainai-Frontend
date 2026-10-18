@@ -14,10 +14,10 @@
 .summaryCard {
     min-width: 0;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .formCard h2,
@@ -45,9 +45,16 @@
 }
 
 .formField label {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-size: 0.8rem;
     font-weight: 700;
+}
+
+.fieldError {
+    /* Texto */
+    color: #a32720;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .formField input,
@@ -57,8 +64,8 @@
     box-sizing: border-box;
     border: 1px solid #bcb5ae;
     border-radius: 0.45rem;
-    background: #f5f1ee;
-    color: #625d58;
+    background: var(--a11y-surface-raised, #f5f1ee);
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
     font-size: 0.8rem;
 }
@@ -101,12 +108,12 @@
     border: 0;
     border-radius: 0.55rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font: inherit;
     font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .submitButton:hover {
@@ -124,9 +131,9 @@
     gap: 0.35rem;
     min-height: 6rem;
     padding: 1rem 1.25rem;
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.6rem;
-    box-shadow: 0 1px 5px rgba(16, 42, 67, 0.06);
+    box-shadow: 0 1px 5px rgba(var(--motta-blue-rgb), 0.06);
 }
 
 .summaryItem h3,
@@ -144,7 +151,7 @@
 }
 
 .summaryItem p {
-    color: #a49d97;
+    color: var(--a11y-text-muted, #a49d97);
     font-size: 0.75rem;
 }
 
@@ -157,7 +164,7 @@
 }
 
 .expiryValue {
-    color: #e78300;
+    color: #783800;
 }
 
 .recordsSection {

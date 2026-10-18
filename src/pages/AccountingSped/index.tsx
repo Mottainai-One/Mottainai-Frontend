@@ -1,3 +1,5 @@
+import DropdownSelect from '@/components/DropdownSelect';
+import JargonTooltip from '@/components/JargonTooltip';
 import { type FormEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { cashClosingDiscrepancies, stockStores } from '@/data/stock';
 import DetailsModal from '@/components/DetailsModal';
@@ -20,11 +22,15 @@ import {
   createMonthlyFinancialReport,
   downloadMonthlyFinancialReport,
 } from '@/utils/monthlyFinancialReports';
+import { sanitizeMonthlyFinancialReportFilters, validateMonthlyFinancialReportFilters } from '@/utils/monthlyFinancialReportValidation';
 import styles from './style.module.css';
 
 const initialState: MonthlyFinancialReportPageState = {
   month: '',
   store: '__all__',
+  format: 'csv',
+  isSavingPreference: false,
+  validationErrors: {},
   reports: [],
   selectedReport: null,
   isLoadingReports: true,
@@ -59,8 +65,6 @@ function AccountingSped() {
   const [detailsDialog, setDetailsDialog] =
     useState<OpenDetailsDialog<MonthlyFinancialReport> | null>(null);
   const handleCloseDetails = useCallback(() => setDetailsDialog(null), []);
-  const [format, setFormat] = useState<ManagementReportFormat>('csv');
-  const [isSavingPreference, setIsSavingPreference] = useState(false);
   const items = useMemo(
     () => state.month
       ? buildMonthlyFinancialReportItems(cashClosingDiscrepancies, {
@@ -105,7 +109,9 @@ function AccountingSped() {
               : 'Não foi possível carregar a preferência de formato.'
             : '',
       }));
-      if (preferenceResult.status === 'fulfilled') setFormat(preferenceResult.value.format);
+      if (preferenceResult.status === 'fulfilled') {
+        setState((current) => ({ ...current, format: preferenceResult.value.format }));
+      }
     };
 
     void loadPageData();
@@ -115,25 +121,22 @@ function AccountingSped() {
   }, []);
 
   const handleFormatChange = async (nextFormat: ManagementReportFormat) => {
-    setFormat(nextFormat);
-    setIsSavingPreference(true);
-    setState((current) => ({ ...current, feedback: 'Salvando preferência de formato…', error: '' }));
+    setState((current) => ({ ...current, format: nextFormat, isSavingPreference: true, feedback: 'Salvando preferência de formato…', error: '' }));
     try {
       await saveManagementReportPreference(nextFormat);
-      setState((current) => ({ ...current, feedback: 'Formato salvo para as próximas visitas.', error: '' }));
+      setState((current) => ({ ...current, isSavingPreference: false, feedback: 'Formato salvo para as próximas visitas.', error: '' }));
     } catch (error) {
       setState((current) => ({
         ...current,
+        isSavingPreference: false,
         feedback: '',
         error: error instanceof Error ? error.message : 'Não foi possível salvar a preferência de formato.',
       }));
-    } finally {
-      setIsSavingPreference(false);
     }
   };
 
   const exportReport = (report: MonthlyFinancialReport) => {
-    if (format === 'csv') {
+    if (state.format === 'csv') {
       downloadMonthlyFinancialReport(report);
       setState((current) => ({ ...current, feedback: 'Relatório exportado em CSV.', error: '' }));
       return;
@@ -144,9 +147,16 @@ function AccountingSped() {
 
   const handleGenerate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!state.month) {
-      document.getElementById(monthId)?.focus();
-      setState((current) => ({ ...current, feedback: '', error: 'Selecione o mês para gerar o relatório financeiro.' }));
+    const filters = sanitizeMonthlyFinancialReportFilters({ month: state.month, store: state.store });
+    const validationErrors = validateMonthlyFinancialReportFilters(filters);
+    if (Object.keys(validationErrors).length > 0) {
+      setState((current) => ({
+        ...current,
+        validationErrors,
+        feedback: '',
+        error: Object.values(validationErrors)[0] ?? 'Revise os filtros do relatório.',
+      }));
+      document.getElementById(validationErrors.month ? monthId : storeId)?.focus();
       return;
     }
     if (items.length === 0) {
@@ -154,7 +164,7 @@ function AccountingSped() {
       return;
     }
 
-    const report = createMonthlyFinancialReport({ month: state.month, store: state.store }, items);
+    const report = createMonthlyFinancialReport(filters, items);
     setState((current) => ({ ...current, isGenerating: true, feedback: 'Gerando e salvando relatório financeiro…', error: '' }));
     try {
       await saveMonthlyFinancialReport(report);
@@ -180,7 +190,7 @@ function AccountingSped() {
   return (
     <section className={styles.page} aria-labelledby="accounting-sped-title">
       <header>
-        <p className={styles.eyebrow}>Contabilidade/SPED</p>
+        <p className={styles.eyebrow}>Contabilidade/<JargonTooltip term="SPED" explanation="Sistema Público de Escrituração Digital, usado para enviar informações fiscais e contábeis em formato digital." /></p>
         <h1 id="accounting-sped-title">Relatório financeiro mensal</h1>
         <p className={styles.intro}>Exporte as divergências de caixa registradas no mês selecionado.</p>
       </header>
@@ -191,13 +201,16 @@ function AccountingSped() {
           <div className={styles.filters}>
             <div className={styles.field}>
               <label htmlFor={monthId}>Mês de referência</label>
-              <select
+              <DropdownSelect
                 id={monthId}
                 required
                 value={state.month}
-                onChange={(event) => setState((current) => ({
+              ariaInvalid={Boolean(state.validationErrors.month)}
+              ariaDescribedBy={state.validationErrors.month ? `${monthId}-error` : undefined}
+              onChange={(event) => setState((current) => ({
                   ...current,
                   month: event.target.value,
+                validationErrors: { ...current.validationErrors, month: undefined },
                   selectedReport: null,
                   feedback: '',
                   error: '',
@@ -209,16 +222,20 @@ function AccountingSped() {
                     {monthNames[Number(month) - 1] ?? `Mês ${month}`} — amostra; ano não informado
                   </option>
                 ))}
-              </select>
+              </DropdownSelect>
+              {state.validationErrors.month && <p className={styles.fieldError} id={`${monthId}-error`} role="alert">{state.validationErrors.month}</p>}
             </div>
             <div className={styles.field}>
               <label htmlFor={storeId}>Loja</label>
-              <select
+              <DropdownSelect
                 id={storeId}
                 value={state.store}
+                ariaInvalid={Boolean(state.validationErrors.store)}
+                ariaDescribedBy={state.validationErrors.store ? `${storeId}-error` : undefined}
                 onChange={(event) => setState((current) => ({
                   ...current,
                   store: event.target.value,
+                  validationErrors: { ...current.validationErrors, store: undefined },
                   selectedReport: null,
                   feedback: '',
                   error: '',
@@ -226,26 +243,27 @@ function AccountingSped() {
               >
                 <option value="__all__">Todas as lojas</option>
                 {stockStores.map((store) => <option key={store} value={store}>{store}</option>)}
-              </select>
+              </DropdownSelect>
+              {state.validationErrors.store && <p className={styles.fieldError} id={`${storeId}-error`} role="alert">{state.validationErrors.store}</p>}
             </div>
           </div>
 
-          <fieldset className={styles.formatPicker} disabled={state.isLoadingReports || state.isGenerating || isSavingPreference}>
+          <fieldset className={styles.formatPicker} disabled={state.isLoadingReports || state.isGenerating || state.isSavingPreference}>
             <legend>Formato de exportação</legend>
             <div className={styles.formatOptions}>
-              <label className={format === 'pdf' ? styles.formatSelected : styles.formatOption} htmlFor={`${formatId}-pdf`}>
-                <input id={`${formatId}-pdf`} type="radio" name="monthly-financial-format" value="pdf" checked={format === 'pdf'} onChange={() => void handleFormatChange('pdf')} />
+              <label className={state.format === 'pdf' ? styles.formatSelected : styles.formatOption} htmlFor={`${formatId}-pdf`}>
+                <input id={`${formatId}-pdf`} type="radio" name="monthly-financial-format" value="pdf" checked={state.format === 'pdf'} onChange={() => void handleFormatChange('pdf')} />
                 PDF
               </label>
-              <label className={format === 'csv' ? styles.formatSelected : styles.formatOption} htmlFor={`${formatId}-csv`}>
-                <input id={`${formatId}-csv`} type="radio" name="monthly-financial-format" value="csv" checked={format === 'csv'} onChange={() => void handleFormatChange('csv')} />
+              <label className={state.format === 'csv' ? styles.formatSelected : styles.formatOption} htmlFor={`${formatId}-csv`}>
+                <input id={`${formatId}-csv`} type="radio" name="monthly-financial-format" value="csv" checked={state.format === 'csv'} onChange={() => void handleFormatChange('csv')} />
                 CSV
               </label>
             </div>
           </fieldset>
           <div className={styles.actions}>
-            <button type="submit" className={styles.primaryButton} disabled={state.isLoadingReports || state.isGenerating || isSavingPreference}>
-              {state.isGenerating ? 'Gerando…' : `Gerar e exportar ${format.toUpperCase()}`}
+            <button type="submit" className={styles.primaryButton} disabled={state.isLoadingReports || state.isGenerating || state.isSavingPreference}>
+              {state.isGenerating ? 'Gerando…' : `Gerar e exportar ${state.format.toUpperCase()}`}
             </button>
           </div>
         </form>

@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { supplierAddressOptions } from "@/data/suppliers";
@@ -149,12 +150,12 @@ function SupplierForm() {
 
           <div className={styles.formField}>
             <label htmlFor="supplier-address">Endereço vinculado *</label>
-            <select
+            <DropdownSelect
               id="supplier-address"
               value={state.form.addressId}
               onChange={(event) => updateForm("addressId", event.target.value)}
-              aria-invalid={Boolean(state.errors.addressId)}
-              aria-describedby={state.errors.addressId ? "supplier-address-error" : undefined}
+              ariaInvalid={Boolean(state.errors.addressId)}
+              ariaDescribedBy={state.errors.addressId ? "supplier-address-error" : undefined}
               required
             >
               <option value="">Selecione um endereço</option>
@@ -163,7 +164,7 @@ function SupplierForm() {
                   {address.label}
                 </option>
               ))}
-            </select>
+            </DropdownSelect>
             {state.errors.addressId && <p className={styles.fieldError} id="supplier-address-error" role="alert">{state.errors.addressId}</p>}
           </div>
 

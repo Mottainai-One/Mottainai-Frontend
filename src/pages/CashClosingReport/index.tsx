@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useId, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ReusableTable from "@/components/ReusableTable";
@@ -173,7 +174,7 @@ function CashClosingReport() {
               {state.isStatusEditorOpen ? (
                 <label className={styles.inlineField} htmlFor={statusId}>
                   <span className={styles["sr-only"]}>Novo status</span>
-                  <select
+                  <DropdownSelect
                     id={statusId}
                     value={state.status}
                     onChange={(event) => updateEditableField("status", event.target.value as CashClosingStatus)}
@@ -181,7 +182,7 @@ function CashClosingReport() {
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>{status}</option>
                     ))}
-                  </select>
+                  </DropdownSelect>
                 </label>
               ) : (
                 <span className={styles.status}>{state.status}</span>
@@ -207,7 +208,7 @@ function CashClosingReport() {
               {state.isResponsibleEditorOpen ? (
                 <label className={styles.inlineField} htmlFor={responsibleId}>
                   <span className={styles["sr-only"]}>Novo responsável</span>
-                  <select
+                  <DropdownSelect
                     id={responsibleId}
                     value={state.responsible}
                     onChange={(event) => updateEditableField("responsible", event.target.value)}
@@ -215,7 +216,7 @@ function CashClosingReport() {
                     {responsibleOptions.map((responsible) => (
                       <option key={responsible} value={responsible}>{responsible}</option>
                     ))}
-                  </select>
+                  </DropdownSelect>
                 </label>
               ) : (
                 <span>{state.responsible}</span>

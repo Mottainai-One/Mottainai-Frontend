@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useId } from "react";
 import type { ProductsFiltersProps } from "@/types/product.types";
 import styles from "./style.module.css";
@@ -35,7 +36,7 @@ function ProductsFilters({
         <label className={styles["sr-only"]} htmlFor={categoryId}>
           Filtrar por categoria
         </label>
-        <select
+        <DropdownSelect
           id={categoryId}
           value={value.category}
           onChange={(event) =>
@@ -48,7 +49,7 @@ function ProductsFilters({
               {category}
             </option>
           ))}
-        </select>
+        </DropdownSelect>
       </div>
     </div>
   );

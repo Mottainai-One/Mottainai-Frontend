@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -91,7 +92,7 @@ function NewTransfer() {
         <div className={styles.formGrid}>
           <div className={styles.formField}>
             <label htmlFor="transfer-suggested-action">Ação sugerida</label>
-            <select
+            <DropdownSelect
               id="transfer-suggested-action"
               value={state.form.suggestedActionId}
               onChange={(event) => updateForm("suggestedActionId", event.target.value)}
@@ -100,60 +101,60 @@ function NewTransfer() {
               {transferSuggestedActionOptions.map((action) => (
                 <option key={action.id} value={action.id}>{action.label}</option>
               ))}
-            </select>
+            </DropdownSelect>
           </div>
 
           <div className={styles.formField}>
             <label htmlFor="transfer-employee">Responsável *</label>
-            <select
+            <DropdownSelect
               id="transfer-employee"
               value={state.form.employeeId}
               onChange={(event) => updateForm("employeeId", event.target.value)}
-              aria-invalid={Boolean(state.errors.employeeId)}
-              aria-describedby={state.errors.employeeId ? "transfer-employee-error" : undefined}
+              ariaInvalid={Boolean(state.errors.employeeId)}
+              ariaDescribedBy={state.errors.employeeId ? "transfer-employee-error" : undefined}
               required
             >
               <option value="">Selecione um responsável</option>
               {transferEmployeeOptions.map((employee) => (
                 <option key={employee.id} value={employee.id}>{employee.label}</option>
               ))}
-            </select>
+            </DropdownSelect>
             {state.errors.employeeId && <p className={styles.fieldError} id="transfer-employee-error" role="alert">{state.errors.employeeId}</p>}
           </div>
 
           <div className={styles.formField}>
             <label htmlFor="transfer-source-store">Loja de origem *</label>
-            <select
+            <DropdownSelect
               id="transfer-source-store"
               value={state.form.sourceStoreId}
               onChange={(event) => updateForm("sourceStoreId", event.target.value)}
-              aria-invalid={Boolean(state.errors.sourceStoreId)}
-              aria-describedby={state.errors.sourceStoreId ? "transfer-source-error" : undefined}
+              ariaInvalid={Boolean(state.errors.sourceStoreId)}
+              ariaDescribedBy={state.errors.sourceStoreId ? "transfer-source-error" : undefined}
               required
             >
               <option value="">Selecione a loja de origem</option>
               {transferStoreOptions.map((store) => (
                 <option key={store.id} value={store.id}>{store.label}</option>
               ))}
-            </select>
+            </DropdownSelect>
             {state.errors.sourceStoreId && <p className={styles.fieldError} id="transfer-source-error" role="alert">{state.errors.sourceStoreId}</p>}
           </div>
 
           <div className={styles.formField}>
             <label htmlFor="transfer-destination-store">Loja de destino *</label>
-            <select
+            <DropdownSelect
               id="transfer-destination-store"
               value={state.form.destinationStoreId}
               onChange={(event) => updateForm("destinationStoreId", event.target.value)}
-              aria-invalid={Boolean(state.errors.destinationStoreId)}
-              aria-describedby={state.errors.destinationStoreId ? "transfer-destination-error" : undefined}
+              ariaInvalid={Boolean(state.errors.destinationStoreId)}
+              ariaDescribedBy={state.errors.destinationStoreId ? "transfer-destination-error" : undefined}
               required
             >
               <option value="">Selecione a loja de destino</option>
               {transferStoreOptions.map((store) => (
                 <option key={store.id} value={store.id}>{store.label}</option>
               ))}
-            </select>
+            </DropdownSelect>
             {state.errors.destinationStoreId && <p className={styles.fieldError} id="transfer-destination-error" role="alert">{state.errors.destinationStoreId}</p>}
           </div>
 
@@ -186,7 +187,7 @@ function NewTransfer() {
 
           <div className={styles.formField}>
             <label htmlFor="transfer-status">Status *</label>
-            <select
+            <DropdownSelect
               id="transfer-status"
               value={state.form.status}
               onChange={(event) => updateForm("status", event.target.value as TransferFormStatus)}
@@ -195,7 +196,7 @@ function NewTransfer() {
               {transferStatusOptions.map((status) => (
                 <option key={status.value} value={status.value}>{status.label}</option>
               ))}
-            </select>
+            </DropdownSelect>
           </div>
 
           <div className={`${styles.formField} ${styles.fullWidth}`}>

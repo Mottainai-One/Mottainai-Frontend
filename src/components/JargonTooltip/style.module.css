@@ -1,0 +1,28 @@
+.term {
+  position: relative;
+  border-bottom: 1px dotted currentColor;
+  cursor: help;
+}
+.indicator { font-size: 0.75em; font-weight: 700; }
+.term::after {
+  position: absolute;
+  z-index: 1600;
+  bottom: calc(100% + 0.5rem);
+  left: 0;
+  display: none;
+  width: max-content;
+  max-width: min(18rem, 75vw);
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.4rem;
+  background: #102a43;
+  color: #fff;
+  content: attr(data-tooltip);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+}
+.term:focus-visible::after,
+:global(html[data-a11y-jargon="on"]) .term::after,
+:global(html[data-a11y-jargon="on"]) .term:hover::after { display: block; }
+.term:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }

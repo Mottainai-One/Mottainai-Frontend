@@ -42,8 +42,34 @@
     gap: .45rem;
 }
 
+.visuallyHidden {
+    /* Layout */
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+
+    /* Tamanho */
+    width: 1px;
+    height: 1px;
+    padding: 0;
+
+    /* Aparência */
+    border: 0;
+
+    /* Texto */
+    white-space: nowrap;
+}
+
+.fieldError {
+    /* Texto */
+    color: #a32720;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
 .fields label {
-    color: #302f2c;
+    color: var(--a11y-text-muted, #302f2c);
     font-size: .9rem;
     font-weight: 700;
 }
@@ -55,7 +81,7 @@
     border: 1px solid #c6c2bc;
     border-radius: .45rem;
     background: #f3f1ee;
-    color: #302f2c;
+    color: var(--a11y-text-muted, #302f2c);
     font: inherit;
     font-weight: 400;
 }
@@ -85,7 +111,7 @@
     border: 2px dashed #85817a;
     border-radius: .5rem;
     background: #f3f1ee;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     text-align: center;
 }
 
@@ -125,7 +151,7 @@
     border: 1px solid var(--motta-blue);
     border-radius: .5rem;
     background: var(--motta-blue);
-    color: #fff;
+    color: var(--a11y-on-brand, var(--main-white));
     font: inherit;
     font-weight: 700;
     cursor: pointer;
@@ -149,7 +175,7 @@
 
 .fileNotice {
     min-height: 1.25rem;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: .8rem;
     text-align: center;
 }

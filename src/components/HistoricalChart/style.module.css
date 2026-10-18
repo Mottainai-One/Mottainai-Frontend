@@ -5,10 +5,10 @@
     min-height: 440px;
     margin-top: 32px;
     padding: 24px;
-    background-color: var(--main-white);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    background-color: var(--a11y-surface, var(--main-white));
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
     color: var(--motta-blue);
 }
 
@@ -28,7 +28,7 @@
 
 .heading p {
     margin-top: 6px;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.875rem;
 }
 
@@ -64,7 +64,7 @@
 
 .dataDetails {
     margin-top: 12px;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8125rem;
 }
 
@@ -115,8 +115,8 @@
 
 .dataPoint:hover,
 .dataPoint:focus-visible {
-    border-color: rgba(16, 42, 67, 0.2);
-    background-color: #f2f6f3;
+    border-color: var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
+    background-color: var(--a11y-surface-raised, #f5f7f9);
 }
 
 .dataPoint:focus-visible {

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PrivateRoute from "@/pages/PrivateRoute";
 import MainLayout from "@/components/MainLayout";
 import Spinner from "@/components/Spinner";
+import FloatingButton from "@/components/FloatingButton";
 
 const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Login"));
@@ -36,6 +37,8 @@ function page(element: ReactNode) {
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <>
+      <FloatingButton />
       <Routes>
         {/* Rotas de Login */}
         <Route path="/" element={page(<Login />)} />
@@ -91,6 +94,7 @@ export default function AppRoutes() {
         {/* Um 'else' para erros */}
         <Route path="*" element={page(<ErrorPage />)} />
       </Routes>
+      </>
     </BrowserRouter>
   );
 }

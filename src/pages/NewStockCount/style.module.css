@@ -8,10 +8,10 @@
 .productsCard {
     width: 100%;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .eyebrow {
@@ -31,12 +31,12 @@
     align-items: center;
     min-height: 2.25rem;
     border-bottom: 1px solid var(--motta-light-blue);
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8rem;
 }
 
 .summaryRow dt {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-weight: 700;
 }
 
@@ -58,8 +58,8 @@
     padding: 0.3rem 0.6rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.45rem;
-    background: var(--main-white);
-    color: #625d58;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
 }
 
@@ -71,9 +71,16 @@
     padding: 0.25rem 0.8rem;
     border-radius: 999px;
     background: #fff0e3;
-    color: #c56a20;
+    color: #783800;
     font-size: 0.75rem;
     font-weight: 700;
+}
+
+.fieldError {
+    /* Texto */
+    color: #a32720;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .productsCard {
@@ -93,7 +100,7 @@
 .barcodeForm {
     display: grid;
     gap: 0.45rem;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8rem;
 }
 
@@ -102,11 +109,11 @@
 }
 
 .barcodeFeedback strong {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
 }
 
 .barcodeForm label {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-weight: 700;
 }
 
@@ -122,7 +129,7 @@
     padding: 0.45rem 0.7rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.45rem;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font: inherit;
 }
 
@@ -146,7 +153,7 @@
 .finalizeButton {
     border: 0;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .barcodeControls button:hover,

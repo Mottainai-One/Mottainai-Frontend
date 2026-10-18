@@ -4,10 +4,10 @@
     min-width: 0;
     min-height: 410px;
     padding: 24px;
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 12px;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
     color: var(--motta-blue);
 }
 
@@ -19,7 +19,7 @@
 
 .heading p {
     margin-top: 6px;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.875rem;
     line-height: 1.4;
 }
@@ -29,6 +29,12 @@
     width: min(100%, 250px);
     height: 220px;
     margin: 12px auto;
+}
+
+:global(html[data-a11y-contrast="high"]) .chartArea {
+    /* Tamanho */
+    width: min(100%, 460px);
+    height: 280px;
 }
 
 .chartArea canvas {
@@ -46,13 +52,18 @@
     pointer-events: none;
 }
 
+:global(html[data-a11y-contrast="high"] body #root :where(*):not(img):not(video):not(svg)) .centerValue {
+    /* Aparência */
+    background-color: transparent !important;
+}
+
 .centerValue strong {
     font-size: 1.5rem;
 }
 
 .centerValue span {
     max-width: 7.5rem;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.75rem;
 }
 
@@ -88,8 +99,8 @@
 
 .segmentButton:hover,
 .segmentButton:focus-visible {
-    border-color: rgba(16, 42, 67, 0.2);
-    background: #f2f6f3;
+    border-color: var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
+    background: var(--a11y-surface-raised, #f5f7f9);
 }
 
 .segmentButton:focus-visible {
@@ -108,13 +119,18 @@
     flex: 0 0 12px;
     width: 12px;
     height: 12px;
-    border: 1px solid rgba(16, 42, 67, 0.25);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 50%;
+}
+
+:global(html[data-a11y-contrast="high"] body #root :where(*):not(img):not(video):not(svg)) .swatch {
+    /* Aparência */
+    background-color: var(--segment-color) !important;
 }
 
 .note {
     margin-top: 12px;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.75rem;
     line-height: 1.45;
 }
@@ -126,5 +142,8 @@
     }
     .chartArea {
         height: 200px;
+    }
+    :global(html[data-a11y-contrast="high"]) .chartArea {
+        height: 260px;
     }
 }

@@ -21,8 +21,8 @@
     padding: 0.55rem 0.85rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.55rem;
-    background: #fff;
-    color: #373431;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #373431);
     font: inherit;
 }
 

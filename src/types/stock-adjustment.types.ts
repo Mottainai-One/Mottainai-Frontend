@@ -21,6 +21,7 @@ export interface StockAdjustmentFormState {
 
 export interface StockAdjustmentPageState {
   form: StockAdjustmentFormState;
+  formErrors: Partial<Record<keyof StockAdjustmentFormState, string>>;
   records: StockAdjustmentRecord[];
   feedback: string;
   feedbackIsError: boolean;

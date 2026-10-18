@@ -16,10 +16,10 @@
     flex-direction: column;
     width: min(100%, 34rem);
     padding: clamp(1.75rem, 6vw, 3.5rem);
-    border: 1px solid rgba(16, 42, 67, 0.1);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 1.5rem;
-    background: rgba(255, 255, 255, 0.96);
-    box-shadow: 0 1.5rem 4rem rgba(16, 42, 67, 0.12);
+    background: rgba(var(--main-white-rgb), 0.96);
+    box-shadow: 0 1.5rem 4rem rgba(var(--motta-blue-rgb), 0.12);
     text-align: center;
 }
 
@@ -52,7 +52,7 @@
     inset: 0.45rem;
     border: 2px dashed rgba(45, 87, 120, 0.3);
     border-radius: 50%;
-    animation: orbit 12s linear infinite;
+    animation: orbit calc(12s * var(--a11y-motion-factor, 1)) linear infinite;
 }
 
 .eyebrow {
@@ -66,7 +66,7 @@
 
 .card h1 {
     max-width: 24rem;
-    color: #102a43;
+    color: var(--motta-blue);
     font-size: clamp(1.5rem, 5vw, 2.15rem);
     line-height: 1.2;
 }
@@ -74,7 +74,7 @@
 .description {
     max-width: 22rem;
     margin: 0.75rem 0 1.5rem;
-    color: #425466;
+    color: var(--a11y-text-muted, #425466);
     line-height: 1.55;
 }
 
@@ -92,7 +92,7 @@
     height: 100%;
     border-radius: inherit;
     background: linear-gradient(90deg, #2d5778, #c56920);
-    animation: progress 1.8s ease-in-out infinite alternate;
+    animation: progress calc(1.8s * var(--a11y-motion-factor, 1)) ease-in-out infinite alternate;
 }
 
 .srOnly {

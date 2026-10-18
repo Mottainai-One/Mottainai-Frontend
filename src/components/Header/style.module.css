@@ -7,8 +7,8 @@
     min-width: 0;
     padding: 12px 24px;
     background-color: var(--motta-blue);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-    color: var(--main-white);
+    border-bottom: 1px solid rgba(var(--main-white-rgb), 0.18);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .session-info {
@@ -16,8 +16,8 @@
     align-items: center;
     justify-content: flex-end;
     gap: 20px;
-    color: var(--main-white);
-    font-size: 0.8rem;
+    color: var(--a11y-on-brand, var(--main-white));
+    font-size: 0.85rem;
     min-width: 0;
     text-align: right;
 }
@@ -35,12 +35,14 @@
     height: 36px;
     margin-left: 4px;
     border-radius: 50%;
-    border: white 3px solid;
+    border: 3px solid white;
     outline: none;
-    color: var(--main-white);
+    background-color: transparent;
+    color: var(--a11y-on-brand, var(--main-white));
     font-size: 1rem;
     text-decoration: none;
-    transition: ease-in-out 0.3s border;
+    transition: background-color calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out,
+        border-color calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .accountLink:focus-visible {
@@ -48,8 +50,35 @@
     outline-offset: 2px;
 }
 
-.accountLink:hover {
-    border: var(--motta-light-blue) 3px solid;
+.accountLink:hover,
+.accountLink:focus-visible {
+    /* Aparência */
+    background-color: var(--motta-light-blue);
+    border-color: var(--motta-light-blue);
+    /* Texto */
+    color: #fff;
+}
+
+:global(html[data-a11y-theme="dark"]) .accountLink:hover,
+:global(html[data-a11y-theme="dark"]) .accountLink:focus-visible {
+    /* Texto */
+    color: var(--motta-orange) !important;
+    font-weight: bold;
+}
+
+:global(html[data-a11y-theme="dark"][data-a11y-contrast="high"]) .accountLink:hover,
+:global(html[data-a11y-theme="dark"][data-a11y-contrast="high"]) .accountLink:focus-visible {
+    /* Texto */
+    color: var(--motta-orange) !important;
+}
+
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]):not([data-a11y-contrast="low"])) .accountLink:hover,
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"]):not([data-a11y-contrast="low"])) .accountLink:focus-visible {
+    /* Aparência */
+    background-color: var(--motta-orange) !important;
+    border-color: var(--motta-orange) !important;
+    /* Texto */
+    color: #fff !important;
 }
 
 .accountTooltip {
@@ -68,7 +97,16 @@
     font-weight: 500;
     white-space: nowrap;
     transform: translateY(-4px);
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+    transition: opacity calc(0.25s * var(--a11y-motion-factor, 1)) ease,
+        transform calc(0.25s * var(--a11y-motion-factor, 1)) ease,
+        visibility 0s linear calc(0.25s * var(--a11y-motion-factor, 1));
+}
+
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .accountTooltip {
+    /* Aparência */
+    background-color: var(--motta-light-blue) !important;
+    /* Texto */
+    color: var(--a11y-action-hover-foreground, #ffd1a3) !important;
 }
 
 .accountTooltip::before {
@@ -81,11 +119,43 @@
     content: '';
 }
 
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .accountTooltip::before {
+    /* Aparência */
+    border-color: transparent !important;
+    border-bottom-color: var(--motta-light-blue) !important;
+}
+
+:global(html[data-a11y-theme="dark"][data-a11y-contrast="high"]) .accountTooltip::before {
+    /* Aparência */
+    border-color: transparent !important;
+    border-bottom-color: var(--motta-light-blue) !important;
+}
+
+:global(html[data-a11y-theme="dark"]) .accountTooltip {
+    /* Efeitos */
+    filter: drop-shadow(0 2px 5px rgb(0 0 0 / 35%));
+}
+
 .accountLink:hover .accountTooltip,
 .accountLink:focus-visible .accountTooltip {
     visibility: visible;
     opacity: 1;
+    background-color: var(--motta-light-blue);
+    color: var(--main-white);
+    font-weight: 500;
     transform: translateY(0);
+    transition: opacity calc(0.25s * var(--a11y-motion-factor, 1)) ease,
+        transform calc(0.25s * var(--a11y-motion-factor, 1)) ease,
+        visibility 0s linear 0s;
+}
+
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .accountLink:hover .accountTooltip,
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .accountLink:focus-visible .accountTooltip {
+    /* Aparência */
+    background-color: var(--motta-light-blue) !important;
+    /* Texto */
+    color: var(--a11y-action-hover-foreground, #ffd1a3) !important;
+    font-weight: bold;
 }
 
 @media (max-width: 768px) {
@@ -132,7 +202,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .accountTooltip {
+    .accountTooltip,
+    .accountLink:hover .accountTooltip,
+    .accountLink:focus-visible .accountTooltip {
         transition: none;
     }
 }

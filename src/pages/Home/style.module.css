@@ -34,9 +34,9 @@
 .comparison > div {
     min-width: 0;
     padding: 16px;
-    border: 1px solid rgba(16, 42, 67, 0.16);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 8px;
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface, var(--main-white));
 }
 
 .comparison dt {
@@ -53,7 +53,7 @@
 
 .comparison dd span,
 .dataNote {
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8125rem;
 }
 
@@ -92,10 +92,10 @@
     min-width: 0;
     margin-top: 2rem;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 12px;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .criticalityCard h2 {
@@ -118,7 +118,7 @@
 .criticalityTable {
     width: 100%;
     border-collapse: collapse;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.9rem;
 }
 
@@ -131,7 +131,7 @@
 
 .criticalityTable thead th {
     border-bottom: 1px solid var(--motta-green);
-    background: #faf9f8;
+    background: var(--a11y-surface-raised, #faf9f8);
     font-weight: 600;
 }
 

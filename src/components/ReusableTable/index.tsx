@@ -61,22 +61,28 @@ function ReusableTable<T extends object>({
                                 {columns.map((column) => {
                                     const content = column.renderCell(row);
                                     const alignmentClass = alignmentClasses[column.align ?? 'start'];
+                                    const actionText = column.display === 'action'
+                                        ? column.actionText?.(row) ?? 'Ver'
+                                        : undefined;
 
                                     return (
                                         <td className={alignmentClass} key={column.id}>
                                             {column.display === 'badge' ? (
-                                                <span className={`${styles.badge} ${toneClasses[column.tone?.(row) ?? 'neutral']}`}>
+                                                <span
+                                                    className={`${styles.badge} ${toneClasses[column.tone?.(row) ?? 'neutral']}`}
+                                                    data-a11y-light-surface="true"
+                                                >
                                                     {content}
                                                 </span>
                                             ) : column.display === 'action' ? (
                                                 <button
                                                     type="button"
-                                                    className={styles.actionButton}
+                                                    className={`${styles.actionButton} a11y-table-action`}
                                                     onClick={(event) => column.onAction?.(row, event)}
                                                     aria-label={column.actionLabel?.(row) ?? 'Ver ação'}
                                                     aria-haspopup={column.actionHasPopup === false ? undefined : 'dialog'}
                                                 >
-                                                    {column.actionText?.(row) ?? 'Ver'}
+                                                    {actionText ?? 'Ver'}
                                                 </button>
                                             ) : content}
                                         </td>

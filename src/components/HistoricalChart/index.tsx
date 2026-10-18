@@ -5,6 +5,16 @@ import styles from "./style.module.css";
 
 Chart.register(...registerables);
 
+function getThemeColor(variable: string, fallback: string): string {
+  return window.getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
+}
+
+function getMotionFactor(): number {
+  const value = window.getComputedStyle(document.documentElement).getPropertyValue("--a11y-motion-factor").trim();
+  const factor = Number(value);
+  return value && Number.isFinite(factor) ? factor : 1;
+}
+
 const formatMetricDate = (date: string) => new Intl.DateTimeFormat("pt-BR", {
   day: "2-digit",
   month: "short",
@@ -50,6 +60,12 @@ function HistoricalChart({
       return undefined;
     }
 
+    const root = document.documentElement;
+    const primaryColor = getThemeColor("--motta-blue", "#102a43");
+    const primaryRgb = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
+    const foregroundColor = getThemeColor("--a11y-foreground", "#102a43");
+    const tooltipForegroundColor = getThemeColor("--a11y-foreground-on-light", foregroundColor);
+
     chartRef.current?.destroy();
     chartRef.current = new Chart(canvasRef.current, {
       type: "line",
@@ -77,6 +93,7 @@ function HistoricalChart({
         ],
       },
       options: {
+        animation: { duration: 1000 * getMotionFactor() },
         responsive: true,
         maintainAspectRatio: false,
         onHover: (_event, activeElements, chart) => {
@@ -85,9 +102,9 @@ function HistoricalChart({
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: "#102a43",
-            titleColor: "#ffffff",
-            bodyColor: "#ffffff",
+            backgroundColor: primaryColor,
+            titleColor: tooltipForegroundColor,
+            bodyColor: tooltipForegroundColor,
             borderColor: "#2d5778",
             borderWidth: 1,
             cornerRadius: 8,
@@ -98,18 +115,40 @@ function HistoricalChart({
         scales: {
           y: {
             beginAtZero,
-            ticks: { color: "#102a43" },
-            grid: { color: "rgba(16, 42, 67, 0.12)" },
+            ticks: { color: foregroundColor },
+            grid: { color: `rgba(${primaryRgb}, 0.12)` },
           },
           x: {
-            ticks: { color: "#102a43", maxRotation: 45, minRotation: 0 },
+            ticks: { color: foregroundColor, maxRotation: 45, minRotation: 0 },
             grid: { display: false },
           },
         },
       },
     });
 
+    const themeObserver = new MutationObserver(() => {
+      const activeChart = chartRef.current;
+      if (!activeChart) return;
+      const primary = getThemeColor("--motta-blue", "#102a43");
+      const primaryRgbValue = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
+      const foreground = getThemeColor("--a11y-foreground", "#102a43");
+      const tooltipForeground = getThemeColor("--a11y-foreground-on-light", foreground);
+      const tooltip = activeChart.options.plugins?.tooltip;
+      if (tooltip) {
+        tooltip.backgroundColor = primary;
+        tooltip.titleColor = tooltipForeground;
+        tooltip.bodyColor = tooltipForeground;
+      }
+      if (activeChart.options.scales?.x?.ticks) activeChart.options.scales.x.ticks.color = foreground;
+      if (activeChart.options.scales?.y?.ticks) activeChart.options.scales.y.ticks.color = foreground;
+      if (activeChart.options.scales?.y?.grid) activeChart.options.scales.y.grid.color = `rgba(${primaryRgbValue}, 0.12)`;
+      activeChart.options.animation = { duration: 1000 * getMotionFactor() };
+      activeChart.update("none");
+    });
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
+
     return () => {
+      themeObserver.disconnect();
       chartRef.current?.destroy();
       chartRef.current = null;
     };

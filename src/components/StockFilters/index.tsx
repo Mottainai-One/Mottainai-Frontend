@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useId } from "react";
 import type { StockFiltersProps } from "@/types/stock.types";
 import styles from "./style.module.css";
@@ -10,8 +11,9 @@ function StockFilters({ value, stores, onChange }: StockFiltersProps) {
       <label className={styles["sr-only"]} htmlFor={storeId}>
         Filtrar por loja
       </label>
-      <select
+      <DropdownSelect
         id={storeId}
+        className={styles.dropdown}
         value={value.store}
         onChange={(event) => onChange({ store: event.target.value })}
       >
@@ -21,7 +23,7 @@ function StockFilters({ value, stores, onChange }: StockFiltersProps) {
             {store}
           </option>
         ))}
-      </select>
+      </DropdownSelect>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import mottainaiLogo from '@/assets/icons/Logo.png';
+import mottainaiLogo from '@/assets/icons/Logo-Orange.png';
 import thinkingOtter from '@/assets/imgs/lontra-pensando.png';
 import styles from './style.module.css';
 

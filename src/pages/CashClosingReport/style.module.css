@@ -8,10 +8,10 @@
 .productsCard {
     width: 100%;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .summaryCard h1 {
@@ -30,12 +30,12 @@
     align-items: center;
     min-height: 2.25rem;
     border-bottom: 1px solid var(--motta-light-blue);
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8rem;
 }
 
 .summaryRow dt {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-weight: 700;
 }
 
@@ -53,8 +53,8 @@
     padding: 0.3rem 0.6rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.45rem;
-    background: var(--main-white);
-    color: #625d58;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
 }
 
@@ -100,7 +100,7 @@
     border: 1px solid #2d5778;
     border-radius: 0.45rem;
     background: rgba(45, 87, 120, 0.08);
-    box-shadow: 0 1px 2px rgba(16, 42, 67, 0.12);
+    box-shadow: 0 1px 2px rgba(var(--motta-blue-rgb), 0.12);
     color: var(--motta-blue);
     font: inherit;
     font-size: 0.75rem;
@@ -110,7 +110,7 @@
 
 .changeButton:hover {
     background: rgba(45, 87, 120, 0.16);
-    box-shadow: 0 2px 5px rgba(16, 42, 67, 0.16);
+    box-shadow: 0 2px 5px rgba(var(--motta-blue-rgb), 0.16);
 }
 
 .productsCard {
@@ -122,7 +122,7 @@
     display: grid;
     gap: 0.4rem;
     margin-top: 1rem;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.8rem;
     font-weight: 700;
 }
@@ -133,7 +133,7 @@
     padding: 0.45rem 0.7rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.45rem;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font: inherit;
 }
 
@@ -152,7 +152,7 @@
 .backButton {
     border: 0;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .saveButton:hover,
@@ -196,7 +196,7 @@
     padding: 0.55rem 1rem;
     border-radius: 0.55rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-weight: 700;
     text-decoration: none;
 }

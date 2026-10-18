@@ -1,7 +1,7 @@
 .page {
     width: 100%;
     min-width: 0;
-    color: #34433b;
+    color: var(--a11y-text-muted, #34433b);
 }
 
 .addButton:focus-visible, .closeButton:focus-visible, .cancelButton:focus-visible {
@@ -38,7 +38,7 @@
     border: 0;
     outline: 0;
     font: inherit;
-    color: #34433b;
+    color: var(--a11y-text-muted, #34433b);
 }
 
 .searchBox input::placeholder {
@@ -51,8 +51,8 @@
     padding: 0 .8rem;
     border: 1px solid #dedbd6;
     border-radius: .65rem;
-    background: #fff;
-    color: #55514d;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #55514d);
     font: inherit;
 }
 
@@ -66,7 +66,7 @@
     border: 0;
     border-radius: .6rem;
     background: var(--motta-blue);
-    color: #fff;
+    color: var(--a11y-on-brand, var(--main-white));
     font: inherit;
     font-weight: 700;
     white-space: nowrap;
@@ -79,7 +79,7 @@
 
 .sessionNote {
     margin: 0 0 1.2rem;
-    color: #615d56;
+    color: var(--a11y-text-muted, #615d56);
     font-size: .82rem;
 }
 
@@ -87,7 +87,7 @@
     padding: clamp(1rem, 2vw, 1.6rem);
     border: 1px solid #e3ded7;
     border-radius: .85rem;
-    background: #fff;
+    background: var(--a11y-surface, var(--main-white));
     box-shadow: 0 1px 3px #30271912;
 }
 
@@ -141,7 +141,7 @@
     border: 0;
     border-radius: .35rem;
     background: #e4ded5;
-    color: #45403a;
+    color: var(--a11y-text-muted, #45403a);
     font: inherit;
     font-size: .78rem;
     white-space: nowrap;
@@ -154,7 +154,7 @@
 
 .empty {
     padding: 2.5rem 1rem;
-    color: #625e58;
+    color: var(--a11y-text-muted, #625e58);
     text-align: center;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .infoPanel p {
-    color: #625e58;
+    color: var(--a11y-text-muted, #625e58);
     line-height: 1.6;
 }
 
@@ -183,7 +183,7 @@
     max-height: min(90vh, 48rem);
     padding: clamp(1.2rem, 3vw, 2rem);
     border-radius: .9rem;
-    background: #fff;
+    background: var(--a11y-surface, var(--main-white));
     box-shadow: 0 1rem 3rem #0003;
 }
 
@@ -206,7 +206,7 @@
     border: 0;
     border-radius: 50%;
     background: #f2f0ec;
-    color: #38352f;
+    color: var(--a11y-text-muted, #38352f);
     font-size: 1rem;
     cursor: pointer;
 }
@@ -221,7 +221,7 @@
 }
 
 .modal form label {
-    color: #49453f;
+    color: var(--a11y-text-muted, #49453f);
     font-size: .9rem;
     font-weight: 600;
 }
@@ -232,8 +232,8 @@
     padding: .55rem .7rem;
     border: 1px solid #c9c3b9;
     border-radius: .45rem;
-    background: #fff;
-    color: #282722;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #282722);
     font: inherit;
 }
 

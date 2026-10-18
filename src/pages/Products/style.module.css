@@ -22,10 +22,10 @@
     padding: 0.55rem 1.25rem;
     border-radius: 0.6rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-weight: 600;
     text-decoration: none;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .new-product:hover {
@@ -43,10 +43,10 @@
     min-width: 0;
     margin-top: clamp(1rem, 2vw, 1.5rem);
     padding: clamp(1.25rem, 3vw, 2.5rem) clamp(1rem, 3vw, 2rem) 1.5rem;
-    border: 1px solid rgba(16, 42, 67, 0.15);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 7px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 7px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .list-title {
@@ -70,7 +70,7 @@
     width: 100%;
     min-width: 54rem;
     border-collapse: collapse;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.78rem;
     line-height: 1.35;
 }
@@ -79,7 +79,7 @@
     position: sticky;
     z-index: 1;
     top: 0;
-    background: #faf9f8;
+    background: var(--a11y-surface-raised, #faf9f8);
 }
 
 .table th,
@@ -124,6 +124,12 @@
     color: #8f151b;
 }
 
+:global(html[data-a11y-theme="dark"]) :global(body) .regular,
+:global(html[data-a11y-theme="dark"]) :global(body) .attention,
+:global(html[data-a11y-theme="dark"]) :global(body) .critical {
+    color: #063652 !important;
+}
+
 .view-button {
     display: flex;
     align-items: center;
@@ -135,19 +141,19 @@
     border-radius: 0.3rem;
     background: #ded8d0;
     border: 1px solid #ded8d0;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font: inherit;
     font-weight: 500;
     line-height: 1.2;
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .view-button:hover {
     background: var(--motta-blue);
     border-color: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .view-button:focus-visible {
@@ -161,12 +167,12 @@
     padding: 0.625rem 1rem;
     border-radius: 999px;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font: inherit;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .link:hover {

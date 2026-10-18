@@ -94,7 +94,8 @@ function Stock() {
       header: "Relatório",
       renderCell: (record) => (
         <Link
-          className={styles.reportButton}
+          className={`${styles.reportButton} a11y-table-action`}
+          data-a11y-light-surface="true"
           to={`/stock/cash-closing/${record.id}`}
         >
           Ver relatório

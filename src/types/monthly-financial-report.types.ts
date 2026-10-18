@@ -28,6 +28,9 @@ export interface MonthlyFinancialReport {
 export interface MonthlyFinancialReportPageState {
   month: string;
   store: string;
+  format: 'pdf' | 'csv';
+  isSavingPreference: boolean;
+  validationErrors: Partial<Record<keyof MonthlyFinancialReportFilters, string>>;
   reports: MonthlyFinancialReport[];
   selectedReport: MonthlyFinancialReport | null;
   isLoadingReports: boolean;

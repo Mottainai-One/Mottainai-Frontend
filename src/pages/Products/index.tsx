@@ -83,7 +83,9 @@ function Products() {
         </h2>
         <div
           className={styles["table-region"]}
-          aria-labelledby="sku-list-title"
+          role="region"
+          aria-label="Tabela de produtos rolável"
+          aria-describedby="sku-table-scroll-hint"
           tabIndex={0}
         >
           <table className={styles.table}>
@@ -123,7 +125,7 @@ function Products() {
                   </td>
                   <td className={styles.center}>
                     <button
-                      className={styles["view-button"]}
+                      className={`${styles["view-button"]} a11y-table-action`}
                       type="button"
                       onClick={(event) => setDetailsDialog({ record: product, trigger: event.currentTarget })}
                       aria-label={`Ver detalhes de ${product.name}`}
@@ -144,6 +146,9 @@ function Products() {
             </tbody>
           </table>
         </div>
+        <p className={styles["sr-only"]} id="sku-table-scroll-hint">
+          Use as setas esquerda e direita para percorrer as colunas da tabela.
+        </p>
       </section>
       {detailsDialog && (
         <DetailsModal

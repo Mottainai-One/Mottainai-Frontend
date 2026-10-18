@@ -3,7 +3,7 @@
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
     min-height: 100dvh;
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface, var(--main-white));
 }
 
 .authSection {
@@ -13,17 +13,15 @@
     align-items: center;
     min-width: 0;
     padding: clamp(1.5rem, 5vw, 3rem);
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface, var(--main-white));
 }
 
 .logo {
     display: block;
     width: 120px;
-    aspect-ratio: 1;
+    height: 120px;
     margin-bottom: 1.5rem;
-    background-color: var(--motta-blue);
-    -webkit-mask: url('../../assets/icons/Logo.png') center / contain no-repeat;
-    mask: url('../../assets/icons/Logo.png') center / contain no-repeat;
+    object-fit: contain;
 }
 
 .title {
@@ -37,7 +35,7 @@
 .subtitle {
     max-width: 380px;
     margin-bottom: 2.5rem;
-    color: #5f5b5b;
+    color: var(--a11y-text-muted, #5f5b5b);
     font-size: 1rem;
     line-height: 1.4;
     text-align: center;
@@ -76,7 +74,7 @@
 }
 
 .input::placeholder {
-    color: #666161;
+    color: var(--a11y-text-muted, #666161);
 }
 
 .input:focus-visible,
@@ -131,10 +129,10 @@
     padding: 18px;
     margin-top: 0.75rem;
     background-color: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-size: 1.1rem;
     font-weight: 500;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color calc(0.2s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .submitButton:hover {
@@ -191,7 +189,7 @@
 
 .successMessage {
     background-color: #e8f5eb;
-    color: #102a43;
+    color: var(--motta-blue);
 }
 
 .errorMessage {
@@ -209,7 +207,7 @@
 
 .codeHint,
 .passwordRequirements {
-    color: #5f5b5b;
+    color: var(--a11y-text-muted, #5f5b5b);
     font-size: 0.875rem;
     line-height: 1.4;
     text-align: center;

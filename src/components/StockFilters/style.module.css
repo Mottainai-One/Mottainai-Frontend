@@ -10,14 +10,19 @@
     padding: 0.55rem 2rem 0.55rem 0.85rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.55rem;
-    background-color: var(--main-white);
-    color: #625d58;
+    background-color: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
 }
 
 .filters select:focus-visible {
     outline: 3px solid var(--motta-light-blue);
     outline-offset: 2px;
+}
+
+.dropdown {
+    /* Tamanho */
+    max-width: 18rem;
 }
 
 .sr-only {
@@ -35,6 +40,10 @@
     .filters,
   .filters select {
         width: 100%;
+    }
+
+    .dropdown {
+        max-width: none;
     }
 }
 
