@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import DropdownSelect from '@/components/DropdownSelect';
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { faPlus, faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import ReusableTable from "@/components/ReusableTable";
 import EmployeeRegistration from "@/components/EmployeeRegistration";
 import type { ReusableTableColumn, TableCellTone } from "@/types/reusable-table.types";
+import { sanitizeEmployeeForm, validateEmployeeForm } from "@/utils/employeeFormValidation";
 import type {
   AuditEvent,
   Employee,
+  EmployeeFormErrors,
   EmployeeFormState,
   EmployeeRole,
 } from "@/types/employee.types";
@@ -23,7 +26,7 @@ type State = {
   roleFilter: string;
   dialog: DialogState;
   form: EmployeeFormState;
-  formError: string;
+  formErrors: EmployeeFormErrors;
   notice: string;
 };
 
@@ -44,6 +47,8 @@ function createAuditEvent(action: string, module: string): AuditEvent {
 }
 
 function Users() {
+  const employeeSearchId = useId();
+  const employeeRoleFilterId = useId();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const validUserPaths = ["/users", "/users/new", "/users/audit"];
@@ -55,7 +60,7 @@ function Users() {
     roleFilter: "",
     dialog: null,
     form: blankForm,
-    formError: "",
+    formErrors: {},
     notice: "",
   });
   const nameInputRef = useRef<HTMLInputElement>(null);
@@ -77,11 +82,11 @@ function Users() {
       form: employee
         ? { name: employee.name, cpf: employee.cpf, role: employee.role, store: employee.store, phone: employee.phone, email: employee.email, status: employee.status }
         : blankForm,
-      formError: "",
+      formErrors: {},
     }));
   };
 
-  const closeDialog = () => setState((current) => ({ ...current, dialog: null, form: blankForm, formError: "" }));
+  const closeDialog = () => setState((current) => ({ ...current, dialog: null, form: blankForm, formErrors: {} }));
 
   useEffect(() => {
     if (!state.dialog) {
@@ -94,7 +99,10 @@ function Users() {
     const focusable = dialog?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled])');
     nameInputRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setState((current) => ({ ...current, dialog: null, form: blankForm, formError: "" }));
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeDialog();
+      }
       if (event.key === "Tab" && focusable?.length) {
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
@@ -107,30 +115,34 @@ function Users() {
         }
       }
     };
+    const handleFocusIn = (event: FocusEvent) => {
+      if (!dialog?.contains(event.target as Node)) {
+        (focusable?.[0] ?? nameInputRef.current)?.focus();
+      }
+    };
     dialog?.addEventListener("keydown", handleKeyDown);
-    return () => dialog?.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener("focusin", handleFocusIn);
+    return () => {
+      dialog?.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("focusin", handleFocusIn);
+    };
   }, [state.dialog]);
 
   const saveEmployee = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const form = state.form;
-    if (!form.name.trim() || !form.cpf.trim() || !form.store.trim()) {
-      setState((current) => ({ ...current, formError: "Preencha nome, CPF e loja para continuar." }));
+    const errors = validateEmployeeForm(state.form);
+    if (Object.keys(errors).length > 0) {
+      setState((current) => ({ ...current, formErrors: errors }));
+      window.requestAnimationFrame(() => {
+        dialogRef.current?.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
+      });
       return;
     }
-    if (form.cpf.replace(/\D/g, "").length !== 11) {
-      setState((current) => ({ ...current, formError: "Informe um CPF com 11 dígitos." }));
-      return;
-    }
+    const form = sanitizeEmployeeForm(state.form);
     const editingId = state.dialog?.type === "employee" ? state.dialog.editingId : null;
     const existingEmployee = editingId ? state.employees.find((employee) => employee.id === editingId) : undefined;
     const employee: Employee = {
       ...form,
-      name: form.name.trim(),
-      cpf: form.cpf.trim(),
-      store: form.store.trim(),
-      phone: form.phone.trim(),
-      email: form.email.trim(),
       id: editingId ?? crypto.randomUUID(),
       lastAccess: existingEmployee?.lastAccess ?? "Ainda não acessou",
     };
@@ -144,7 +156,7 @@ function Users() {
       auditEvents: [auditEvent, ...current.auditEvents],
       dialog: null,
       form: blankForm,
-      formError: "",
+      formErrors: {},
       notice: editingId ? "Funcionário atualizado nesta sessão." : "Funcionário adicionado nesta sessão.",
     }));
   };
@@ -193,12 +205,12 @@ function Users() {
 
       {section === "employees" && <>
         <div className={styles.toolbar}>
-          <label className={styles.searchBox}>
+          <label className={styles.searchBox} htmlFor={employeeSearchId}>
             <FontAwesomeIcon icon={faMagnifyingGlass} aria-hidden="true" />
             <span className={styles.visuallyHidden}>Buscar por nome ou CPF</span>
-            <input value={state.search} onChange={(event) => setState((current) => ({ ...current, search: event.target.value }))} placeholder="Buscar por nome ou CPF..." />
+            <input id={employeeSearchId} value={state.search} onChange={(event) => setState((current) => ({ ...current, search: event.target.value }))} placeholder="Buscar por nome ou CPF..." />
           </label>
-          <label className={styles.filterLabel}><span className={styles.visuallyHidden}>Filtrar por cargo</span><select value={state.roleFilter} onChange={(event) => setState((current) => ({ ...current, roleFilter: event.target.value }))}><option value="">Todos os cargos</option>{employeeRoles.map((role) => <option key={role} value={role}>{role}</option>)}</select></label>
+          <label className={styles.filterLabel} htmlFor={employeeRoleFilterId}><span className={styles.visuallyHidden}>Filtrar por cargo</span><DropdownSelect id={employeeRoleFilterId} value={state.roleFilter} onChange={(event) => setState((current) => ({ ...current, roleFilter: event.target.value }))}><option value="">Todos os cargos</option>{employeeRoles.map((role) => <option key={role} value={role}>{role}</option>)}</DropdownSelect></label>
           <button type="button" className={styles.addButton} onClick={() => navigate("/users/new")}><FontAwesomeIcon icon={faPlus} aria-hidden="true" /> Novo Funcionário</button>
         </div>
         <p className={styles.sessionNote}>Funcionários, permissões e auditoria ficam somente nesta sessão do navegador.</p>
@@ -221,16 +233,15 @@ function Users() {
             <button type="button" className={styles.closeButton} aria-label="Fechar formulário" onClick={closeDialog}><FontAwesomeIcon icon={faXmark} aria-hidden="true" /></button>
           </div>
           {state.dialog.type === "employee" ? <form onSubmit={saveEmployee} noValidate>
-            <label htmlFor="employee-name">Nome completo<input id="employee-name" ref={nameInputRef} value={state.form.name} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, name: event.target.value } }))} autoComplete="name" /></label>
-            <label htmlFor="employee-cpf">CPF<input id="employee-cpf" value={state.form.cpf} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, cpf: event.target.value } }))} inputMode="numeric" autoComplete="off" /></label>
-            <label htmlFor="employee-phone">Telefone<input id="employee-phone" type="tel" value={state.form.phone} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, phone: event.target.value } }))} autoComplete="tel" /></label>
-            <label htmlFor="employee-email">E-mail<input id="employee-email" type="email" value={state.form.email} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, email: event.target.value } }))} autoComplete="email" /></label>
+            <label htmlFor="employee-name">Nome completo<input id="employee-name" maxLength={100} ref={nameInputRef} value={state.form.name} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, name: event.target.value }, formErrors: { ...current.formErrors, name: undefined } }))} autoComplete="name" aria-invalid={Boolean(state.formErrors.name)} aria-describedby={state.formErrors.name ? "employee-name-error" : undefined} />{state.formErrors.name && <span className={styles.formError} id="employee-name-error" role="alert">{state.formErrors.name}</span>}</label>
+            <label htmlFor="employee-cpf">CPF<input id="employee-cpf" maxLength={18} value={state.form.cpf} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, cpf: event.target.value }, formErrors: { ...current.formErrors, cpf: undefined } }))} inputMode="numeric" autoComplete="off" aria-invalid={Boolean(state.formErrors.cpf)} aria-describedby={state.formErrors.cpf ? "employee-cpf-error" : undefined} />{state.formErrors.cpf && <span className={styles.formError} id="employee-cpf-error" role="alert">{state.formErrors.cpf}</span>}</label>
+            <label htmlFor="employee-phone">Telefone<input id="employee-phone" maxLength={20} type="tel" value={state.form.phone} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, phone: event.target.value }, formErrors: { ...current.formErrors, phone: undefined } }))} autoComplete="tel" aria-invalid={Boolean(state.formErrors.phone)} aria-describedby={state.formErrors.phone ? "employee-phone-error" : undefined} />{state.formErrors.phone && <span className={styles.formError} id="employee-phone-error" role="alert">{state.formErrors.phone}</span>}</label>
+            <label htmlFor="employee-email">E-mail<input id="employee-email" maxLength={254} type="email" value={state.form.email} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, email: event.target.value }, formErrors: { ...current.formErrors, email: undefined } }))} autoComplete="email" aria-invalid={Boolean(state.formErrors.email)} aria-describedby={state.formErrors.email ? "employee-email-error" : undefined} />{state.formErrors.email && <span className={styles.formError} id="employee-email-error" role="alert">{state.formErrors.email}</span>}</label>
             <div className={styles.formRow}>
-              <label htmlFor="employee-role">Cargo<select id="employee-role" value={state.form.role} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, role: event.target.value as EmployeeRole } }))}>{employeeRoles.map((role) => <option key={role}>{role}</option>)}</select></label>
-              <label htmlFor="employee-status">Status<select id="employee-status" value={state.form.status} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, status: event.target.value as "Ativo" | "Inativo" } }))}><option>Ativo</option><option>Inativo</option></select></label>
+              <label htmlFor="employee-role">Cargo<DropdownSelect id="employee-role" value={state.form.role} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, role: event.target.value as EmployeeRole }, formErrors: { ...current.formErrors, role: undefined } }))} ariaInvalid={Boolean(state.formErrors.role)} ariaDescribedBy={state.formErrors.role ? "employee-role-error" : undefined}>{employeeRoles.map((role) => <option key={role}>{role}</option>)}</DropdownSelect>{state.formErrors.role && <span className={styles.formError} id="employee-role-error" role="alert">{state.formErrors.role}</span>}</label>
+              <label htmlFor="employee-status">Status<DropdownSelect id="employee-status" value={state.form.status} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, status: event.target.value as "Ativo" | "Inativo" } }))}><option>Ativo</option><option>Inativo</option></DropdownSelect></label>
             </div>
-            <label htmlFor="employee-store">Loja<input id="employee-store" value={state.form.store} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, store: event.target.value } }))} /></label>
-            {state.formError && <p className={styles.formError} role="alert">{state.formError}</p>}
+            <label htmlFor="employee-store">Loja<input id="employee-store" maxLength={100} value={state.form.store} onChange={(event) => setState((current) => ({ ...current, form: { ...current.form, store: event.target.value }, formErrors: { ...current.formErrors, store: undefined } }))} aria-invalid={Boolean(state.formErrors.store)} aria-describedby={state.formErrors.store ? "employee-store-error" : undefined} />{state.formErrors.store && <span className={styles.formError} id="employee-store-error" role="alert">{state.formErrors.store}</span>}</label>
             <div className={styles.formActions}><button type="button" className={styles.cancelButton} onClick={closeDialog}>Cancelar</button><button type="submit" className={styles.addButton}>Salvar funcionário</button></div>
           </form> : null}
         </section>

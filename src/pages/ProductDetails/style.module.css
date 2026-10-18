@@ -32,7 +32,7 @@
     justify-content: space-between;
     gap: 1rem;
     padding: 0 0.5rem;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
 }
 
 .heading p {
@@ -43,12 +43,12 @@
 
 .heading h1 {
     margin: 0;
-    color: #102a43;
+    color: var(--motta-blue);
     font-size: clamp(1.35rem, 3vw, 2rem);
 }
 
 .heading > span {
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font-size: 0.9rem;
 }
 
@@ -65,15 +65,15 @@
 .status,
 .feedback {
     padding: clamp(1.5rem, 4vw, 3rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    color: #373431;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #373431);
 }
 
 .feedback h1 {
     margin-top: 0;
-    color: #102a43;
+    color: var(--motta-blue);
 }
 
 .feedback [role="alert"] {

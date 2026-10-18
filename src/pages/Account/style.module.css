@@ -17,13 +17,13 @@
 
 .heading > p:last-child {
   margin: 0;
-  color: #514b45;
+  color: var(--a11y-text-muted, #514b45);
   line-height: 1.5;
 }
 
 .eyebrow {
   margin: 0;
-  color: #514b45;
+  color: var(--a11y-text-muted, #514b45);
   font-size: 0.875rem;
   font-weight: 700;
 }
@@ -38,14 +38,14 @@
 .detail {
   min-width: 0;
   padding: 1.25rem;
-  border: 1px solid rgba(16, 42, 67, 0.14);
+  border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
   border-radius: 0.75rem;
-  background: var(--main-white);
+  background: var(--a11y-surface, var(--main-white));
 }
 
 .detail dt {
   margin-bottom: 0.5rem;
-  color: #514b45;
+  color: var(--a11y-text-muted, #514b45);
   font-size: 0.875rem;
   font-weight: 700;
 }

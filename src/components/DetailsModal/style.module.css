@@ -6,12 +6,12 @@
     place-items: center;
     padding: 1rem;
     background: rgba(22, 22, 22, 0.78);
-    animation: backdropFadeIn 180ms ease-out both;
+    animation: backdropFadeIn calc(180ms * var(--a11y-motion-factor, 1)) ease-out both;
 }
 
 .backdropClosing {
     pointer-events: none;
-    animation: backdropFadeOut 180ms ease-in both;
+    animation: backdropFadeOut calc(180ms * var(--a11y-motion-factor, 1)) ease-in both;
 }
 
 .dialog {
@@ -21,15 +21,15 @@
     max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     padding: clamp(1.25rem, 4vw, 2rem);
     border-radius: 1.25rem;
-    background: #faf9f8;
+    background: var(--a11y-surface-raised, #faf9f8);
     box-shadow: 0 1rem 2.5rem rgba(0, 0, 0, 0.3);
-    color: #4f4f4f;
-    animation: dialogFadeIn 180ms ease-out both;
+    color: var(--a11y-text-muted, #4f4f4f);
+    animation: dialogFadeIn calc(180ms * var(--a11y-motion-factor, 1)) ease-out both;
 }
 
 .dialogClosing {
     pointer-events: none;
-    animation: dialogFadeOut 180ms ease-in both;
+    animation: dialogFadeOut calc(180ms * var(--a11y-motion-factor, 1)) ease-in both;
 }
 
 @keyframes backdropFadeIn {
@@ -87,7 +87,7 @@
 }
 
 .header h2 {
-    color: #262626;
+    color: var(--a11y-text-muted, #262626);
     font-size: clamp(1.25rem, 4vw, 1.5rem);
     line-height: 1.25;
 }
@@ -111,7 +111,7 @@
 
 .description {
     margin-top: 1.25rem;
-    color: #4f4f4f;
+    color: var(--a11y-text-muted, #4f4f4f);
     line-height: 1.5;
 }
 

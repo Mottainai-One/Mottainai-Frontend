@@ -6,10 +6,10 @@
     max-width: 420px;
     margin-top: 32px;
     padding: 20px 32px 24px;
-    background-color: var(--main-white);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    background-color: var(--a11y-surface, var(--main-white));
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
     color: var(--motta-blue);
 }
 
@@ -46,9 +46,9 @@
 
 .tableHeader {
     padding: 10px 14px;
-    background-color: rgba(16, 42, 67, 0.03);
+    background-color: rgba(var(--motta-blue-rgb), 0.03);
     border-bottom: 1px solid var(--motta-light-blue);
-    color: #6f6862;
+    color: var(--a11y-text-muted, #6f6862);
     font-size: 0.875rem;
     font-weight: 500;
 }
@@ -57,8 +57,8 @@
     flex: 1 1 0;
     min-height: 42px;
     padding: 7px 14px;
-    border-bottom: 1px solid rgba(16, 42, 67, 0.14);
-    color: #6f6862;
+    border-bottom: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
+    color: var(--a11y-text-muted, #6f6862);
     font-size: 0.875rem;
 }
 
@@ -91,7 +91,7 @@
 
 .low {
     background-color: #dedede;
-    color: #686868;
+    color: var(--a11y-text-muted, #686868);
 }
 
 @media (max-width: 1024px) {

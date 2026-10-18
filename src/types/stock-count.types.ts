@@ -27,6 +27,7 @@ export interface NewStockCountFormState {
 
 export interface NewStockCountPageState {
   form: NewStockCountFormState;
+  formErrors: Partial<Record<keyof NewStockCountFormState, string>>;
   products: StockCountProduct[];
   lastBarcode: string;
   feedback: string;

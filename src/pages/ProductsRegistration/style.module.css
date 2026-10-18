@@ -7,10 +7,10 @@
 
 .card {
     padding: clamp(1.25rem, 3vw, 2.5rem);
-    border: 1px solid rgba(16, 42, 67, 0.14);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .card h1 {
@@ -32,7 +32,7 @@
     border: 0;
     border-bottom: 2px solid transparent;
     background: transparent;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
     cursor: pointer;
 }
@@ -61,11 +61,11 @@
     padding: 2rem;
     border: 2px dashed #7b746d;
     border-radius: 0.65rem;
-    background: #f7f5f3;
-    color: #625d58;
+    background: var(--a11y-surface-raised, #f7f5f3);
+    color: var(--a11y-text-muted, #625d58);
     text-align: center;
     cursor: pointer;
-    transition: 0.2s;
+    transition: calc(0.2s * var(--a11y-motion-factor, 1));
 }
 
 .dropzone:hover,
@@ -121,7 +121,7 @@ input:focus-visible {
     padding: 1rem 1.25rem;
     border: 1px solid #86ad78;
     border-radius: 0.75rem;
-    background: #fff;
+    background: var(--a11y-surface, var(--main-white));
     box-shadow: 0 5px 16px rgba(32, 92, 28, 0.12);
     font-size: 1.6rem;
     text-align: left;
@@ -141,7 +141,7 @@ input:focus-visible {
 }
 
 .selected-file small {
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
 }
 
 .actions {
@@ -170,13 +170,13 @@ input:focus-visible {
 .primary {
     border: 1px solid var(--motta-blue);
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .secondary {
     border: 1px solid #d5d0ca;
-    background: #fff;
-    color: #373431;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #373431);
 }
 
 .primary:disabled,
@@ -198,7 +198,7 @@ input:focus-visible {
     padding: 0.5rem 0.75rem;
     border: 1px solid #d5d0ca;
     border-radius: 0.55rem;
-    background: #fff;
+    background: var(--a11y-surface, var(--main-white));
     font: inherit;
 }
 
@@ -224,7 +224,7 @@ input:focus-visible {
     flex-direction: column;
     gap: 0.4rem;
     min-width: 0;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-size: 0.9rem;
     font-weight: 700;
 }
@@ -236,8 +236,15 @@ input:focus-visible {
     padding: 0.6rem 0.85rem;
     border: 1px solid #aaa29a;
     border-radius: 0.5rem;
-    background: #faf9f8;
+    background: var(--a11y-surface-raised, #faf9f8);
     font: inherit;
+}
+
+.fieldError {
+    /* Texto */
+    color: #a32720;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .wide {
@@ -253,12 +260,12 @@ input:focus-visible {
     justify-content: center;
     padding: 1rem;
     background: rgba(10, 20, 13, 0.55);
-    animation: registrationBackdropFadeIn 180ms ease-out both;
+    animation: registrationBackdropFadeIn calc(180ms * var(--a11y-motion-factor, 1)) ease-out both;
 }
 
 .backdropClosing {
     pointer-events: none;
-    animation: registrationBackdropFadeOut 180ms ease-in both;
+    animation: registrationBackdropFadeOut calc(180ms * var(--a11y-motion-factor, 1)) ease-in both;
 }
 
 .modal {
@@ -268,14 +275,14 @@ input:focus-visible {
     max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     padding: clamp(1rem, 3vw, 2rem);
     border-radius: 0.75rem;
-    background: #fff;
+    background: var(--a11y-surface, var(--main-white));
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
-    animation: registrationModalFadeIn 180ms ease-out both;
+    animation: registrationModalFadeIn calc(180ms * var(--a11y-motion-factor, 1)) ease-out both;
 }
 
 .modalClosing {
     pointer-events: none;
-    animation: registrationModalFadeOut 180ms ease-in both;
+    animation: registrationModalFadeOut calc(180ms * var(--a11y-motion-factor, 1)) ease-in both;
 }
 
 @keyframes registrationBackdropFadeIn {
@@ -339,7 +346,7 @@ input:focus-visible {
     height: 2.5rem;
     border: 0;
     border-radius: 50%;
-    background: #f0ece8;
+    background: var(--a11y-surface-raised, #f0ece8);
     cursor: pointer;
 }
 

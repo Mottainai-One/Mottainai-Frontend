@@ -29,10 +29,10 @@
     padding: 0.55rem 1.25rem;
     border-radius: 0.6rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .searchField {
@@ -45,10 +45,10 @@
     min-height: 2.35rem;
     box-sizing: border-box;
     padding: 0.45rem 0.8rem;
-    border: 1px solid rgba(16, 42, 67, 0.14);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.6rem;
-    background: var(--main-white);
-    color: #625d58;
+    background: var(--a11y-surface, var(--main-white));
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
 }
 
@@ -97,6 +97,12 @@
 .critical {
     background-color: #f9dfe1;
     color: #8f151b;
+}
+
+:global(html[data-a11y-theme="dark"]) :global(body) .tableSection .moderate,
+:global(html[data-a11y-theme="dark"]) :global(body) .tableSection .high,
+:global(html[data-a11y-theme="dark"]) :global(body) .tableSection .critical {
+    color: var(--main-white) !important;
 }
 
 .tableSection {

@@ -18,6 +18,8 @@ import {
 import {
   validateRecoveryCode,
   validateRecoveryEmail,
+  sanitizeRecoveryCode,
+  sanitizeRecoveryEmail,
 } from '@/utils/passwordRecoveryValidation';
 
 function PasswordRecovery() {
@@ -35,6 +37,7 @@ function PasswordRecovery() {
     isLoading: false,
     feedback: null,
     feedbackType: null,
+    fieldErrors: {},
   });
 
   function updateState(changes: Partial<PasswordRecoveryState>) {
@@ -42,30 +45,32 @@ function PasswordRecovery() {
   }
 
   function handleEmailChange(event: ChangeEvent<HTMLInputElement>) {
-    updateState({ email: event.target.value, feedback: null, feedbackType: null });
+    updateState({ email: event.target.value, feedback: null, feedbackType: null, fieldErrors: { ...state.fieldErrors, email: undefined } });
   }
 
   function handleCodeChange(event: ChangeEvent<HTMLInputElement>) {
-    const code = event.target.value.replace(/\D/g, '').slice(0, 6);
-    updateState({ code, feedback: null, feedbackType: null });
+    const code = sanitizeRecoveryCode(event.target.value);
+    updateState({ code, feedback: null, feedbackType: null, fieldErrors: { ...state.fieldErrors, code: undefined } });
   }
 
   async function handleEmailSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const validationError = validateRecoveryEmail(state.email);
     if (validationError) {
-      updateState({ feedback: validationError, feedbackType: 'error' });
+      updateState({ feedback: null, feedbackType: null, fieldErrors: { email: validationError } });
+      window.requestAnimationFrame(() => document.getElementById(emailFieldId)?.focus());
       return;
     }
 
     updateState({ isLoading: true, feedback: null, feedbackType: null });
     try {
-      const response = await sendRecoveryCode(state.email.trim());
+      const response = await sendRecoveryCode(sanitizeRecoveryEmail(state.email));
       updateState({
         step: 'code',
         isLoading: false,
         feedback: response.message,
         feedbackType: 'success',
+        fieldErrors: {},
       });
     } catch (error) {
       updateState({
@@ -80,13 +85,14 @@ function PasswordRecovery() {
     event.preventDefault();
     const validationError = validateRecoveryCode(state.code);
     if (validationError) {
-      updateState({ feedback: validationError, feedbackType: 'error' });
+      updateState({ feedback: null, feedbackType: null, fieldErrors: { code: validationError } });
+      window.requestAnimationFrame(() => document.getElementById(codeFieldId)?.focus());
       return;
     }
 
     updateState({ isLoading: true, feedback: null, feedbackType: null });
     try {
-      const response = await verifyRecoveryCode(state.email.trim(), state.code);
+      const response = await verifyRecoveryCode(sanitizeRecoveryEmail(state.email), sanitizeRecoveryCode(state.code));
       navigate(`/newPassword?token=${encodeURIComponent(response.resetToken)}`, {
         replace: true,
         state: { userEmail: state.email.trim() },
@@ -101,7 +107,7 @@ function PasswordRecovery() {
   }
 
   function handleBackToEmail() {
-    updateState({ step: 'email', code: '', feedback: null, feedbackType: null });
+    updateState({ step: 'email', code: '', feedback: null, feedbackType: null, fieldErrors: {} });
   }
 
   function handleBackToLogin() {
@@ -148,8 +154,11 @@ function PasswordRecovery() {
             required
             value={state.email}
             onChange={handleEmailChange}
-            aria-invalid={state.feedbackType === 'error' ? 'true' : undefined}
+            maxLength={254}
+            aria-invalid={Boolean(state.fieldErrors.email)}
+            aria-describedby={state.fieldErrors.email ? `${emailFieldId}-error` : state.feedback ? feedbackId : undefined}
           />
+          {state.fieldErrors.email && <p id={`${emailFieldId}-error`} className={styles.errorMessage} role="alert">{state.fieldErrors.email}</p>}
           <button type="submit" className={styles.submitButton} disabled={state.isLoading}>
             {state.isLoading ? 'Enviando código...' : 'Enviar código'}
           </button>
@@ -191,8 +200,10 @@ function PasswordRecovery() {
           required
           value={state.code}
           onChange={handleCodeChange}
-          aria-invalid={state.feedbackType === 'error' ? 'true' : undefined}
+          aria-invalid={Boolean(state.fieldErrors.code)}
+          aria-describedby={state.fieldErrors.code ? `${codeFieldId}-error` : state.feedback ? feedbackId : undefined}
         />
+        {state.fieldErrors.code && <p id={`${codeFieldId}-error`} className={styles.errorMessage} role="alert">{state.fieldErrors.code}</p>}
         <p className={styles.codeHint}>Para testar o fluxo, use o código 123456.</p>
         <button type="submit" className={styles.submitButton} disabled={state.isLoading}>
           {state.isLoading ? 'Verificando...' : 'Verificar código'}

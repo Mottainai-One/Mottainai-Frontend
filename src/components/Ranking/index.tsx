@@ -47,7 +47,11 @@ function Ranking({
                     {sortedData.map((item, index) => (
                         <div className={styles.row} role="row" key={item.id}>
                             <span className={styles.name} role="cell">{item.name}</span>
-                            <span className={`${styles.value} ${styles[getValueTone(index)]}`} role="cell">
+                            <span
+                                className={`${styles.value} ${styles[getValueTone(index)]}`}
+                                data-a11y-light-surface="true"
+                                role="cell"
+                            >
                                 {valueFormatter.format(item.value)}{valueSuffix}
                             </span>
                         </div>

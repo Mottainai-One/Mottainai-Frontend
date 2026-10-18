@@ -7,11 +7,10 @@ import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
 import lontraOrgulhosa from '@/assets/imgs/lontra-orgulhosa.png';
 import type {
-  NewPasswordFormState,
   NewPasswordState,
 } from '@/types/password-recovery.types';
 import { resetPassword } from '@/services/passwordRecoveryService';
-import { validateNewPassword } from '@/utils/passwordRecoveryValidation';
+import { sanitizeNewPassword, validateNewPassword } from '@/utils/passwordRecoveryValidation';
 
 function NewPassword() {
   const [searchParams] = useSearchParams();
@@ -21,55 +20,53 @@ function NewPassword() {
   const feedbackId = useId();
   const resetToken = searchParams.get('token');
 
-  const [formData, setFormData] = useState<NewPasswordFormState>({
-    password: '',
-    passwordConfirmation: '',
-  });
   const [state, setState] = useState<NewPasswordState>({
+    form: { password: '', passwordConfirmation: '' },
+    visibility: { password: false, confirmation: false },
     isLoading: false,
     feedback: null,
     feedbackType: null,
+    validationErrors: {},
   });
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmationVisible, setIsConfirmationVisible] = useState(false);
 
   function handlePasswordChange(event: ChangeEvent<HTMLInputElement>) {
-    setFormData((previous) => ({ ...previous, password: event.target.value }));
-    setState((previous) => ({ ...previous, feedback: null, feedbackType: null }));
+    setState((previous) => ({ ...previous, form: { ...previous.form, password: event.target.value }, validationErrors: { ...previous.validationErrors, password: undefined }, feedback: null, feedbackType: null }));
   }
 
   function handleConfirmationChange(event: ChangeEvent<HTMLInputElement>) {
-    setFormData((previous) => ({ ...previous, passwordConfirmation: event.target.value }));
-    setState((previous) => ({ ...previous, feedback: null, feedbackType: null }));
+    setState((previous) => ({ ...previous, form: { ...previous.form, passwordConfirmation: event.target.value }, validationErrors: { ...previous.validationErrors, passwordConfirmation: undefined }, feedback: null, feedbackType: null }));
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!resetToken) {
-      setState({
+      setState((previous) => ({
+        ...previous,
         isLoading: false,
         feedback: 'Sua sessão de recuperação expirou. Solicite um novo código.',
         feedbackType: 'error',
-      });
+      }));
       return;
     }
 
-    const validationError = validateNewPassword(formData.password, formData.passwordConfirmation);
-    if (validationError) {
-      setState({ isLoading: false, feedback: validationError, feedbackType: 'error' });
+    const validationErrors = validateNewPassword(state.form.password, state.form.passwordConfirmation);
+    if (Object.keys(validationErrors).length > 0) {
+      setState((previous) => ({ ...previous, isLoading: false, feedback: null, feedbackType: null, validationErrors }));
+      window.requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
       return;
     }
 
-    setState({ isLoading: true, feedback: null, feedbackType: null });
+    setState((previous) => ({ ...previous, isLoading: true, feedback: null, feedbackType: null, validationErrors: {} }));
     try {
-      const response = await resetPassword(resetToken, formData.password);
-      setState({ isLoading: false, feedback: response.message, feedbackType: 'success' });
+      const response = await resetPassword(resetToken, sanitizeNewPassword(state.form.password));
+      setState((previous) => ({ ...previous, isLoading: false, feedback: response.message, feedbackType: 'success', validationErrors: {} }));
     } catch (error) {
-      setState({
+      setState((previous) => ({
+        ...previous,
         isLoading: false,
         feedback: error instanceof Error ? error.message : 'Não foi possível alterar a senha.',
         feedbackType: 'error',
-      });
+      }));
     }
   }
 
@@ -128,50 +125,56 @@ function NewPassword() {
           <input
             id={passwordFieldId}
             name="password"
-            type={isPasswordVisible ? 'text' : 'password'}
+            type={state.visibility.password ? 'text' : 'password'}
             className={styles.input}
             placeholder="Nova senha"
             autoComplete="new-password"
             required
-            value={formData.password}
+            maxLength={128}
+            value={state.form.password}
             onChange={handlePasswordChange}
-            aria-invalid={state.feedbackType === 'error' ? 'true' : undefined}
+            aria-invalid={Boolean(state.validationErrors.password)}
+            aria-describedby={state.validationErrors.password ? `${passwordFieldId}-error` : undefined}
           />
           <button
             type="button"
             className={styles.togglePasswordButton}
-            onClick={() => setIsPasswordVisible((previous) => !previous)}
-            aria-pressed={isPasswordVisible}
-            aria-label={isPasswordVisible ? 'Ocultar nova senha' : 'Mostrar nova senha'}
+            onClick={() => setState((current) => ({ ...current, visibility: { ...current.visibility, password: !current.visibility.password } }))}
+            aria-pressed={state.visibility.password}
+            aria-label={state.visibility.password ? 'Ocultar nova senha' : 'Mostrar nova senha'}
           >
-            <FontAwesomeIcon icon={isPasswordVisible ? faEyeSlash : faEye} aria-hidden="true" />
+            <FontAwesomeIcon icon={state.visibility.password ? faEyeSlash : faEye} aria-hidden="true" />
           </button>
         </div>
+        {state.validationErrors.password && <p id={`${passwordFieldId}-error`} className={styles.errorMessage} role="alert">{state.validationErrors.password}</p>}
         <p className={styles.passwordRequirements}>Use pelo menos 8 caracteres.</p>
         <label htmlFor={confirmationFieldId} className={styles.visuallyHidden}>Confirme sua nova senha</label>
         <div className={styles.passwordField}>
           <input
             id={confirmationFieldId}
             name="passwordConfirmation"
-            type={isConfirmationVisible ? 'text' : 'password'}
+            type={state.visibility.confirmation ? 'text' : 'password'}
             className={styles.input}
             placeholder="Confirme sua nova senha"
             autoComplete="new-password"
             required
-            value={formData.passwordConfirmation}
+            maxLength={128}
+            value={state.form.passwordConfirmation}
             onChange={handleConfirmationChange}
-            aria-invalid={state.feedbackType === 'error' ? 'true' : undefined}
+            aria-invalid={Boolean(state.validationErrors.passwordConfirmation)}
+            aria-describedby={state.validationErrors.passwordConfirmation ? `${confirmationFieldId}-error` : undefined}
           />
           <button
             type="button"
             className={styles.togglePasswordButton}
-            onClick={() => setIsConfirmationVisible((previous) => !previous)}
-            aria-pressed={isConfirmationVisible}
-            aria-label={isConfirmationVisible ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'}
+            onClick={() => setState((current) => ({ ...current, visibility: { ...current.visibility, confirmation: !current.visibility.confirmation } }))}
+            aria-pressed={state.visibility.confirmation}
+            aria-label={state.visibility.confirmation ? 'Ocultar confirmação de senha' : 'Mostrar confirmação de senha'}
           >
-            <FontAwesomeIcon icon={isConfirmationVisible ? faEyeSlash : faEye} aria-hidden="true" />
+            <FontAwesomeIcon icon={state.visibility.confirmation ? faEyeSlash : faEye} aria-hidden="true" />
           </button>
         </div>
+        {state.validationErrors.passwordConfirmation && <p id={`${confirmationFieldId}-error`} className={styles.errorMessage} role="alert">{state.validationErrors.passwordConfirmation}</p>}
         <button type="submit" className={styles.submitButton} disabled={state.isLoading}>
           {state.isLoading ? 'Salvando...' : 'Alterar senha'}
         </button>

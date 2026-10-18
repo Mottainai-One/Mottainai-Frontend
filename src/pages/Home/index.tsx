@@ -3,6 +3,7 @@ import DonutChart from '@/components/DonutChart';
 import InfoCard from "@/components/InfoCard"
 import HistoricalChart from '@/components/HistoricalChart';
 import Ranking from '@/components/Ranking';
+import JargonTooltip from '@/components/JargonTooltip';
 import { products } from '@/data/products';
 import { wastedItemsByCategory } from '@/data/wastedItemsByCategory';
 import { useHistoricalMetrics } from '@/hooks/useHistoricalMetrics';
@@ -124,7 +125,7 @@ function Home(){
                 )}
             </div>
             <section className={styles.criticalityCard} aria-labelledby="criticality-title">
-                <h2 id="criticality-title">Nível de criticidade – SKUs monitorados</h2>
+                <h2 id="criticality-title">Nível de <JargonTooltip term="criticidade" explanation="Grau de atenção necessário para um produto, conforme os critérios do sistema." /> – <JargonTooltip term="SKUs" explanation="Códigos únicos usados para identificar cada produto no estoque." /> monitorados</h2>
                 <div
                     className={styles.criticalityTableRegion}
                     role="region"
@@ -146,7 +147,10 @@ function Home(){
                             {orderedCriticalitySummary.map((item) => (
                                 <tr key={item.id}>
                                     <th scope="row">
-                                        <span className={`${styles.criticalityStatus} ${criticalityStatusClasses[item.id]}`}>
+                                            <span
+                                                className={`${styles.criticalityStatus} ${criticalityStatusClasses[item.id]}`}
+                                                data-a11y-light-surface="true"
+                                            >
                                             {item.status}
                                         </span>
                                     </th>

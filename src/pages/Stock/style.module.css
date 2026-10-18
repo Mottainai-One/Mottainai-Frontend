@@ -21,16 +21,16 @@
     padding: 0.55rem 1.25rem;
     border-radius: 0.6rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-weight: 700;
     text-decoration: none;
-    transition: all 0.3s ease-in-out;
+    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
 }
 
 .newCountButton:hover,
 .reportButton:hover {
-    background: var(--motta-blue);
-    color: var(--main-white);
+    background: var(--motta-light-blue);
+    color: var(--a11y-on-brand, var(--main-white));
 }
 
 .newCountButton:focus-visible,
@@ -51,7 +51,7 @@
     padding: 0.3rem 0.7rem;
     border-radius: 0.35rem;
     background: #ded8d0;
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-size: 0.75rem;
     font-weight: 700;
     text-decoration: none;

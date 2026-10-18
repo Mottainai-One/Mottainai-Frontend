@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
@@ -43,6 +44,10 @@ function MainLayout() {
     : normalizedPathname.startsWith("/users/")
       ? "Usuários"
     : (PAGE_TITLES[normalizedPathname] ?? "Mottainai");
+
+  useEffect(() => {
+    document.title = `${pageTitle} | Mottainai`;
+  }, [pageTitle]);
   const isStockFlowActive =
     normalizedPathname === "/stock" || normalizedPathname.startsWith("/stock/");
   const isAccountingFlowActive =

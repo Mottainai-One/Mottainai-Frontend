@@ -1,12 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 
-:root {
-    --motta-blue: rgba(16, 42, 67, 1);
-    --motta-light-blue: rgba(45, 87, 120, 1);
-    --main-gray: rgba(168, 164, 164, 1);
-    --main-white: rgba(255, 255, 255, 1);
-}
-
 body {
     min-height: 100vh;
     height: 100%;
@@ -24,7 +17,7 @@ img {
     display: grid;
     grid-template-columns: 1fr 1fr;
     min-height: 100vh;
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface, var(--main-white));
 }
 
 .loginSection {
@@ -33,7 +26,7 @@ img {
     justify-content: center;
     align-items: center;
     padding: 2rem;
-    background-color: var(--main-white);
+    background-color: var(--a11y-surface, var(--main-white));
 }
 
 .logo {
@@ -154,12 +147,12 @@ img {
     background-color: var(--motta-blue);
     border: none;
     border-radius: 50px;
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-size: 1.1rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out, outline-offset 0.2s ease;
+    transition: background-color calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out, outline-offset calc(0.2s * var(--a11y-motion-factor, 1)) ease;
 }
 
 .submitButton:hover,

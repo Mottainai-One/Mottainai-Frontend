@@ -11,7 +11,7 @@
     border: 2px solid currentColor;
     border-right-color: transparent;
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    animation: spin calc(0.7s * var(--a11y-motion-factor, 1)) linear infinite;
 }
 
 @keyframes spin {
@@ -22,6 +22,6 @@
 
 @media (prefers-reduced-motion: reduce) {
     .spinner {
-        animation-duration: 1.5s;
+        animation-duration: calc(1.5s * var(--a11y-motion-factor, 1));
     }
 }

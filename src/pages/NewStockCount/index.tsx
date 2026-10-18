@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { useMemo, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import ReusableTable from "@/components/ReusableTable";
@@ -10,6 +11,7 @@ import type {
   StockCountProductStatus,
   StockCountScope,
 } from "@/types/stock-count.types";
+import { sanitizeStockCountBarcode, validateStockCountBarcode } from "@/utils/stockCountValidation";
 import styles from "./style.module.css";
 
 const initialForm: NewStockCountFormState = {
@@ -50,6 +52,7 @@ function getProductStatus(product: StockCountProduct): StockCountProductStatus {
 function NewStockCount() {
   const [state, setState] = useState<NewStockCountPageState>({
     form: initialForm,
+    formErrors: {},
     products: [],
     lastBarcode: "",
     feedback: "",
@@ -69,6 +72,7 @@ function NewStockCount() {
     setState((currentState) => ({
       ...currentState,
       form: { ...currentState.form, [field]: value },
+      formErrors: { ...currentState.formErrors, [field]: undefined },
       feedback: "",
       feedbackIsError: false,
     }));
@@ -80,6 +84,7 @@ function NewStockCount() {
     setState((currentState) => ({
       ...currentState,
       form: { scope, barcode: "" },
+      formErrors: {},
       products: scopeData ? [...scopeData.products] : [],
       lastBarcode: "",
       feedback: scopeData ? "Escopo carregado. Confira os produtos da contagem." : "",
@@ -90,23 +95,17 @@ function NewStockCount() {
 
   const handleBarcodeSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const barcode = state.form.barcode.trim();
-
-    if (!selectedScope) {
+    const barcode = sanitizeStockCountBarcode(state.form.barcode);
+    const formErrors = validateStockCountBarcode({ scope: state.form.scope, barcode });
+    if (Object.keys(formErrors).length > 0) {
       setState((currentState) => ({
         ...currentState,
-        feedback: "Selecione um escopo antes de adicionar um código de barras.",
+        formErrors,
+        feedback: "",
         feedbackIsError: true,
       }));
-      return;
-    }
-
-    if (!barcode) {
-      setState((currentState) => ({
-        ...currentState,
-        feedback: "Digite ou bipe um código de barras.",
-        feedbackIsError: true,
-      }));
+      const firstInvalidId = formErrors.scope ? "stock-count-scope" : "stock-count-barcode";
+      window.requestAnimationFrame(() => document.getElementById(firstInvalidId)?.focus());
       return;
     }
 
@@ -126,6 +125,7 @@ function NewStockCount() {
     setState((currentState) => ({
       ...currentState,
       form: { ...currentState.form, barcode: "" },
+      formErrors: {},
       products: currentState.products.map((item) =>
         item.id === product.id
           ? { ...item, physicalQuantity: (item.physicalQuantity ?? 0) + 1 }
@@ -202,17 +202,20 @@ function NewStockCount() {
             <dd>
               <label className={styles.inlineField} htmlFor="stock-count-scope">
                 <span className={styles["sr-only"]}>Selecione um escopo</span>
-                <select
+                <DropdownSelect
                   id="stock-count-scope"
                   value={state.form.scope}
+                  ariaInvalid={Boolean(state.formErrors.scope)}
+                  ariaDescribedBy={state.formErrors.scope ? "stock-count-scope-error" : undefined}
                   onChange={(event) => handleScopeChange(event.target.value as StockCountScope | "")}
                 >
                   <option value="">Selecione um escopo</option>
                   {stockCountScopes.map((scope) => (
                     <option key={scope.value} value={scope.value}>{scope.label}</option>
                   ))}
-                </select>
+                </DropdownSelect>
               </label>
+              {state.formErrors.scope && <span className={styles.fieldError} id="stock-count-scope-error" role="alert">{state.formErrors.scope}</span>}
             </dd>
           </div>
           <div className={styles.summaryRow}>
@@ -263,13 +266,17 @@ function NewStockCount() {
             <div className={styles.barcodeControls}>
               <input
                 id="stock-count-barcode"
+                maxLength={50}
                 inputMode="numeric"
                 value={state.form.barcode}
+                aria-invalid={Boolean(state.formErrors.barcode)}
+                aria-describedby={state.formErrors.barcode ? "stock-count-barcode-error" : undefined}
                 onChange={(event) => updateForm("barcode", event.target.value)}
                 placeholder="Digite ou bipe o código"
               />
               <button type="submit">Adicionar</button>
             </div>
+            {state.formErrors.barcode && <span className={styles.fieldError} id="stock-count-barcode-error" role="alert">{state.formErrors.barcode}</span>}
           </form>
         </div>
       </div>

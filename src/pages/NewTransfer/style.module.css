@@ -7,10 +7,10 @@
     width: 100%;
     box-sizing: border-box;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
 }
 
 .formHeader {
@@ -30,12 +30,12 @@
 
 .formHeader h1 {
     margin: 0;
-    color: #292623;
+    color: var(--a11y-text-muted, #292623);
     font-size: clamp(1.35rem, 3vw, 2rem);
 }
 
 .requiredHint {
-    color: #827a73;
+    color: var(--a11y-text-muted, #827a73);
     font-size: 0.75rem;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .formField label {
-    color: #373431;
+    color: var(--a11y-text-muted, #373431);
     font-size: 0.85rem;
     font-weight: 700;
 }
@@ -68,8 +68,8 @@
     padding: 0.55rem 0.75rem;
     border: 1px solid #bcb5ae;
     border-radius: 0.45rem;
-    background: #f5f1ee;
-    color: #625d58;
+    background: var(--a11y-surface-raised, #f5f1ee);
+    color: var(--a11y-text-muted, #625d58);
     font: inherit;
 }
 
@@ -142,7 +142,7 @@
 .submitButton {
     border: 0;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     cursor: pointer;
 }
 

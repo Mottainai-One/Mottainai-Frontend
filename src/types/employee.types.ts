@@ -23,6 +23,12 @@ export interface EmployeeFormState {
   status: EmployeeStatus;
 }
 
+export type EmployeeRegistrationDraft = Omit<EmployeeFormState, "role"> & {
+  role: EmployeeRole | "";
+};
+
+export type EmployeeFormErrors = Partial<Record<keyof EmployeeFormState, string>>;
+
 export interface EmployeeRegistrationProps {
   onSubmit: (employee: EmployeeFormState) => void;
   onCancel: () => void;

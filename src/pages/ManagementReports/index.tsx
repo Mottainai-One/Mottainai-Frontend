@@ -1,3 +1,4 @@
+import DropdownSelect from '@/components/DropdownSelect';
 import { type FormEvent, useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { cashClosingDiscrepancies, stockStores } from '@/data/stock';
 import DetailsModal from '@/components/DetailsModal';
@@ -7,6 +8,7 @@ import type {
   ManagementReportFormat,
   ManagementReportPageState,
 } from '@/types/management-report.types';
+import { sanitizeManagementReportFilters, validateManagementReportFilters } from '@/utils/managementReportValidation';
 import {
   buildTopSellingReport,
   createManagementReport,
@@ -21,6 +23,7 @@ import styles from './style.module.css';
 
 const initialState: ManagementReportPageState = {
   filters: { date: '', store: '', category: '' },
+  filterErrors: {},
   reports: [],
   selectedReport: null,
   format: 'csv',
@@ -100,6 +103,7 @@ function ManagementReports() {
     setState((current) => ({
       ...current,
       filters: { ...current.filters, [field]: value },
+      filterErrors: { ...current.filterErrors, [field]: undefined },
       selectedReport: null,
       feedback: '',
       error: '',
@@ -138,21 +142,16 @@ function ManagementReports() {
   const handleExport = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selectedReport) {
-      const missingField = !state.filters.date
-        ? dateId
-        : !state.filters.store
-          ? storeId
-          : !state.filters.category
-            ? categoryId
-            : null;
-
-      if (missingField) {
-        document.getElementById(missingField)?.focus();
+      const filterErrors = validateManagementReportFilters(state.filters);
+      if (Object.keys(filterErrors).length > 0) {
         setState((current) => ({
           ...current,
+          filterErrors,
           feedback: '',
-          error: 'Selecione período, loja e categoria antes de exportar.',
+          error: Object.values(filterErrors)[0] ?? 'Revise os filtros do relatório.',
         }));
+        const firstInvalidId = filterErrors.date ? dateId : filterErrors.store ? storeId : categoryId;
+        document.getElementById(firstInvalidId)?.focus();
         return;
       }
 
@@ -166,7 +165,7 @@ function ManagementReports() {
       }
     }
 
-    const report = selectedReport ?? createManagementReport(state.filters, previewItems);
+    const report = selectedReport ?? createManagementReport(sanitizeManagementReportFilters(state.filters), previewItems);
     const isAlreadyListed = state.reports.some((item) => item.id === report.id);
     setState((current) => ({
       ...current,
@@ -254,10 +253,12 @@ function ManagementReports() {
         <div className={styles.filters}>
           <div className={styles.field}>
             <label htmlFor={dateId}>Período de referência</label>
-            <select
+            <DropdownSelect
               id={dateId}
               required
               value={state.filters.date}
+              ariaInvalid={Boolean(state.filterErrors.date)}
+              ariaDescribedBy={state.filterErrors.date ? `${dateId}-error` : undefined}
               onChange={(event) => updateFilter('date', event.target.value)}
             >
               <option value="" disabled>Selecione um período</option>
@@ -265,15 +266,18 @@ function ManagementReports() {
               {availableDates.map((date) => (
                 <option key={date} value={date}>{date} (amostra)</option>
               ))}
-            </select>
+            </DropdownSelect>
+            {state.filterErrors.date && <p className={styles.fieldError} id={`${dateId}-error`} role="alert">{state.filterErrors.date}</p>}
           </div>
 
           <div className={styles.field}>
             <label htmlFor={storeId}>Loja</label>
-            <select
+            <DropdownSelect
               id={storeId}
               required
               value={state.filters.store}
+              ariaInvalid={Boolean(state.filterErrors.store)}
+              ariaDescribedBy={state.filterErrors.store ? `${storeId}-error` : undefined}
               onChange={(event) => updateFilter('store', event.target.value)}
             >
               <option value="" disabled>Selecione uma loja</option>
@@ -281,15 +285,18 @@ function ManagementReports() {
               {stockStores.map((store) => (
                 <option key={store} value={store}>{store}</option>
               ))}
-            </select>
+            </DropdownSelect>
+            {state.filterErrors.store && <p className={styles.fieldError} id={`${storeId}-error`} role="alert">{state.filterErrors.store}</p>}
           </div>
 
           <div className={styles.field}>
             <label htmlFor={categoryId}>Categoria</label>
-            <select
+            <DropdownSelect
               id={categoryId}
               required
               value={state.filters.category}
+              ariaInvalid={Boolean(state.filterErrors.category)}
+              ariaDescribedBy={state.filterErrors.category ? `${categoryId}-error` : undefined}
               onChange={(event) => updateFilter('category', event.target.value)}
             >
               <option value="" disabled>Selecione uma categoria</option>
@@ -297,7 +304,8 @@ function ManagementReports() {
               {categories.map((category) => (
                 <option key={category} value={category}>{category}</option>
               ))}
-            </select>
+            </DropdownSelect>
+            {state.filterErrors.category && <p className={styles.fieldError} id={`${categoryId}-error`} role="alert">{state.filterErrors.category}</p>}
           </div>
         </div>
 
@@ -404,7 +412,7 @@ function ManagementReports() {
                       <div className={styles.reportActions}>
                         <button
                           type="button"
-                          className={styles.viewButton}
+                          className={`${styles.viewButton} a11y-table-action`}
                           aria-label={`Ver relatório de produtos mais vendidos, gerado em ${dateFormatter.format(new Date(report.createdAt))}`}
                           aria-haspopup="dialog"
                           onClick={(event) => setDetailsDialog({ record: report, trigger: event.currentTarget })}

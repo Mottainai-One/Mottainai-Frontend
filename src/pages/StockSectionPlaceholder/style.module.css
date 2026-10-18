@@ -2,10 +2,10 @@
     width: 100%;
     min-width: 0;
     padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid rgba(16, 42, 67, 0.12);
+    border: 1px solid var(--a11y-card-border, rgba(var(--motta-blue-rgb), 0.12));
     border-radius: 0.75rem;
-    background-color: var(--main-white);
-    box-shadow: 0 2px 8px rgba(16, 42, 67, 0.08);
+    background-color: var(--a11y-surface, var(--main-white));
+    box-shadow: 0 2px 8px rgba(var(--motta-blue-rgb), 0.08);
     color: var(--motta-blue);
 }
 
@@ -16,7 +16,7 @@
 
 .page p {
     margin: 0.75rem 0 1.25rem;
-    color: #625d58;
+    color: var(--a11y-text-muted, #625d58);
     line-height: 1.5;
 }
 
@@ -27,7 +27,7 @@
     padding: 0.55rem 1rem;
     border-radius: 0.55rem;
     background: var(--motta-blue);
-    color: var(--main-white);
+    color: var(--a11y-on-brand, var(--main-white));
     font-weight: 700;
     text-decoration: none;
 }

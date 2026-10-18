@@ -3,7 +3,7 @@
     overflow-y: hidden;
     width: 100%;
     margin-top: -1px;
-    background-color: var(--motta-blue);
+    background-color: var(--a11y-folder-navigation, var(--motta-blue));
 }
 
 .list {
@@ -31,17 +31,22 @@
     padding: 2px 40px 4px;
     margin: 0 6px;
     border-radius: 18px 18px 0 0;
-    background-color: #f7f6f5;
-    opacity: 0.9;
+    background-color: var(--a11y-folder-tab, #f7f6f5);
+    opacity: 1;
     isolation: isolate;
-    color: #6b655f;
+    color: var(--a11y-folder-tab-text, var(--a11y-text-muted, #6b655f));
     font-size: clamp(0.8rem, 1.1vw, 1rem);
     font-weight: 700;
     line-height: 1.2;
     text-align: center;
     text-decoration: none;
     white-space: nowrap;
-    transition: background-color 0.3s ease, color 0.3s ease-in-out, opacity 0.3s ease-in;
+    transition: background-color calc(0.3s * var(--a11y-motion-factor, 1)) ease, color calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out, opacity calc(0.3s * var(--a11y-motion-factor, 1)) ease-in;
+}
+
+:global(html[data-a11y-theme="dark"]) .link {
+    /* Efeitos */
+    filter: drop-shadow(0 0 1px var(--a11y-folder-border));
 }
 
 .link::before,
@@ -71,9 +76,9 @@
 }
 
 .link:hover {
-    background-color: #ffffff;
+    background-color: var(--a11y-folder-active, var(--a11y-surface, var(--main-white)));
     opacity: 1;
-    color: var(--motta-blue);
+    color: var(--a11y-folder-active-text, var(--motta-blue));
 }
 
 .link:focus-visible {
@@ -82,9 +87,14 @@
 }
 
 .active {
-    background-color: var(--main-white);
+    background-color: var(--a11y-folder-active, var(--a11y-surface, var(--main-white)));
     opacity: 1 !important;
-    color: var(--motta-blue);
+    color: var(--a11y-folder-active-text, var(--motta-blue));
+}
+
+:global(html[data-a11y-theme="dark"]) .active {
+    /* Aparência */
+    background-color: var(--a11y-folder-active);
 }
 
 .disabled {
@@ -95,9 +105,9 @@
 }
 
 .disabled:hover {
-    background-color: #f7f6f5;
+    background-color: var(--a11y-folder-tab, #f7f6f5);
     opacity: 0.62;
-    color: #6b655f;
+    color: var(--a11y-text-muted, #6b655f);
 }
 
 @media (max-width: 768px) {

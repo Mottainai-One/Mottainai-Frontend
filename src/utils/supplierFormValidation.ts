@@ -1,4 +1,5 @@
 import type { SupplierFormState } from '@/types/supplier.types';
+import { isValidEmailAddress } from './emailValidation.ts';
 
 export type SupplierFormErrors = Partial<Record<keyof SupplierFormState, string>>;
 
@@ -13,7 +14,7 @@ export function validateSupplierForm(form: SupplierFormState): SupplierFormError
 
   if (!form.addressId) errors.addressId = 'Selecione o endereço vinculado.';
   if (cnpjDigits.length !== 14) errors.cnpj = 'Informe um CNPJ com 14 dígitos.';
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Informe um e-mail válido.';
+  if (email && !isValidEmailAddress(email)) errors.email = 'Informe um e-mail válido.';
   else if (email.length > 254) errors.email = 'Use até 254 caracteres.';
   if (phoneDigits && (phoneDigits.length < 10 || phoneDigits.length > 13)) {
     errors.phone = 'Informe um telefone com DDD e até 13 dígitos.';

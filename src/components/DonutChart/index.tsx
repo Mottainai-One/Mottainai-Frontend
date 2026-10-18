@@ -1,9 +1,183 @@
-import { useEffect, useId, useRef, useState, type MouseEvent } from 'react';
-import { Chart, registerables } from 'chart.js';
+import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import { Chart, registerables, type ArcElement, type Plugin } from 'chart.js';
 import type { DonutChartProps } from '@/types/donut-chart.types';
 import styles from './style.module.css';
 
 Chart.register(...registerables);
+
+function getThemeColor(variable: string, fallback: string): string {
+  return window.getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
+}
+
+function getMotionFactor(): number {
+  const value = window.getComputedStyle(document.documentElement).getPropertyValue("--a11y-motion-factor").trim();
+  const factor = Number(value);
+  return value && Number.isFinite(factor) ? factor : 1;
+}
+
+function hasDarkTheme(): boolean {
+  return document.documentElement.getAttribute("data-a11y-theme") === "dark";
+}
+
+function hasHighContrast(): boolean {
+  return document.documentElement.getAttribute("data-a11y-contrast") === "high";
+}
+
+const highContrastPalette = ["#ff00aa", "#ffd700", "#00ffff", "#ff4d4d", "#00ff66"];
+
+function getSegmentDisplayColor(
+  segment: DonutChartProps["segments"][number],
+  index: number,
+  darkTheme: boolean,
+  highContrast: boolean,
+): string {
+  if (highContrast) {
+    const identity = `${segment.id} ${segment.label}`.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+    if (identity.includes("critical") || identity.includes("critico")) return "#ff4d4d";
+    if (identity.includes("attention") || identity.includes("alto")) return "#ffd700";
+    if (identity.includes("regular") || identity.includes("moderado")) return "#00ffff";
+    return highContrastPalette[index % highContrastPalette.length];
+  }
+
+  const color = segment.color;
+  const match = color.match(/^#([\da-f]{3}|[\da-f]{6})$/i);
+  if (!darkTheme || !match) return color;
+
+  const hex = match[1].length === 3
+    ? match[1].split("").map((digit) => `${digit}${digit}`).join("")
+    : match[1];
+  const brightened = hex.match(/[\da-f]{2}/gi)?.map((channel) =>
+    Math.round(Number.parseInt(channel, 16) + (255 - Number.parseInt(channel, 16)) * 0.42),
+  );
+  return brightened ? `#${brightened.map((channel) => channel.toString(16).padStart(2, "0")).join("")}` : color;
+}
+
+function createHatchPattern(
+  context: CanvasRenderingContext2D,
+  color: string,
+  patternIndex: number,
+): string | CanvasPattern {
+  const tile = document.createElement("canvas");
+  tile.width = 12;
+  tile.height = 12;
+  const tileContext = tile.getContext("2d");
+  if (!tileContext) return color;
+
+  tileContext.fillStyle = color;
+  tileContext.fillRect(0, 0, tile.width, tile.height);
+  tileContext.strokeStyle = "#000";
+  tileContext.fillStyle = "#000";
+  tileContext.lineWidth = 2;
+
+  if (patternIndex % 3 === 0) {
+    tileContext.beginPath();
+    tileContext.moveTo(-3, 12);
+    tileContext.lineTo(12, -3);
+    tileContext.moveTo(3, 15);
+    tileContext.lineTo(15, 3);
+    tileContext.stroke();
+  } else if (patternIndex % 3 === 1) {
+    for (const x of [3, 9]) {
+      for (const y of [3, 9]) {
+        tileContext.beginPath();
+        tileContext.arc(x, y, 1.5, 0, Math.PI * 2);
+        tileContext.fill();
+      }
+    }
+  } else {
+    tileContext.beginPath();
+    tileContext.moveTo(-3, 12);
+    tileContext.lineTo(12, -3);
+    tileContext.moveTo(0, -3);
+    tileContext.lineTo(15, 12);
+    tileContext.stroke();
+  }
+
+  return context.createPattern(tile, "repeat") ?? color;
+}
+
+interface DonutLabelPlacement {
+  side: "left" | "right";
+  anchorX: number;
+  anchorY: number;
+  elbowX: number;
+  elbowY: number;
+  text: string;
+  labelY: number;
+}
+
+function createHighContrastLabelPlugin(): Plugin<"doughnut"> {
+  return {
+    id: "high-contrast-donut-labels",
+    afterDatasetsDraw(chart) {
+      if (!hasHighContrast()) return;
+
+      const arcs = chart.getDatasetMeta(0).data as ArcElement[];
+      const values = chart.data.datasets[0]?.data ?? [];
+      const placements: DonutLabelPlacement[] = [];
+
+      arcs.forEach((arc, index) => {
+        const value = values[index];
+        if (typeof value !== "number" || value <= 0) return;
+
+        const angle = (arc.startAngle + arc.endAngle) / 2;
+        const directionX = Math.cos(angle);
+        const directionY = Math.sin(angle);
+        const side = directionX >= 0 ? "right" : "left";
+        const elbowRadius = arc.outerRadius + 12;
+        placements.push({
+          side,
+          anchorX: arc.x + directionX * arc.outerRadius,
+          anchorY: arc.y + directionY * arc.outerRadius,
+          elbowX: arc.x + directionX * elbowRadius,
+          elbowY: arc.y + directionY * elbowRadius,
+          text: `${chart.data.labels?.[index] ?? "Categoria"}: ${value}`,
+          labelY: arc.y + directionY * elbowRadius,
+        });
+      });
+
+      const context = chart.ctx;
+      context.save();
+      context.font = "600 12px system-ui, sans-serif";
+      context.fillStyle = "#fff";
+      context.strokeStyle = "#fff";
+      context.lineWidth = 2;
+      context.lineCap = "round";
+      context.lineJoin = "round";
+
+      for (const side of ["left", "right"] as const) {
+        const sidePlacements = placements
+          .filter((placement) => placement.side === side)
+          .sort((first, second) => first.labelY - second.labelY);
+        const minY = 16;
+        const maxY = chart.height - 16;
+        const gap = Math.min(24, (maxY - minY) / Math.max(1, sidePlacements.length - 1));
+
+        sidePlacements.forEach((placement, index) => {
+          const desiredY = Math.max(minY, Math.min(maxY, placement.labelY));
+          placement.labelY = index === 0 ? desiredY : Math.max(desiredY, sidePlacements[index - 1].labelY + gap);
+        });
+
+        const lastPlacement = sidePlacements[sidePlacements.length - 1];
+        const overflow = Math.max(0, (lastPlacement?.labelY ?? maxY) - maxY);
+        sidePlacements.forEach((placement) => {
+          placement.labelY -= overflow;
+          const textX = side === "left" ? 8 : chart.width - 8;
+          const lineEndX = side === "left" ? 5 : chart.width - 5;
+          context.textAlign = side === "left" ? "left" : "right";
+          context.beginPath();
+          context.moveTo(placement.anchorX, placement.anchorY);
+          context.lineTo(placement.elbowX, placement.elbowY);
+          context.lineTo(lineEndX, placement.labelY);
+          context.stroke();
+          context.fillText(placement.text, textX, placement.labelY - 2);
+        });
+      }
+
+      context.restore();
+    },
+  };
+}
 
 function DonutChart({ title, description, segments, centerLabel = 'Total', valueLabel = 'itens', note }: DonutChartProps) {
   const titleId = useId();
@@ -11,31 +185,51 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const chartRef = useRef<Chart<'doughnut', number[], string> | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [darkTheme, setDarkTheme] = useState(hasDarkTheme);
+  const [highContrast, setHighContrast] = useState(hasHighContrast);
   const total = segments.reduce((sum, segment) => sum + segment.value, 0);
   const activeSegment = activeIndex === null ? null : segments[activeIndex];
 
   useEffect(() => {
-    if (!canvasRef.current) {
+    const canvas = canvasRef.current;
+    const canvasContext = canvas?.getContext("2d");
+    if (!canvas || !canvasContext) {
       return undefined;
     }
 
-    const chart = new Chart(canvasRef.current, {
+    const root = document.documentElement;
+    const initialDarkTheme = hasDarkTheme();
+    const initialHighContrast = hasHighContrast();
+    const surfaceColor = getThemeColor("--a11y-surface", "#ffffff");
+    const primaryColor = getThemeColor("--motta-blue", "#102a43");
+    const foregroundColor = getThemeColor("--a11y-foreground", "#102a43");
+    const tooltipForegroundColor = getThemeColor("--a11y-foreground-on-light", foregroundColor);
+
+    const chart = new Chart(canvas, {
       type: 'doughnut',
       data: {
         labels: segments.map((segment) => segment.label),
         datasets: [{
           data: segments.map((segment) => segment.value),
-          backgroundColor: segments.map((segment) => segment.color),
-          borderColor: '#ffffff',
-          borderWidth: 3,
+          backgroundColor: segments.map((segment, index) => {
+            const color = getSegmentDisplayColor(segment, index, initialDarkTheme, initialHighContrast);
+            return initialHighContrast ? createHatchPattern(canvasContext, color, index) : color;
+          }),
+          borderColor: initialHighContrast ? segments.map(() => "#fff") : surfaceColor,
+          borderWidth: initialHighContrast ? segments.map(() => 3) : 3,
+          borderAlign: initialHighContrast ? "inner" : "center",
+          spacing: initialHighContrast ? 5 : 0,
           hoverOffset: 8,
-          hoverBorderColor: '#ffffff',
+          hoverBorderColor: initialHighContrast ? "#fff" : surfaceColor,
+          hoverBorderWidth: 3,
         }],
       },
       options: {
+        animation: { duration: 1000 * getMotionFactor() },
         responsive: true,
         maintainAspectRatio: false,
         cutout: '68%',
+        layout: { padding: initialHighContrast ? { top: 14, right: 92, bottom: 14, left: 92 } : 0 },
         onHover: (_event, activeElements, hoveredChart) => {
           const index = activeElements[0]?.index ?? null;
           hoveredChart.canvas.style.cursor = index === null ? 'default' : 'pointer';
@@ -44,9 +238,9 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#102a43',
-            titleColor: '#ffffff',
-            bodyColor: '#ffffff',
+            backgroundColor: primaryColor,
+            titleColor: tooltipForegroundColor,
+            bodyColor: tooltipForegroundColor,
             borderColor: '#2d5778',
             borderWidth: 1,
             cornerRadius: 8,
@@ -57,10 +251,47 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
           },
         },
       },
+      plugins: [createHighContrastLabelPlugin()],
     });
 
     chartRef.current = chart;
+    const themeObserver = new MutationObserver(() => {
+      const dark = hasDarkTheme();
+      const highContrastEnabled = hasHighContrast();
+      setDarkTheme(dark);
+      setHighContrast(highContrastEnabled);
+      const surface = getThemeColor("--a11y-surface", "#ffffff");
+      const primary = getThemeColor("--motta-blue", "#102a43");
+      const foreground = getThemeColor("--a11y-foreground", "#102a43");
+      const tooltipForeground = getThemeColor("--a11y-foreground-on-light", foreground);
+      chart.data.datasets[0].borderColor = highContrastEnabled ? segments.map(() => "#fff") : surface;
+      chart.data.datasets[0].borderWidth = highContrastEnabled ? segments.map(() => 3) : 3;
+      chart.data.datasets[0].borderAlign = highContrastEnabled ? "inner" : "center";
+      chart.data.datasets[0].spacing = highContrastEnabled ? 5 : 0;
+      chart.data.datasets[0].backgroundColor = segments.map((segment, index) => {
+        const color = getSegmentDisplayColor(segment, index, dark, highContrastEnabled);
+        return highContrastEnabled ? createHatchPattern(chart.ctx, color, index) : color;
+      });
+      chart.options.layout.padding = highContrastEnabled
+        ? { top: 14, right: 92, bottom: 14, left: 92 }
+        : 0;
+      const dataset = chart.data.datasets[0];
+      if (dataset) {
+        dataset.hoverBorderColor = highContrastEnabled ? "#fff" : surface;
+        dataset.hoverBorderWidth = 3;
+      }
+      const tooltip = chart.options.plugins?.tooltip;
+      if (tooltip) {
+        tooltip.backgroundColor = primary;
+        tooltip.titleColor = tooltipForeground;
+        tooltip.bodyColor = tooltipForeground;
+      }
+      chart.options.animation = { duration: 1000 * getMotionFactor() };
+      chart.update("none");
+    });
+    themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
     return () => {
+      themeObserver.disconnect();
       chart.destroy();
       chartRef.current = null;
     };
@@ -130,7 +361,11 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
               onMouseLeave={handleSegmentMouseLeave}
             >
               <span className={styles.segmentName}>
-                <span className={styles.swatch} style={{ backgroundColor: segment.color }} aria-hidden="true" />
+                <span
+                  className={styles.swatch}
+                  style={{ "--segment-color": getSegmentDisplayColor(segment, index, darkTheme, highContrast) } as CSSProperties}
+                  aria-hidden="true"
+                />
                 {segment.label}
               </span>
               <strong>{segment.value}</strong>

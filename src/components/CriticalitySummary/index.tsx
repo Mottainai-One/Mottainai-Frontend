@@ -8,7 +8,10 @@ const columns: ReusableTableColumn<CriticalitySummaryProps['data'][number]>[] = 
         id: 'level',
         header: 'Nível',
         renderCell: (item) => (
-            <span className={`${styles.levelBadge} ${styles[item.id]}`}>
+            <span
+                className={`${styles.levelBadge} ${styles[item.id]}`}
+                data-a11y-light-surface="true"
+            >
                 {item.status}
             </span>
         ),

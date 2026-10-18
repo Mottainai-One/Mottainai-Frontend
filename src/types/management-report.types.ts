@@ -4,6 +4,8 @@ export interface ManagementReportFilters {
   category: string;
 }
 
+export type ManagementReportFilterErrors = Partial<Record<keyof ManagementReportFilters, string>>;
+
 export type ManagementReportFormat = 'pdf' | 'csv';
 
 export interface ManagementReportItem {
@@ -22,6 +24,7 @@ export interface ManagementReport {
 
 export interface ManagementReportPageState {
   filters: ManagementReportFilters;
+  filterErrors: ManagementReportFilterErrors;
   reports: ManagementReport[];
   selectedReport: ManagementReport | null;
   format: ManagementReportFormat;
