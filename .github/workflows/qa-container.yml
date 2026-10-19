@@ -1,0 +1,19 @@
+name: Frontend QA container
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build frontend QA image
+        run: docker build --tag mottainai-frontend:qa .
