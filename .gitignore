@@ -21,11 +21,7 @@ dist-ssr
 .cache/
 /tmp/
 
-# Testes e ferramentas locais de auditoria
-/tests/
-**/*.test.*
-**/*.spec.*
-/vitest.config.ts
+# Ferramentas locais de auditoria
 /.lighthouserc.cjs
 /audit.js
 /scripts/lighthouse-*.cjs
