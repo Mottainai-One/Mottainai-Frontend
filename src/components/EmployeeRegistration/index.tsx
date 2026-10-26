@@ -87,7 +87,7 @@ function EmployeeRegistration({ onSubmit, onCancel }: EmployeeRegistrationProps)
     <section className={styles.page} aria-labelledby="registration-title">
       <header className={styles.header}>
         <FontAwesomeIcon className={styles.headerIcon} icon={faUserPlus} aria-hidden="true" />
-        <h1 id="registration-title">Cadastrar Funcionário</h1>
+        <h2 id="registration-title">Cadastrar Funcionário</h2>
       </header>
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
         <div className={styles.fields}>

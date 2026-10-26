@@ -71,7 +71,7 @@
     min-width: 54rem;
     border-collapse: collapse;
     color: var(--a11y-text-muted, #625d58);
-    font-size: 0.78rem;
+    font-size: 0.875rem;
     line-height: 1.35;
 }
 
@@ -220,7 +220,6 @@
     }
     .table {
         min-width: 46rem;
-        font-size: 0.72rem;
     }
     .table th,
     .table td {

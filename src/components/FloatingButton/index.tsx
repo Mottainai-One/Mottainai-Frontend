@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { AccessibilityPreferences, AccessibilityPreferenceKey, AccessibilityWidgetState } from "@/types/accessibility.types";
 import type { ChoiceGroupProps } from "@/types/accessibility-widget.types";
+import { cancelSpeech, pauseSpeech, resumeSpeech, speakText, updateSpeechRate } from "@/services/speechService";
 import { DEFAULT_ACCESSIBILITY_PREFERENCES, loadAccessibilityPreferences, saveAccessibilityPreferences } from "@/utils/accessibilityPreferences";
 import styles from "./style.module.css";
 
@@ -39,15 +40,17 @@ function FloatingButton() {
   const [widgetState, setWidgetState] = useState<AccessibilityWidgetState>({
     isOpen: false,
     isReading: false,
+    isPaused: false,
     statusMessage: "",
     statusIsError: false,
   });
   const panelTitleRef = useRef<HTMLHeadingElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
-  const { isOpen, isReading, statusMessage, statusIsError } = widgetState;
+  const { isOpen, isReading, isPaused, statusMessage, statusIsError } = widgetState;
   const setIsOpen = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isOpen: value })), []);
   const setIsReading = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isReading: value })), []);
+  const setIsPaused = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isPaused: value })), []);
   const setStatusMessage = useCallback((value: string) => setWidgetState((current) => ({ ...current, statusMessage: value })), []);
   const setStatusIsError = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, statusIsError: value })), []);
 
@@ -73,19 +76,17 @@ function FloatingButton() {
       "data-a11y-align": preferences.align ? "on" : undefined,
       "data-a11y-targets": preferences.targets ? "on" : undefined,
       "data-a11y-spotlight": preferences.spotlight === "off" ? undefined : preferences.spotlight,
-      "data-a11y-zoom": preferences.textScale ? "on" : undefined,
       "data-a11y-cursor": preferences.cursorColor !== "default" || preferences.cursorSize !== "default" ? "on" : undefined,
     };
     Object.entries(attrs).forEach(([name, value]) => value ? root.setAttribute(name, value) : root.removeAttribute(name));
     rootStyles.setProperty("--a11y-spacing", String(preferences.spacing));
-    const textZoom = (100 + preferences.textScale * 10) / 100;
-    rootStyles.setProperty("--a11y-zoom", String(textZoom));
-    rootStyles.setProperty("--a11y-zoom-inverse", String(1 / textZoom));
+    const textScale = (100 + preferences.textScale * 10) / 100;
+    rootStyles.setProperty("--a11y-text-scale", String(textScale));
     rootStyles.setProperty("--a11y-cursor", getCursorValue(preferences.cursorColor, preferences.cursorSize));
     rootStyles.setProperty("--a11y-color-vision-filter", preferences.colorVision === "off" ? "none" : `url(#${id}-${preferences.colorVision})`);
     return () => {
       Object.keys(attrs).forEach((name) => root.removeAttribute(name));
-      ["--a11y-spacing", "--a11y-zoom", "--a11y-zoom-inverse", "--a11y-cursor", "--a11y-color-vision-filter"].forEach((name) => rootStyles.removeProperty(name));
+      ["--a11y-spacing", "--a11y-text-scale", "--a11y-cursor", "--a11y-color-vision-filter"].forEach((name) => rootStyles.removeProperty(name));
     };
   }, [preferences, id]);
 
@@ -133,55 +134,53 @@ function FloatingButton() {
     };
   }, [preferences.spotlight]);
 
-  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+  useEffect(() => () => cancelSpeech(), []);
 
   function choose<K extends AccessibilityPreferenceKey>(key: K, value: string) {
-    updatePreference(key, value as AccessibilityPreferences[K]);
+    const normalizedValue = key === "motion" || key === "border" || key === "rate"
+      ? Number(value)
+      : value;
+    updatePreference(key, normalizedValue as AccessibilityPreferences[K]);
+    if (key === "rate") {
+      const rate = Number(normalizedValue);
+      if (isReading) {
+        pauseSpeech();
+        setIsPaused(true);
+      }
+      updateSpeechRate(rate);
+      setStatusMessage(isReading
+        ? "Leitura pausada. Pressione Reproduzir para continuar com a nova velocidade."
+        : "Velocidade selecionada. Ela será usada na próxima leitura.");
+      setStatusIsError(false);
+    }
   }
 
-  function speak(text: string) {
-    if (!("speechSynthesis" in window)) {
-      setStatusMessage("Seu navegador não oferece leitura em voz alta.");
+  async function speak(text: string) {
+    setIsReading(true);
+    setIsPaused(false);
+    setStatusMessage("Preparando a leitura em voz alta...");
+    setStatusIsError(false);
+
+    const result = await speakText(text, {
+      language: document.documentElement.lang || "pt-BR",
+      rate: preferences.rate,
+      onStarted: () => setStatusMessage("Leitura iniciada."),
+    });
+    if (result.status === "cancelled") {
+      setIsReading(false);
+      setIsPaused(false);
+      return;
+    }
+
+    setIsReading(false);
+    setIsPaused(false);
+    if (result.status === "error") {
+      setStatusMessage(result.message);
       setStatusIsError(true);
       return;
     }
-    window.speechSynthesis.cancel();
-    const parts = text.match(/[^.!?…]+[.!?…]*\s*/g) ?? [text];
-    const chunks: string[] = [];
-    let current = "";
-    parts.forEach((part) => {
-      if (current && (current + part).length > 220) {
-        chunks.push(current.trim());
-        current = part;
-      } else current += part;
-    });
-    if (current.trim()) chunks.push(current.trim());
-    if (chunks.length === 0) {
-      setStatusMessage("Não há texto disponível para leitura.");
-      setStatusIsError(true);
-      return;
-    }
-    const language = document.documentElement.lang || "pt-BR";
-    chunks.forEach((chunk, index) => {
-      const utterance = new SpeechSynthesisUtterance(chunk);
-      utterance.lang = language;
-      utterance.rate = preferences.rate;
-      if (index === chunks.length - 1) {
-        utterance.onend = () => {
-          setIsReading(false);
-          setStatusMessage("Leitura concluída.");
-          setStatusIsError(false);
-        };
-        utterance.onerror = () => {
-          setIsReading(false);
-          setStatusMessage("O navegador não conseguiu concluir a leitura.");
-          setStatusIsError(true);
-        };
-      }
-      window.speechSynthesis.speak(utterance);
-    });
-    setIsReading(chunks.length > 0);
-    setStatusMessage("Leitura iniciada.");
+
+    setStatusMessage("Leitura concluída.");
     setStatusIsError(false);
   }
 
@@ -203,9 +202,24 @@ function FloatingButton() {
 
   function resetPreferences() {
     setPreferences({ ...DEFAULT_ACCESSIBILITY_PREFERENCES });
-    window.speechSynthesis?.cancel();
+    cancelSpeech();
     setIsReading(false);
+    setIsPaused(false);
     setStatusMessage("Preferências restauradas.");
+    setStatusIsError(false);
+  }
+
+  function pauseReading() {
+    pauseSpeech();
+    setIsPaused(true);
+    setStatusMessage("Leitura pausada. Pressione Reproduzir para continuar.");
+    setStatusIsError(false);
+  }
+
+  function resumeReading() {
+    resumeSpeech();
+    setIsPaused(false);
+    setStatusMessage("Leitura retomada com a velocidade selecionada.");
     setStatusIsError(false);
   }
 
@@ -244,7 +258,6 @@ function FloatingButton() {
         <section
           className={styles.panel}
           id={`${id}-panel`}
-          role="region"
           aria-labelledby={`${id}-title`}
           aria-hidden={!isOpen}
           data-open={isOpen}
@@ -265,7 +278,7 @@ function FloatingButton() {
               <ChoiceGroup id={`${id}-saturation`} legend="Saturação das cores" value={preferences.saturation} options={[["normal", "Padrão"], ["low", "Baixa"], ["gray", "Cinza"]]} onChange={(value) => choose("saturation", value)} />
               <ChoiceGroup id={`${id}-color-vision`} legend="Filtro para daltonismo" value={preferences.colorVision} options={[["off", "Desligado"], ["protanopia", "Protanopia (vermelho)"], ["deuteranopia", "Deuteranopia (verde)"], ["tritanopia", "Tritanopia (azul)"]]} onChange={(value) => choose("colorVision", value)} />
               <div className={styles.toggles}>
-                <button type="button" aria-pressed={preferences.jargonSupport} onClick={() => updatePreference("jargonSupport", !preferences.jargonSupport)}>
+                <button type="button" aria-pressed={preferences.jargonSupport} onClick={() => updatePreference("jargonSupport", !preferences.jargonSupport)} className={styles.help}>
                   Ajuda para termos técnicos
                   {preferences.jargonSupport && <span className={styles.activeTag} aria-hidden="true">Ligado</span>}
                 </button>
@@ -314,9 +327,13 @@ function FloatingButton() {
                 <p>Usa a voz disponível no seu dispositivo para ler o conteúdo principal da página.</p>
                 <button type="button" onClick={readPage} disabled={isReading}>Ouvir esta página</button>
                 <button type="button" onClick={readSelection} disabled={isReading}>Ler seleção</button>
-                <button type="button" onClick={() => { window.speechSynthesis?.cancel(); setIsReading(false); setStatusMessage("Leitura interrompida."); }} disabled={!isReading}>Parar leitura</button>
+                {isReading && (isPaused
+                  ? <button type="button" onClick={resumeReading}>▶ Reproduzir leitura</button>
+                  : <button type="button" onClick={pauseReading}>Pausar leitura</button>)}
+                <button type="button" onClick={() => { cancelSpeech(); setIsReading(false); setIsPaused(false); setStatusMessage("Leitura interrompida."); }} disabled={!isReading}>Parar leitura</button>
               </div>
               <ChoiceGroup id={`${id}-rate`} legend="Velocidade da voz" value={preferences.rate} options={[[0.75, "Lenta"], [1, "Normal"], [1.25, "Rápida"], [1.5, "Mais rápida"]]} onChange={(value) => choose("rate", value)} />
+              <p className={styles.hint}>Ao escolher outra velocidade durante a leitura, ela será pausada. Pressione Reproduzir para continuar com a nova velocidade.</p>
               <button className={styles.reset} type="button" onClick={resetPreferences}>Restaurar preferências</button>
               <p className={styles.shortcut}>Atalho: Alt + Shift + A · Fechar: Esc</p>
             </div>

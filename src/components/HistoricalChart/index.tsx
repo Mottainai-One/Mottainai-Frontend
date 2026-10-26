@@ -1,12 +1,33 @@
-import { useEffect, useId, useRef } from "react";
-import { Chart, registerables } from "chart.js";
+import { useEffect, useId, useRef, useState } from "react";
+import type { Chart as ChartInstance } from "chart.js";
 import type { HistoricalChartProps } from "@/types/historical-chart.types";
 import styles from "./style.module.css";
 
-Chart.register(...registerables);
-
 function getThemeColor(variable: string, fallback: string): string {
   return window.getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
+}
+
+function hasDarkTheme(): boolean {
+  return document.documentElement.getAttribute("data-a11y-theme") === "dark";
+}
+
+function hasHighContrast(): boolean {
+  return document.documentElement.getAttribute("data-a11y-contrast") === "high";
+}
+
+function getTooltipColors(primaryColor: string): { backgroundColor: string; foregroundColor: string } {
+  const darkTheme = hasDarkTheme();
+  const highContrast = hasHighContrast();
+
+  if (darkTheme && highContrast) {
+    return {
+      backgroundColor: primaryColor,
+      foregroundColor: getThemeColor("--a11y-foreground-on-light", "#783800"),
+    };
+  }
+  if (darkTheme) return { backgroundColor: primaryColor, foregroundColor: "#fff" };
+  if (highContrast) return { backgroundColor: "#000", foregroundColor: "#fff" };
+  return { backgroundColor: "#fff", foregroundColor: "#102a43" };
 }
 
 function getMotionFactor(): number {
@@ -33,10 +54,13 @@ function HistoricalChart({
   const titleId = useId();
   const canvasId = useId();
   const descriptionId = useId();
+  const [chartLoadStatus, setChartLoadStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const chartRef = useRef<Chart<"line", number[], string> | null>(null);
+  const chartRef = useRef<ChartInstance<"line", number[], string> | null>(null);
+  const activeDataPointIndexRef = useRef<number | null>(null);
 
   const activateDataPoint = (index: number) => {
+    activeDataPointIndexRef.current = index;
     const chart = chartRef.current;
     const point = chart?.getDatasetMeta(0).data[index];
     if (!chart || !point) return;
@@ -47,6 +71,7 @@ function HistoricalChart({
   };
 
   const clearDataPoint = () => {
+    activeDataPointIndexRef.current = null;
     const chart = chartRef.current;
     if (!chart) return;
     chart.setActiveElements([]);
@@ -56,99 +81,156 @@ function HistoricalChart({
   };
 
   useEffect(() => {
-    if (!canvasRef.current) {
+    const canvas = canvasRef.current;
+    if (!canvas) {
       return undefined;
     }
 
-    const root = document.documentElement;
-    const primaryColor = getThemeColor("--motta-blue", "#102a43");
-    const primaryRgb = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
-    const foregroundColor = getThemeColor("--a11y-foreground", "#102a43");
-    const tooltipForegroundColor = getThemeColor("--a11y-foreground-on-light", foregroundColor);
+    let disposed = false;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let themeObserver: MutationObserver | null = null;
 
-    chartRef.current?.destroy();
-    chartRef.current = new Chart(canvasRef.current, {
-      type: "line",
-      data: {
-        labels: data.map((item) => formatMetricDate(item.date)),
-        datasets: [
-          {
-            label: datasetLabel,
-            data: data.map((item) => item.value),
-            borderColor: "#c64c49",
-            backgroundColor: "rgba(198, 76, 73, 0.12)",
-            borderWidth: 3,
-            pointBackgroundColor: "#c64c49",
-            pointBorderColor: "#c64c49",
-            pointBorderWidth: 1,
-            pointRadius: data.length > 14 ? 2.5 : 4,
-            pointHoverBackgroundColor: "#c64c49",
-            pointHoverBorderColor: "#c64c49",
-            pointHoverBorderWidth: 1,
-            pointHoverRadius: data.length > 14 ? 4 : 6,
-            pointHitRadius: 8,
-            tension: 0.25,
-            fill: true,
-          },
-        ],
-      },
-      options: {
-        animation: { duration: 1000 * getMotionFactor() },
-        responsive: true,
-        maintainAspectRatio: false,
-        onHover: (_event, activeElements, chart) => {
-          chart.canvas.style.cursor = activeElements.length > 0 ? "pointer" : "default";
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: primaryColor,
-            titleColor: tooltipForegroundColor,
-            bodyColor: tooltipForegroundColor,
-            borderColor: "#2d5778",
-            borderWidth: 1,
-            cornerRadius: 8,
-            padding: 12,
-            displayColors: false,
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero,
-            ticks: { color: foregroundColor },
-            grid: { color: `rgba(${primaryRgb}, 0.12)` },
-          },
-          x: {
-            ticks: { color: foregroundColor, maxRotation: 45, minRotation: 0 },
-            grid: { display: false },
-          },
-        },
-      },
-    });
+    const initializeChart = async () => {
+      if (disposed || !canvasRef.current) return;
+      setChartLoadStatus("loading");
+      try {
+        const {
+          CategoryScale,
+          Chart,
+          Filler,
+          LineController,
+          LineElement,
+          LinearScale,
+          PointElement,
+          Tooltip,
+        } = await import("chart.js");
 
-    const themeObserver = new MutationObserver(() => {
-      const activeChart = chartRef.current;
-      if (!activeChart) return;
-      const primary = getThemeColor("--motta-blue", "#102a43");
-      const primaryRgbValue = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
-      const foreground = getThemeColor("--a11y-foreground", "#102a43");
-      const tooltipForeground = getThemeColor("--a11y-foreground-on-light", foreground);
-      const tooltip = activeChart.options.plugins?.tooltip;
-      if (tooltip) {
-        tooltip.backgroundColor = primary;
-        tooltip.titleColor = tooltipForeground;
-        tooltip.bodyColor = tooltipForeground;
+        if (disposed || !canvasRef.current) return;
+
+        Chart.register(CategoryScale, Filler, LineController, LineElement, LinearScale, PointElement, Tooltip);
+
+        const root = document.documentElement;
+        const primaryColor = getThemeColor("--motta-blue", "#102a43");
+        const primaryRgb = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
+        const foregroundColor = getThemeColor("--a11y-foreground", "#102a43");
+        const tooltipColors = getTooltipColors(primaryColor);
+
+        chartRef.current?.destroy();
+        chartRef.current = new Chart(canvas, {
+          type: "line",
+          data: {
+            labels: data.map((item) => formatMetricDate(item.date)),
+            datasets: [
+              {
+                label: datasetLabel,
+                data: data.map((item) => item.value),
+                borderColor: "#c64c49",
+                backgroundColor: "rgba(198, 76, 73, 0.12)",
+                borderWidth: 3,
+                pointBackgroundColor: "#c64c49",
+                pointBorderColor: "#c64c49",
+                pointBorderWidth: 1,
+                pointRadius: data.length > 14 ? 2.5 : 4,
+                pointHoverBackgroundColor: "#c64c49",
+                pointHoverBorderColor: "#c64c49",
+                pointHoverBorderWidth: 1,
+                pointHoverRadius: data.length > 14 ? 4 : 6,
+                pointHitRadius: 8,
+                tension: 0.25,
+                fill: true,
+              },
+            ],
+          },
+          options: {
+            animation: { duration: 1000 * getMotionFactor() },
+            responsive: true,
+            maintainAspectRatio: false,
+            onHover: (_event, activeElements, chart) => {
+              chart.canvas.style.cursor = activeElements.length > 0 ? "pointer" : "default";
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: tooltipColors.backgroundColor,
+                titleColor: tooltipColors.foregroundColor,
+                bodyColor: tooltipColors.foregroundColor,
+                borderColor: "#2d5778",
+                borderWidth: 1,
+                cornerRadius: 8,
+                padding: 12,
+                displayColors: false,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero,
+                ticks: { color: foregroundColor },
+                grid: { color: `rgba(${primaryRgb}, 0.12)` },
+              },
+              x: {
+                ticks: { color: foregroundColor, maxRotation: 45, minRotation: 0 },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+
+        const activeIndex = activeDataPointIndexRef.current;
+        const activeChart = chartRef.current;
+        const activePoint = activeIndex === null
+          ? undefined
+          : activeChart?.getDatasetMeta(0).data[activeIndex];
+        if (activeIndex !== null && activeChart && activePoint) {
+          const activeSelection = { datasetIndex: 0, index: activeIndex };
+          activeChart.setActiveElements([activeSelection]);
+          activeChart.tooltip?.setActiveElements([activeSelection], {
+            x: activePoint.x,
+            y: activePoint.y,
+          });
+          activeChart.update("none");
+        }
+
+        themeObserver = new MutationObserver(() => {
+          const activeChart = chartRef.current;
+          if (!activeChart) return;
+          const primary = getThemeColor("--motta-blue", "#102a43");
+          const primaryRgbValue = getThemeColor("--a11y-foreground-rgb", "16, 42, 67");
+          const foreground = getThemeColor("--a11y-foreground", "#102a43");
+          const updatedTooltipColors = getTooltipColors(primary);
+          const tooltip = activeChart.options.plugins?.tooltip;
+          if (tooltip) {
+            tooltip.backgroundColor = updatedTooltipColors.backgroundColor;
+            tooltip.titleColor = updatedTooltipColors.foregroundColor;
+            tooltip.bodyColor = updatedTooltipColors.foregroundColor;
+          }
+          if (activeChart.options.scales?.x?.ticks) activeChart.options.scales.x.ticks.color = foreground;
+          if (activeChart.options.scales?.y?.ticks) activeChart.options.scales.y.ticks.color = foreground;
+          if (activeChart.options.scales?.y?.grid) activeChart.options.scales.y.grid.color = `rgba(${primaryRgbValue}, 0.12)`;
+          activeChart.options.animation = { duration: 1000 * getMotionFactor() };
+          activeChart.update("none");
+        });
+        themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
+        setChartLoadStatus("success");
+      } catch {
+        if (!disposed) setChartLoadStatus("error");
       }
-      if (activeChart.options.scales?.x?.ticks) activeChart.options.scales.x.ticks.color = foreground;
-      if (activeChart.options.scales?.y?.ticks) activeChart.options.scales.y.ticks.color = foreground;
-      if (activeChart.options.scales?.y?.grid) activeChart.options.scales.y.grid.color = `rgba(${primaryRgbValue}, 0.12)`;
-      activeChart.options.animation = { duration: 1000 * getMotionFactor() };
-      activeChart.update("none");
-    });
-    themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
+    };
+
+    if (typeof IntersectionObserver === "undefined") {
+      void initializeChart();
+    } else {
+      intersectionObserver = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        intersectionObserver?.disconnect();
+        void initializeChart();
+      });
+      intersectionObserver.observe(canvas);
+    }
 
     return () => {
-      themeObserver.disconnect();
+      disposed = true;
+      intersectionObserver?.disconnect();
+      themeObserver?.disconnect();
       chartRef.current?.destroy();
       chartRef.current = null;
     };
@@ -166,7 +248,7 @@ function HistoricalChart({
         </div>
         <span className={styles.period}>{period}</span>
       </div>
-      <div className={styles.chartArea}>
+      <div className={styles.chartArea} aria-busy={chartLoadStatus === "loading"}>
         <canvas
           id={canvasId}
           ref={canvasRef}
@@ -175,6 +257,17 @@ function HistoricalChart({
           aria-describedby={descriptionId}
         />
       </div>
+      {chartLoadStatus === "loading" && (
+        <p className={styles["sr-only"]} role="status">Carregando gráfico.</p>
+      )}
+      {chartLoadStatus === "success" && (
+        <p className={styles["sr-only"]} role="status">Gráfico carregado.</p>
+      )}
+      {chartLoadStatus === "error" && (
+        <p className={styles.dataDetails} role="alert">
+          Não foi possível carregar o gráfico. Os valores continuam disponíveis em “Ver dados do gráfico”.
+        </p>
+      )}
       <p className={styles["sr-only"]} id={descriptionId}>
         {description}. {data.length} pontos disponíveis. Dados: {data.map((item) => `${formatMetricDate(item.date)}: ${item.value}. `)}
       </p>

@@ -4,7 +4,7 @@
   bottom: max(1rem, env(safe-area-inset-bottom));
   z-index: 1500;
   color: var(--motta-blue);
-  font-family: "DM Sans", Arial, sans-serif;
+  font-family: inherit;
 }
 
 .filterDefs { position: absolute; width: 0; height: 0; overflow: hidden; }
@@ -391,6 +391,21 @@
   border-color: #7a3512;
   background: #fff7f0;
   color: #7a3512;
+}
+
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .reset {
+    /* Aparência */
+    background-color: var(--motta-orange) !important;
+    /* Texto */
+    color: var(--main-white) !important;
+    font-weight: bold;
+}
+
+:global(html[data-a11y-theme="dark"]:not([data-a11y-contrast="high"])) .help{
+  background-color: var(--motta-orange) !important;
+    /* Texto */
+    color: var(--main-white) !important;
+    font-weight: bold;
 }
 
 .status {

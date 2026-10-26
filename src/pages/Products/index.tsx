@@ -21,6 +21,8 @@ const engineActionLevels: Record<ProductTrafficLight, EngineActionLevel> = {
 };
 
 const initialFilters: ProductFilterState = { search: "", category: "" };
+// Keyboard focus lets users scroll the product table horizontally without a pointer.
+const keyboardScrollProps = { tabIndex: 0 } as const;
 
 const currencyFormatter = new Intl.NumberFormat("pt-BR", {
   style: "currency",
@@ -86,7 +88,7 @@ function Products() {
           role="region"
           aria-label="Tabela de produtos rolável"
           aria-describedby="sku-table-scroll-hint"
-          tabIndex={0}
+          {...keyboardScrollProps}
         >
           <table className={styles.table}>
             <thead>

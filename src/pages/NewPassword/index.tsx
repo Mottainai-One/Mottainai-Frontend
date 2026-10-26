@@ -5,7 +5,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
-import lontraOrgulhosa from '@/assets/imgs/lontra-orgulhosa.png';
+import lontraOrgulhosa from '@/assets/imgs/lontra-orgulhosa.webp';
 import type {
   NewPasswordState,
 } from '@/types/password-recovery.types';

@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
-import lontraPensando from '@/assets/imgs/lontra-pensando.png';
+import lontraPensando from '@/assets/imgs/lontra-pensando.webp';
 
 import type {
   PasswordRecoveryState,

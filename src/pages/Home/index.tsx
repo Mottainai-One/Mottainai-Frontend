@@ -33,6 +33,8 @@ const criticalityStatusClasses = {
 } as const;
 const orderedCriticalitySummary = [...criticalitySummary].reverse();
 const weeklySalesValues = [64, 68, 72, 76, 91, 118, 83, 86];
+// Keyboard focus lets users scroll the table horizontally without a pointer.
+const keyboardScrollProps = { tabIndex: 0 } as const;
 
 function toLocalDateString(date: Date): string {
     const year = date.getFullYear();
@@ -130,7 +132,7 @@ function Home(){
                     className={styles.criticalityTableRegion}
                     role="region"
                     aria-labelledby="criticality-title"
-                    tabIndex={0}
+                    {...keyboardScrollProps}
                 >
                     <table className={styles.criticalityTable}>
                         <caption className={styles.visuallyHidden}>

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
 import type { DetailsModalProps } from '@/types/details-modal.types';
 import styles from './style.module.css';
 
@@ -140,14 +139,9 @@ function DetailsModal({
     };
   }, [handleRequestClose, triggerElement]);
 
-  const handleBackdropClick = (event: ReactMouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) handleRequestClose();
-  };
-
   return (
     <div
       className={`${styles.backdrop} ${isClosing ? styles.backdropClosing : ''}`}
-      onMouseDown={handleBackdropClick}
     >
       <section
         ref={dialogRef}
@@ -156,7 +150,6 @@ function DetailsModal({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
-        onMouseDown={(event) => event.stopPropagation()}
       >
         <header className={styles.header}>
           <div>

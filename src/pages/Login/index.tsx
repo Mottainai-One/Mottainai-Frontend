@@ -1,10 +1,10 @@
 import { useEffect, useId, useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import type { LoginFormState } from '@/types/login.types';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/AuthLayout';
 import styles from '@/components/AuthLayout/style.module.css';
-import lontraExplicando from '@/assets/imgs/lontra-explicando.png';
+import lontraExplicando from '@/assets/imgs/lontra-explicando.webp';
 import { useAuth } from '@/hooks/useAuth'
 import  Loading  from '@/components/Loading'
 import {

@@ -17,8 +17,6 @@ const PAGE_TITLES: Record<string, string> = {
   "/overview": "Visão Geral",
   "/users": "Usuários",
   "/account": "Minha conta",
-  "/passwordRecovery": "Recuperação de Senha",
-  "/productTransfer": "Transferência de Produtos",
   "/products": "Produtos",
   "/usageHistory": "Histórico de Uso",
   "/expiringProducts": "Produtos a Vencer",
@@ -70,7 +68,7 @@ function MainLayout() {
       </a>
       <Sidebar overviewPaths={FOLDER_NAVIGATION_PATHS} />
       <div className={styles["content-shell"]}>
-        <Header pageTitle={pageTitle} />
+        <Header />
         {showFolderNavigation && (
           <FolderNavigation
             items={folderNavigationItems}
