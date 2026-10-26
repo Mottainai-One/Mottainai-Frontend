@@ -1,9 +1,9 @@
 import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { Chart, registerables, type ArcElement, type Plugin } from 'chart.js';
+import { ArcElement, Chart, DoughnutController, Tooltip, type Plugin } from 'chart.js';
 import type { DonutChartProps } from '@/types/donut-chart.types';
 import styles from './style.module.css';
 
-Chart.register(...registerables);
+Chart.register(ArcElement, DoughnutController, Tooltip);
 
 function getThemeColor(variable: string, fallback: string): string {
   return window.getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
@@ -21,6 +21,21 @@ function hasDarkTheme(): boolean {
 
 function hasHighContrast(): boolean {
   return document.documentElement.getAttribute("data-a11y-contrast") === "high";
+}
+
+function getTooltipColors(primaryColor: string): { backgroundColor: string; foregroundColor: string } {
+  const darkTheme = hasDarkTheme();
+  const highContrast = hasHighContrast();
+
+  if (darkTheme && highContrast) {
+    return {
+      backgroundColor: primaryColor,
+      foregroundColor: getThemeColor("--a11y-foreground-on-light", "#783800"),
+    };
+  }
+  if (darkTheme) return { backgroundColor: primaryColor, foregroundColor: "#fff" };
+  if (highContrast) return { backgroundColor: "#000", foregroundColor: "#fff" };
+  return { backgroundColor: "#fff", foregroundColor: "#102a43" };
 }
 
 const highContrastPalette = ["#ff00aa", "#ffd700", "#00ffff", "#ff4d4d", "#00ff66"];
@@ -202,8 +217,7 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
     const initialHighContrast = hasHighContrast();
     const surfaceColor = getThemeColor("--a11y-surface", "#ffffff");
     const primaryColor = getThemeColor("--motta-blue", "#102a43");
-    const foregroundColor = getThemeColor("--a11y-foreground", "#102a43");
-    const tooltipForegroundColor = getThemeColor("--a11y-foreground-on-light", foregroundColor);
+    const tooltipColors = getTooltipColors(primaryColor);
 
     const chart = new Chart(canvas, {
       type: 'doughnut',
@@ -238,9 +252,9 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: primaryColor,
-            titleColor: tooltipForegroundColor,
-            bodyColor: tooltipForegroundColor,
+            backgroundColor: tooltipColors.backgroundColor,
+            titleColor: tooltipColors.foregroundColor,
+            bodyColor: tooltipColors.foregroundColor,
             borderColor: '#2d5778',
             borderWidth: 1,
             cornerRadius: 8,
@@ -262,8 +276,7 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
       setHighContrast(highContrastEnabled);
       const surface = getThemeColor("--a11y-surface", "#ffffff");
       const primary = getThemeColor("--motta-blue", "#102a43");
-      const foreground = getThemeColor("--a11y-foreground", "#102a43");
-      const tooltipForeground = getThemeColor("--a11y-foreground-on-light", foreground);
+      const tooltipColors = getTooltipColors(primary);
       chart.data.datasets[0].borderColor = highContrastEnabled ? segments.map(() => "#fff") : surface;
       chart.data.datasets[0].borderWidth = highContrastEnabled ? segments.map(() => 3) : 3;
       chart.data.datasets[0].borderAlign = highContrastEnabled ? "inner" : "center";
@@ -285,9 +298,9 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
       }
       const tooltip = chart.options.plugins?.tooltip;
       if (tooltip) {
-        tooltip.backgroundColor = primary;
-        tooltip.titleColor = tooltipForeground;
-        tooltip.bodyColor = tooltipForeground;
+        tooltip.backgroundColor = tooltipColors.backgroundColor;
+        tooltip.titleColor = tooltipColors.foregroundColor;
+        tooltip.bodyColor = tooltipColors.foregroundColor;
       }
       chart.options.animation = { duration: 1000 * getMotionFactor() };
       chart.update("none");
@@ -356,7 +369,6 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
             <button
               className={styles.segmentButton}
               type="button"
-              aria-label={`${segment.label}: ${segment.value} ${valueLabel}. Focar para destacar esta categoria no gráfico.`}
               onFocus={() => activateSegment(index)}
               onBlur={clearActiveSegment}
               onClick={() => activateSegment(index)}

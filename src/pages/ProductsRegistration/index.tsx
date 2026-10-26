@@ -599,262 +599,272 @@ function ProductsRegistration() {
         </div>
 
         <>
-          <form
+          <div
             id="bulk-registration-panel"
             hidden={state.mode !== "bulk"}
             role="tabpanel"
             aria-labelledby="bulk-registration-tab"
             tabIndex={0}
-            onSubmit={handleProcessFile}
           >
-            <input
-              className={styles["file-input"]}
-              id={fileInputId}
-              type="file"
-              accept={`.${state.format}`}
-              onChange={handleFileChange}
-            />
-            <label
-              className={`${styles.dropzone} ${state.isDragging ? styles.dragging : ""} ${state.file ? styles["has-file"] : ""}`}
-              htmlFor={fileInputId}
-              onDragEnter={(event) => {
-                event.preventDefault();
-
-                updateState((draft) => {
-                  draft.isDragging = true;
-                });
-              }}
-              onDragOver={(event) => event.preventDefault()}
-              onDragLeave={() =>
-                updateState((draft) => {
-                  draft.isDragging = false;
-                })
-              }
-              onDrop={handleDrop}
+            <form
+              id="bulk-registration-form"
+              aria-labelledby="bulk-registration-tab"
+              onSubmit={handleProcessFile}
             >
-              {state.file ? (
-                <>
-                  <span className={styles["ready-label"]}>
-                    <FontAwesomeIcon icon={faCheck} /> Arquivo pronto para
-                    inserir
-                  </span>
-                  <span className={styles["selected-file"]} role="status">
-                    <FontAwesomeIcon icon={faFileLines} />
-                    <span>
-                      <strong>{state.file.name}</strong>
-                      <small>
-                        {state.format.toUpperCase()} ·{" "}
-                        {formatFileSize(state.file.size)}
-                      </small>
-                    </span>
-                    <FontAwesomeIcon icon={faCheck} />
-                  </span>
-                  <span>Clique ou arraste outro arquivo para substituir</span>
-                </>
-              ) : (
-                <>
-                  <span className={styles["upload-icon"]}>
-                    <FontAwesomeIcon icon={faCloudArrowUp} />
-                  </span>
-                  <strong>
-                    Arraste o arquivo {state.format.toUpperCase()} aqui ou
-                    clique para selecionar
-                  </strong>
-                  <span>Formato aceito: .{state.format} · máximo de 10 MB</span>
-                </>
-              )}
-            </label>
-            <div className={styles.actions}>
-              <button className={styles.primary} type="submit" disabled={busy}>
-                {state.status === "processing" ? (
-                  <Spinner label="Processando" />
-                ) : (
-                  "Inserir"
-                )}
-              </button>
-              <button
-                className={styles.secondary}
-                type="button"
-                onClick={() => navigate("/products")}
-                disabled={busy}
-              >
-                Cancelar
-              </button>
-              <label className={styles.format} htmlFor={formatSelectId}>
-                Formato{" "}
-                <DropdownSelect
-                  id={formatSelectId}
-                  value={state.format}
-                  disabled={busy}
-                  onChange={(event) => {
-                    const format = event.target.value as ProductImportFormat;
+              <input
+                className={styles["file-input"]}
+                id={fileInputId}
+                type="file"
+                accept={`.${state.format}`}
+                onChange={handleFileChange}
+              />
+              <label
+                className={`${styles.dropzone} ${state.isDragging ? styles.dragging : ""} ${state.file ? styles["has-file"] : ""}`}
+                htmlFor={fileInputId}
+                onDragEnter={(event) => {
+                  event.preventDefault();
 
-                    updateState((draft) => {
-                      Object.assign(draft, initialState, {
-                        mode: "bulk",
-                        format,
-                      });
-                    });
-                  }}
-                >
-                  <option value="xml">XML</option>
-                  <option value="csv">CSV</option>
-                </DropdownSelect>
-              </label>
-            </div>
-            {state.message && (
-              <p
-                className={
-                  state.status === "error" ? styles.error : styles.message
+                  updateState((draft) => {
+                    draft.isDragging = true;
+                  });
+                }}
+                onDragOver={(event) => event.preventDefault()}
+                onDragLeave={() =>
+                  updateState((draft) => {
+                    draft.isDragging = false;
+                  })
                 }
-                role={state.status === "error" ? "alert" : "status"}
+                onDrop={handleDrop}
               >
-                {state.message}
-              </p>
-            )}
-          </form>
-          <form
+                {state.file ? (
+                  <>
+                    <span className={styles["ready-label"]}>
+                      <FontAwesomeIcon icon={faCheck} /> Arquivo pronto para
+                      inserir
+                    </span>
+                    <span className={styles["selected-file"]} role="status">
+                      <FontAwesomeIcon icon={faFileLines} />
+                      <span>
+                        <strong>{state.file.name}</strong>
+                        <small>
+                          {state.format.toUpperCase()} ·{" "}
+                          {formatFileSize(state.file.size)}
+                        </small>
+                      </span>
+                      <FontAwesomeIcon icon={faCheck} />
+                    </span>
+                    <span>Clique ou arraste outro arquivo para substituir</span>
+                  </>
+                ) : (
+                  <>
+                    <span className={styles["upload-icon"]}>
+                      <FontAwesomeIcon icon={faCloudArrowUp} />
+                    </span>
+                    <strong>
+                      Arraste o arquivo {state.format.toUpperCase()} aqui ou
+                      clique para selecionar
+                    </strong>
+                    <span>Formato aceito: .{state.format} · máximo de 10 MB</span>
+                  </>
+                )}
+              </label>
+              <div className={styles.actions}>
+                <button className={styles.primary} type="submit" disabled={busy}>
+                  {state.status === "processing" ? (
+                    <Spinner label="Processando" />
+                  ) : (
+                    "Inserir"
+                  )}
+                </button>
+                <button
+                  className={styles.secondary}
+                  type="button"
+                  onClick={() => navigate("/products")}
+                  disabled={busy}
+                >
+                  Cancelar
+                </button>
+                <label className={styles.format} htmlFor={formatSelectId}>
+                  Formato{" "}
+                  <DropdownSelect
+                    id={formatSelectId}
+                    value={state.format}
+                    disabled={busy}
+                    onChange={(event) => {
+                      const format = event.target.value as ProductImportFormat;
+
+                      updateState((draft) => {
+                        Object.assign(draft, initialState, {
+                          mode: "bulk",
+                          format,
+                        });
+                      });
+                    }}
+                  >
+                    <option value="xml">XML</option>
+                    <option value="csv">CSV</option>
+                  </DropdownSelect>
+                </label>
+              </div>
+              {state.message && (
+                <p
+                  className={
+                    state.status === "error" ? styles.error : styles.message
+                  }
+                  role={state.status === "error" ? "alert" : "status"}
+                >
+                  {state.message}
+                </p>
+              )}
+            </form>
+          </div>
+          <div
             id="single-registration-panel"
             hidden={state.mode !== "single"}
             role="tabpanel"
             aria-labelledby="single-registration-tab"
             tabIndex={0}
-            onSubmit={handleSingleSubmit}
-            className={styles["single-form"]}
           >
-            <div className={styles["form-grid"]}>
-              <label htmlFor="product-sku">
-                SKU
-                <input
-                  id="product-sku"
-                  maxLength={64}
-                  value={productDraft.values.sku}
-                  onChange={(e) => updateDraft("sku", e.target.value)}
-                  aria-invalid={Boolean(productDraft.errors.sku)}
-                  aria-describedby={productDraft.errors.sku ? "product-sku-error" : undefined}
-                />
-                {productDraft.errors.sku && <span className={styles.fieldError} id="product-sku-error" role="alert">{productDraft.errors.sku}</span>}
-              </label>
-              <label htmlFor="product-barcode">
-                Código de barras
-                <input
-                  id="product-barcode"
-                  maxLength={32}
-                  value={productDraft.values.barcode}
-                  onChange={(e) => updateDraft("barcode", e.target.value)}
-                  aria-invalid={Boolean(productDraft.errors.barcode)}
-                  aria-describedby={productDraft.errors.barcode ? "product-barcode-error" : undefined}
-                />
-                {productDraft.errors.barcode && <span className={styles.fieldError} id="product-barcode-error" role="alert">{productDraft.errors.barcode}</span>}
-              </label>
-              <label className={styles.wide} htmlFor="product-name">
-                Nome do produto
-                <input
-                  id="product-name"
-                  maxLength={120}
-                  value={productDraft.values.name}
-                  onChange={(e) => updateDraft("name", e.target.value)}
-                  aria-invalid={Boolean(productDraft.errors.name)}
-                  aria-describedby={productDraft.errors.name ? "product-name-error" : undefined}
-                />
-                {productDraft.errors.name && <span className={styles.fieldError} id="product-name-error" role="alert">{productDraft.errors.name}</span>}
-              </label>
-              <label htmlFor="product-category">
-                Categoria
-                <DropdownSelect
-                  id="product-category"
-                  value={productDraft.values.category}
-                  onChange={(e) => updateDraft("category", e.target.value)}
-                  ariaInvalid={Boolean(productDraft.errors.category)}
-                  ariaDescribedBy={productDraft.errors.category ? "product-category-error" : undefined}
+            <form
+              id="single-registration-form"
+              aria-labelledby="single-registration-tab"
+              onSubmit={handleSingleSubmit}
+              className={styles["single-form"]}
+            >
+              <div className={styles["form-grid"]}>
+                <label htmlFor="product-sku">
+                  SKU
+                  <input
+                    id="product-sku"
+                    maxLength={64}
+                    value={productDraft.values.sku}
+                    onChange={(e) => updateDraft("sku", e.target.value)}
+                    aria-invalid={Boolean(productDraft.errors.sku)}
+                    aria-describedby={productDraft.errors.sku ? "product-sku-error" : undefined}
+                  />
+                  {productDraft.errors.sku && <span className={styles.fieldError} id="product-sku-error" role="alert">{productDraft.errors.sku}</span>}
+                </label>
+                <label htmlFor="product-barcode">
+                  Código de barras
+                  <input
+                    id="product-barcode"
+                    maxLength={32}
+                    value={productDraft.values.barcode}
+                    onChange={(e) => updateDraft("barcode", e.target.value)}
+                    aria-invalid={Boolean(productDraft.errors.barcode)}
+                    aria-describedby={productDraft.errors.barcode ? "product-barcode-error" : undefined}
+                  />
+                  {productDraft.errors.barcode && <span className={styles.fieldError} id="product-barcode-error" role="alert">{productDraft.errors.barcode}</span>}
+                </label>
+                <label className={styles.wide} htmlFor="product-name">
+                  Nome do produto
+                  <input
+                    id="product-name"
+                    maxLength={120}
+                    value={productDraft.values.name}
+                    onChange={(e) => updateDraft("name", e.target.value)}
+                    aria-invalid={Boolean(productDraft.errors.name)}
+                    aria-describedby={productDraft.errors.name ? "product-name-error" : undefined}
+                  />
+                  {productDraft.errors.name && <span className={styles.fieldError} id="product-name-error" role="alert">{productDraft.errors.name}</span>}
+                </label>
+                <label htmlFor="product-category">
+                  Categoria
+                  <DropdownSelect
+                    id="product-category"
+                    value={productDraft.values.category}
+                    onChange={(e) => updateDraft("category", e.target.value)}
+                    ariaInvalid={Boolean(productDraft.errors.category)}
+                    ariaDescribedBy={productDraft.errors.category ? "product-category-error" : undefined}
+                  >
+                    <option value="">Selecione</option>
+                    {categories.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </DropdownSelect>
+                  {productDraft.errors.category && <span className={styles.fieldError} id="product-category-error" role="alert">{productDraft.errors.category}</span>}
+                </label>
+                <label htmlFor="product-brand">
+                  Marca
+                  <input
+                    id="product-brand"
+                    maxLength={100}
+                    value={productDraft.values.brand}
+                    onChange={(e) => updateDraft("brand", e.target.value)}
+                    aria-invalid={Boolean(productDraft.errors.brand)}
+                    aria-describedby={productDraft.errors.brand ? "product-brand-error" : undefined}
+                  />
+                  {productDraft.errors.brand && <span className={styles.fieldError} id="product-brand-error" role="alert">{productDraft.errors.brand}</span>}
+                </label>
+                <label htmlFor="product-measurement-unit">
+                  Unidade de medida
+                  <DropdownSelect
+                    id="product-measurement-unit"
+                    value={productDraft.values.measurementUnit}
+                    onChange={(e) =>
+                      updateDraft("measurementUnit", e.target.value)
+                    }
+                    ariaInvalid={Boolean(productDraft.errors.measurementUnit)}
+                    ariaDescribedBy={productDraft.errors.measurementUnit ? "product-measurement-unit-error" : undefined}
+                  >
+                    <option value="">Selecione</option>
+                    {measurementUnits.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </DropdownSelect>
+                  {productDraft.errors.measurementUnit && <span className={styles.fieldError} id="product-measurement-unit-error" role="alert">{productDraft.errors.measurementUnit}</span>}
+                </label>
+                <label htmlFor="product-supplier">
+                  Fornecedor
+                  <DropdownSelect
+                    id="product-supplier"
+                    value={productDraft.values.supplier}
+                    onChange={(e) => updateDraft("supplier", e.target.value)}
+                    ariaInvalid={Boolean(productDraft.errors.supplier)}
+                    ariaDescribedBy={productDraft.errors.supplier ? "product-supplier-error" : undefined}
+                  >
+                    <option value="">Selecione</option>
+                    {suppliers.map((item) => (
+                      <option key={item}>{item}</option>
+                    ))}
+                  </DropdownSelect>
+                  {productDraft.errors.supplier && <span className={styles.fieldError} id="product-supplier-error" role="alert">{productDraft.errors.supplier}</span>}
+                </label>
+              </div>
+              <div className={styles.actions}>
+                <button
+                  className={styles.primary}
+                  type="submit"
+                  disabled={productDraft.status === "registering"}
                 >
-                  <option value="">Selecione</option>
-                  {categories.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </DropdownSelect>
-                {productDraft.errors.category && <span className={styles.fieldError} id="product-category-error" role="alert">{productDraft.errors.category}</span>}
-              </label>
-              <label htmlFor="product-brand">
-                Marca
-                <input
-                  id="product-brand"
-                  maxLength={100}
-                  value={productDraft.values.brand}
-                  onChange={(e) => updateDraft("brand", e.target.value)}
-                  aria-invalid={Boolean(productDraft.errors.brand)}
-                  aria-describedby={productDraft.errors.brand ? "product-brand-error" : undefined}
-                />
-                {productDraft.errors.brand && <span className={styles.fieldError} id="product-brand-error" role="alert">{productDraft.errors.brand}</span>}
-              </label>
-              <label htmlFor="product-measurement-unit">
-                Unidade de medida
-                <DropdownSelect
-                  id="product-measurement-unit"
-                  value={productDraft.values.measurementUnit}
-                  onChange={(e) =>
-                    updateDraft("measurementUnit", e.target.value)
+                  {productDraft.status === "registering" ? (
+                    <Spinner label="Cadastrando" />
+                  ) : (
+                    "Cadastrar produto"
+                  )}
+                </button>
+                <button
+                  className={styles.secondary}
+                  type="button"
+                  onClick={() => navigate("/products")}
+                >
+                  Cancelar cadastro
+                </button>
+              </div>
+              {productDraft.message && (
+                <p
+                  className={
+                    productDraft.status === "error"
+                      ? styles.error
+                      : styles.message
                   }
-                  ariaInvalid={Boolean(productDraft.errors.measurementUnit)}
-                  ariaDescribedBy={productDraft.errors.measurementUnit ? "product-measurement-unit-error" : undefined}
+                  role={productDraft.status === "error" ? "alert" : "status"}
                 >
-                  <option value="">Selecione</option>
-                  {measurementUnits.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </DropdownSelect>
-                {productDraft.errors.measurementUnit && <span className={styles.fieldError} id="product-measurement-unit-error" role="alert">{productDraft.errors.measurementUnit}</span>}
-              </label>
-              <label htmlFor="product-supplier">
-                Fornecedor
-                <DropdownSelect
-                  id="product-supplier"
-                  value={productDraft.values.supplier}
-                  onChange={(e) => updateDraft("supplier", e.target.value)}
-                  ariaInvalid={Boolean(productDraft.errors.supplier)}
-                  ariaDescribedBy={productDraft.errors.supplier ? "product-supplier-error" : undefined}
-                >
-                  <option value="">Selecione</option>
-                  {suppliers.map((item) => (
-                    <option key={item}>{item}</option>
-                  ))}
-                </DropdownSelect>
-                {productDraft.errors.supplier && <span className={styles.fieldError} id="product-supplier-error" role="alert">{productDraft.errors.supplier}</span>}
-              </label>
-            </div>
-            <div className={styles.actions}>
-              <button
-                className={styles.primary}
-                type="submit"
-                disabled={productDraft.status === "registering"}
-              >
-                {productDraft.status === "registering" ? (
-                  <Spinner label="Cadastrando" />
-                ) : (
-                  "Cadastrar produto"
-                )}
-              </button>
-              <button
-                className={styles.secondary}
-                type="button"
-                onClick={() => navigate("/products")}
-              >
-                Cancelar cadastro
-              </button>
-            </div>
-            {productDraft.message && (
-              <p
-                className={
-                  productDraft.status === "error"
-                    ? styles.error
-                    : styles.message
-                }
-                role={productDraft.status === "error" ? "alert" : "status"}
-              >
-                {productDraft.message}
-              </p>
-            )}
-          </form>
+                  {productDraft.message}
+                </p>
+              )}
+            </form>
+          </div>
         </>
       </section>
       <ReusableTable

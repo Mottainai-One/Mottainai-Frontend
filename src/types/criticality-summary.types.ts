@@ -13,8 +13,4 @@ export interface CriticalitySummaryItem {
     guidance: string;
 }
 
-export interface CriticalitySummaryProps {
-    data: readonly CriticalitySummaryItem[];
-}
-
 export type ProductCriticalitySource = Pick<Product, 'trafficLight'>;

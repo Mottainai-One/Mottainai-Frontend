@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import type { SidebarProps } from "@/types/sidebar.types";
 import styles from "./style.module.css";
-import mottainaiLogo from "@/assets/icons/Logo-Orange.png";
+import mottainaiLogo40 from "@/assets/icons/Logo-Orange-40w.png";
+import mottainaiLogo80 from "@/assets/icons/Logo-Orange-80w.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHouse,
@@ -90,7 +91,16 @@ function Sidebar({ overviewPaths }: SidebarProps) {
       >
         <div className={styles["sidebar-logo"]}>
           <span className={styles.icon} aria-hidden="true">
-            <img src={mottainaiLogo} alt="Logo do Mottainai" />
+            <img
+              src={mottainaiLogo40}
+              srcSet={`${mottainaiLogo40} 40w, ${mottainaiLogo80} 80w`}
+              sizes="40px"
+              alt="Logo do Mottainai"
+              width={40}
+              height={40}
+              loading="lazy"
+              decoding="async"
+            />
           </span>
 
           <span className={styles.text}>Mottainai</span>

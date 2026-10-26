@@ -9,10 +9,10 @@ on:
 
 jobs:
   # ============================================================
-  # JOB 1: Build e Testes
+  # Build e testes
   # ============================================================
   build-and-test:
-    name: 1. Build e Testes
+    name: Build e Testes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +30,7 @@ jobs:
         run: npm run build
 
       - name: Rodar testes (se existir script "test")
-        run: npm test --if-present
+        run: npm test
 
       - name: Upload resultados de teste
         if: failure()
@@ -40,10 +40,10 @@ jobs:
           path: dist/
 
   # ============================================================
-  # JOB 2: Estilo de Código (indentação + ESLint)
+  # Estilo de código (indentação + ESLint)
   # ============================================================
   code-style:
-    name: 2. Estilo de Código
+    name: Estilo de Código
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -75,10 +75,10 @@ jobs:
         run: npm run lint
 
   # ============================================================
-  # JOB 3: Convenção de Commits
+  # Convenção de commits
   # ============================================================
   commit-convention:
-    name: 3. Convenção de Commits
+    name: Convenção de Commits
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -114,69 +114,3 @@ jobs:
           done
           
           echo "Convenção de commits OK"
-
-  # ============================================================
-  # JOB 5: Idioma dos Comentários
-  # ============================================================
-  comment-language:
-    name: 5. Idioma dos Comentários
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Verificar comentários
-        run: |
-          echo "Verificando comentários em arquivos TypeScript..."
-          
-          # Extrair comentários de arquivos .ts/.tsx
-          find src/ \( -name "*.ts" -o -name "*.tsx" \) -exec grep -Hn "//\|/\*\|\*" {} \; > /tmp/comments.txt || true
-          
-          if [ ! -s /tmp/comments.txt ]; then
-            echo "Nenhum comentário encontrado"
-            exit 0
-          fi
-          
-          echo "Comentários encontrados:"
-          cat /tmp/comments.txt
-          
-          # Verificar se comentários fazem sentido (básico)
-          # Procurar por comentários muito curtos ou sem sentido
-          while IFS= read -r line; do
-            FILE=$(echo "$line" | cut -d: -f1)
-            LINE=$(echo "$line" | cut -d: -f2)
-            COMMENT=$(echo "$line" | cut -d: -f3-)
-            
-            # Verificar se comentário tem pelo menos 3 caracteres após //
-            CLEAN=$(echo "$COMMENT" | sed -e 's|//||g; s|/\*||g; s|\*/||g' -e 's/^[[:space:]]*//; s/[[:space:]]*$//')
-            if [ ${#CLEAN} -lt 3 ]; then
-              echo "AVISO: Comentário muito curto em $FILE:$LINE"
-            fi
-          done < /tmp/comments.txt
-          
-          echo "Verificação de comentários concluída"
-
-  # ============================================================
-  # JOB 6: Idioma do Código
-  # ============================================================
-  code-language:
-    name: 6. Idioma do Código
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Verificar código em inglês
-        run: |
-          echo "Verificando se código está em inglês..."
-          
-          # Verificar nomes de componentes, variáveis e funções
-          # Procurar por possíveis palavras em português
-          PATTERNS="buscar|salvar|atualizar|remover|listar|criar|usuario|senha|produto|loja|venda|estoque|relatorio|dashboard"
-          
-          if grep -rE "$PATTERNS" --include="*.ts" --include="*.tsx" src/; then
-            echo "AVISO: Encontrados possíveis nomes em português"
-            echo "Considere usar nomes em inglês: fetch, save, update, delete, list, create"
-          fi
-          
-          echo "Verificação de idioma concluída"

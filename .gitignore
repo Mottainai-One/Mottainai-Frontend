@@ -11,6 +11,34 @@ node_modules
 dist
 dist-ssr
 *.local
+.lighthouseci/
+*.tsbuildinfo
+/vite.config.js
+/vite.config.d.ts
+
+# Cache e arquivos temporarios locais
+.vite/
+.cache/
+/tmp/
+
+# Testes e ferramentas locais de auditoria
+/tests/
+**/*.test.*
+**/*.spec.*
+/vitest.config.ts
+/.lighthouserc.cjs
+/audit.js
+/scripts/lighthouse-*.cjs
+
+# Resultados gerados por testes e auditorias
+/coverage/
+/test-results/
+/playwright-report/
+/output/
+/chromewebdata_*.report.html
+/localhost_*.report.html
+/relatorio-lighthouse.md
+/relatorio-qualidade.html
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +51,4 @@ dist-ssr
 *.sln
 *.sw?
 AGENTS.md
+agents2.md

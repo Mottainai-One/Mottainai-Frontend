@@ -1,5 +1,5 @@
 import mottainaiLogo from '@/assets/icons/Logo-Orange.png';
-import thinkingOtter from '@/assets/imgs/lontra-pensando.png';
+import thinkingOtter from '@/assets/imgs/lontra-pensando.webp';
 import styles from './style.module.css';
 
 function Loading() {

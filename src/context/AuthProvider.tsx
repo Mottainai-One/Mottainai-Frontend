@@ -16,7 +16,7 @@ import { sanitizeLoginCredentials, validateLoginCredentials } from '@/utils/logi
 
 const TOKEN_KEY = '@App:token';
 
-// Função para pegar o tokej
+// Decodifica o token e obtém os dados básicos da sessão.
 function decodeUserFromToken(token: string): User | null {
   try {
     const decoded = jwtDecode<DecodedToken>(token);
@@ -32,7 +32,7 @@ function decodeUserFromToken(token: string): User | null {
   }
 }
 
-// Função para inicializar o token se nao tiver
+// Recupera a sessão local apenas quando o mock está habilitado.
 const initialAuthState: AuthState = {
   token: null,
   user: null,
@@ -58,6 +58,11 @@ function discardStoredToken(): void {
 }
 
 function getInitialAuthState(): AuthState {
+  if (!authService.isMockAuthenticationEnabled) {
+    discardStoredToken();
+    return initialAuthState;
+  }
+
   let storedValue: string | null;
   try {
     storedValue = localStorage.getItem(TOKEN_KEY);
@@ -117,11 +122,11 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
   }
 }
 
-// Cabo para repasssar para toda a aplicação 
+// Compartilha o estado de autenticação com a aplicação.
 export function AuthProvider({ children }: AuthProviderProps) {
   const [authState, dispatch] = useReducer(authReducer, undefined, getInitialAuthState);
 
-  // Função de Login com token
+  // Valida e inicia a sessão de demonstração.
   const login = useCallback(async (credentials: LoginCredentials) => {
     dispatch({ type: 'login-started' });
 
@@ -145,7 +150,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // Função do Logout tirando do localStorage
+  // Encerra a sessão e remove o token local.
   const logout = useCallback(() => {
     discardStoredToken();
     dispatch({ type: 'logged-out' });

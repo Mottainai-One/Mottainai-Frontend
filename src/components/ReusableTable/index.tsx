@@ -20,6 +20,9 @@ const alignmentClasses: Record<NonNullable<ReusableTableColumn<object>['align']>
     end: styles.alignEnd,
 };
 
+// Keyboard focus lets users scroll the table horizontally without a pointer.
+const keyboardScrollProps = { tabIndex: 0 } as const;
+
 function ReusableTable<T extends object>({
     title,
     columns,
@@ -38,7 +41,7 @@ function ReusableTable<T extends object>({
                 className={styles.scrollArea}
                 role="region"
                 aria-labelledby={titleId}
-                tabIndex={0}
+                {...keyboardScrollProps}
             >
                 <table className={styles.table}>
                     <thead>

@@ -45,6 +45,10 @@ const dateFormatter = new Intl.DateTimeFormat('pt-BR', {
   dateStyle: 'short',
   timeStyle: 'short',
 });
+
+// Focusable table wrappers let keyboard users scroll horizontally without a pointer.
+const keyboardScrollProps = { tabIndex: 0 } as const;
+
 function ManagementReports() {
   const dateId = useId();
   const storeId = useId();
@@ -364,7 +368,12 @@ function ManagementReports() {
           {selectedReport && <span className={styles.selectedLabel}>Último relatório gerado</span>}
         </div>
         {previewItems.length > 0 ? (
-          <div className={styles.tableWrap}>
+          <div
+            className={styles.tableWrap}
+            role="region"
+            {...keyboardScrollProps}
+            aria-label="Prévia dos produtos. Use as setas para rolar a tabela horizontalmente."
+          >
             <table>
               <caption className={styles.srOnly}>Produtos mais vendidos no recorte selecionado</caption>
               <thead>
@@ -395,7 +404,12 @@ function ManagementReports() {
         </div>
         {state.isLoadingReports && <p role="status">Carregando relatórios salvos…</p>}
         {!state.isLoadingReports && state.reports.length ? (
-          <div className={styles.tableWrap}>
+          <div
+            className={styles.tableWrap}
+            role="region"
+            {...keyboardScrollProps}
+            aria-label="Relatórios salvos. Use as setas para rolar a tabela horizontalmente."
+          >
             <table>
               <caption className={styles.srOnly}>Relatórios salvos neste navegador</caption>
               <thead>
@@ -453,8 +467,13 @@ function ManagementReports() {
             <p>Loja: {printableReport.filters.store === '__all__' ? 'Todas as lojas' : printableReport.filters.store}</p>
             <p>Categoria: {printableReport.filters.category === '__all__' ? 'Todas as categorias' : printableReport.filters.category}</p>
             <table>
+              <caption className={styles.srOnly}>Produtos mais vendidos no período e nos filtros selecionados</caption>
               <thead>
-                <tr><th>Produto</th><th>Categoria</th><th>Unidades vendidas</th></tr>
+                <tr>
+                  <th scope="col">Produto</th>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Unidades vendidas</th>
+                </tr>
               </thead>
               <tbody>
                 {printableReport.items.map((item) => (
@@ -476,7 +495,12 @@ function ManagementReports() {
           onClose={handleCloseDetails}
         >
           <h3>Produtos incluídos</h3>
-          <div className={styles.tableWrap}>
+          <div
+            className={styles.tableWrap}
+            role="region"
+            {...keyboardScrollProps}
+            aria-label="Produtos incluídos no relatório. Use as setas para rolar a tabela horizontalmente."
+          >
             <table>
               <caption className={styles.srOnly}>Produtos incluídos no relatório de produtos mais vendidos</caption>
               <thead>

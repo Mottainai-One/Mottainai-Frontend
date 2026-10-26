@@ -24,6 +24,7 @@ export type AccessibilityPreferenceKey = Exclude<keyof AccessibilityPreferences,
 export interface AccessibilityWidgetState {
   isOpen: boolean;
   isReading: boolean;
+  isPaused: boolean;
   statusMessage: string;
   statusIsError: boolean;
 }

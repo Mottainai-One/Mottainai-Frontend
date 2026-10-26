@@ -43,11 +43,6 @@ export interface StockFiltersProps {
   onChange: (filters: StockFilterState) => void;
 }
 
-export interface StockSectionPlaceholderProps {
-  title: string;
-  description: string;
-}
-
 export interface CashClosingReportState {
   status: CashClosingStatus;
   responsible: string;
