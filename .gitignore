@@ -42,6 +42,11 @@ dist-ssr
 /.lighthouserc.cjs
 /audit.js
 
+# Ferramentas locais de auditoria
+/.lighthouserc.cjs
+/audit.js
+/scripts/lighthouse-*.cjs
+
 # Resultados gerados por testes e auditorias
 /coverage/
 /test-results/
@@ -63,6 +68,8 @@ __tests__/
 test_*.py
 *.snap
 /scripts/lighthouse-*.cjs
+/relatorio-lighthouse.md
+/relatorio-qualidade.html
 
 # Editor directories and files
 .vscode/*
@@ -76,4 +83,5 @@ test_*.py
 *.sw?
 AGENTS.md
 .codex
+agents2.md
 agents2.md
