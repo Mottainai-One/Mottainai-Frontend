@@ -1,7 +1,7 @@
 export type AccessibilityPreferences = {
   _versao: 1;
   textScale: number;
-  theme: "light" | "dark";
+  theme: "system" | "light" | "dark";
   contrast: "normal" | "high" | "low";
   saturation: "normal" | "low" | "gray";
   colorVision: "off" | "protanopia" | "deuteranopia" | "tritanopia";

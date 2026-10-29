@@ -1,10 +1,10 @@
 import { lazy, Suspense, type ReactNode } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PrivateRoute from "@/pages/PrivateRoute";
-import MainLayout from "@/components/MainLayout";
 import Spinner from "@/components/Spinner";
 import FloatingButton from "@/components/FloatingButton";
 
+const MainLayout = lazy(() => import("@/components/MainLayout"));
 const Home = lazy(() => import("@/pages/Home"));
 const Login = lazy(() => import("@/pages/Login"));
 const ErrorPage = lazy(() => import("@/pages/ErrorPage"));
@@ -50,7 +50,7 @@ export default function AppRoutes() {
 
         {/* Rotas Privadas */}
         <Route element={<PrivateRoute />}>
-          <Route element={<MainLayout />}>
+          <Route element={page(<MainLayout />)}>
             <Route path="/overview" element={page(<Overview />)} />
             <Route path="/home" element={page(<Home />)} />
             <Route path="/users/*" element={page(<Users />)} />

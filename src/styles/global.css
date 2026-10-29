@@ -119,7 +119,3 @@ p, span, h1, h2, h3, h4, h5, h6, div, li, time, dt, dd, label, td, th, strong, e
     cursor: default;
 }
 
-button, a {
-    transition: all calc(0.3s * var(--a11y-motion-factor, 1)) ease-in-out;
-}
-

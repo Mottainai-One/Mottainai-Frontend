@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DonutChart from '@/components/DonutChart';
 import InfoCard from "@/components/InfoCard"
 import HistoricalChart from '@/components/HistoricalChart';
@@ -33,6 +33,7 @@ const criticalityStatusClasses = {
 } as const;
 const orderedCriticalitySummary = [...criticalitySummary].reverse();
 const weeklySalesValues = [64, 68, 72, 76, 91, 118, 83, 86];
+const shortDateFormatter = new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' });
 // Keyboard focus lets users scroll the table horizontally without a pointer.
 const keyboardScrollProps = { tabIndex: 0 } as const;
 
@@ -43,7 +44,7 @@ function toLocalDateString(date: Date): string {
     return `${year}-${month}-${day}`;
 }
 
-const formatShortDate = (date: Date) => new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: '2-digit' }).format(date);
+const formatShortDate = (date: Date) => shortDateFormatter.format(date);
 
 function Home(){
     const [currentDate, setCurrentDate] = useState(() => new Date());
@@ -61,16 +62,24 @@ function Home(){
         return () => window.clearTimeout(timeoutId);
     }, [currentDate]);
 
-    const periodEnd = new Date(currentDate);
-    periodEnd.setDate(currentDate.getDate() - 1);
-    const periodStart = new Date(periodEnd);
-    periodStart.setDate(periodEnd.getDate() - 7);
-    const weeklySalesData: HistoricalMetric[] = weeklySalesValues.map((value, index) => {
-        const date = new Date(periodStart);
-        date.setDate(periodStart.getDate() + index);
-        return { date: toLocalDateString(date), value };
-    });
-    const periodLabel = `${formatShortDate(periodStart)}–${formatShortDate(periodEnd)}`;
+    const { periodEnd, periodStart, periodLabel, weeklySalesData } = useMemo(() => {
+        const periodEnd = new Date(currentDate);
+        periodEnd.setDate(currentDate.getDate() - 1);
+        const periodStart = new Date(periodEnd);
+        periodStart.setDate(periodEnd.getDate() - 7);
+        const weeklySalesData: HistoricalMetric[] = weeklySalesValues.map((value, index) => {
+            const date = new Date(periodStart);
+            date.setDate(periodStart.getDate() + index);
+            return { date: toLocalDateString(date), value };
+        });
+
+        return {
+            periodEnd,
+            periodStart,
+            periodLabel: `${formatShortDate(periodStart)}–${formatShortDate(periodEnd)}`,
+            weeklySalesData,
+        };
+    }, [currentDate]);
 
     return(
         <>

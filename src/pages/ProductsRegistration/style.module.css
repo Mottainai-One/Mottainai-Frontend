@@ -190,7 +190,10 @@ input:focus-visible {
     align-items: center;
     gap: 0.6rem;
     margin-left: auto;
+
+    /* Texto */
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .format select {

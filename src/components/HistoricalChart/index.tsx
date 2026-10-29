@@ -94,20 +94,9 @@ function HistoricalChart({
       if (disposed || !canvasRef.current) return;
       setChartLoadStatus("loading");
       try {
-        const {
-          CategoryScale,
-          Chart,
-          Filler,
-          LineController,
-          LineElement,
-          LinearScale,
-          PointElement,
-          Tooltip,
-        } = await import("chart.js");
+        const { Chart } = await import("./chartRuntime");
 
         if (disposed || !canvasRef.current) return;
-
-        Chart.register(CategoryScale, Filler, LineController, LineElement, LinearScale, PointElement, Tooltip);
 
         const root = document.documentElement;
         const primaryColor = getThemeColor("--motta-blue", "#102a43");
@@ -142,7 +131,7 @@ function HistoricalChart({
             ],
           },
           options: {
-            animation: { duration: 1000 * getMotionFactor() },
+            animation: { duration: 250 * getMotionFactor() },
             responsive: true,
             maintainAspectRatio: false,
             onHover: (_event, activeElements, chart) => {
@@ -206,7 +195,7 @@ function HistoricalChart({
           if (activeChart.options.scales?.x?.ticks) activeChart.options.scales.x.ticks.color = foreground;
           if (activeChart.options.scales?.y?.ticks) activeChart.options.scales.y.ticks.color = foreground;
           if (activeChart.options.scales?.y?.grid) activeChart.options.scales.y.grid.color = `rgba(${primaryRgbValue}, 0.12)`;
-          activeChart.options.animation = { duration: 1000 * getMotionFactor() };
+          activeChart.options.animation = { duration: 250 * getMotionFactor() };
           activeChart.update("none");
         });
         themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });

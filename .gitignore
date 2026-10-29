@@ -20,6 +20,27 @@ dist-ssr
 .vite/
 .cache/
 /tmp/
+**/.vite/
+**/.cache/
+**/cache/
+**/caches/
+**/.parcel-cache/
+**/.turbo/
+**/.next/cache/
+**/.nuxt/
+**/.eslintcache
+**/.stylelintcache
+**/__pycache__/
+**/.pytest_cache/
+**/.mypy_cache/
+**/.ruff_cache/
+*.cache
+*.py[cod]
+
+# Ferramentas locais de auditoria
+/.codacy/
+/.lighthouserc.cjs
+/audit.js
 
 # Ferramentas locais de auditoria
 /.lighthouserc.cjs
@@ -33,6 +54,20 @@ dist-ssr
 /output/
 /chromewebdata_*.report.html
 /localhost_*.report.html
+/relatorio-*
+
+# Arquivos e pastas de testes
+tests/
+test/
+__tests__/
+*.test.*
+*.spec.*
+*.cy.*
+*.e2e.*
+*_test.py
+test_*.py
+*.snap
+/scripts/lighthouse-*.cjs
 /relatorio-lighthouse.md
 /relatorio-qualidade.html
 
@@ -47,4 +82,6 @@ dist-ssr
 *.sln
 *.sw?
 AGENTS.md
+.codex
+agents2.md
 agents2.md

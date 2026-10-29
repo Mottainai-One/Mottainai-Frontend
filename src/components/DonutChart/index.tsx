@@ -1,9 +1,7 @@
 import { useEffect, useId, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
-import { ArcElement, Chart, DoughnutController, Tooltip, type Plugin } from 'chart.js';
+import type { ArcElement, Chart as ChartInstance, Plugin } from 'chart.js';
 import type { DonutChartProps } from '@/types/donut-chart.types';
 import styles from './style.module.css';
-
-Chart.register(ArcElement, DoughnutController, Tooltip);
 
 function getThemeColor(variable: string, fallback: string): string {
   return window.getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
@@ -198,10 +196,11 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
   const titleId = useId();
   const descriptionId = useId();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const chartRef = useRef<Chart<'doughnut', number[], string> | null>(null);
+  const chartRef = useRef<ChartInstance<'doughnut', number[], string> | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [darkTheme, setDarkTheme] = useState(hasDarkTheme);
   const [highContrast, setHighContrast] = useState(hasHighContrast);
+  const [chartLoadStatus, setChartLoadStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const total = segments.reduce((sum, segment) => sum + segment.value, 0);
   const activeSegment = activeIndex === null ? null : segments[activeIndex];
 
@@ -212,103 +211,136 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
       return undefined;
     }
 
-    const root = document.documentElement;
-    const initialDarkTheme = hasDarkTheme();
-    const initialHighContrast = hasHighContrast();
-    const surfaceColor = getThemeColor("--a11y-surface", "#ffffff");
-    const primaryColor = getThemeColor("--motta-blue", "#102a43");
-    const tooltipColors = getTooltipColors(primaryColor);
+    let disposed = false;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let themeObserver: MutationObserver | null = null;
+    let chart: ChartInstance<'doughnut', number[], string> | null = null;
 
-    const chart = new Chart(canvas, {
-      type: 'doughnut',
-      data: {
-        labels: segments.map((segment) => segment.label),
-        datasets: [{
-          data: segments.map((segment) => segment.value),
-          backgroundColor: segments.map((segment, index) => {
-            const color = getSegmentDisplayColor(segment, index, initialDarkTheme, initialHighContrast);
-            return initialHighContrast ? createHatchPattern(canvasContext, color, index) : color;
-          }),
-          borderColor: initialHighContrast ? segments.map(() => "#fff") : surfaceColor,
-          borderWidth: initialHighContrast ? segments.map(() => 3) : 3,
-          borderAlign: initialHighContrast ? "inner" : "center",
-          spacing: initialHighContrast ? 5 : 0,
-          hoverOffset: 8,
-          hoverBorderColor: initialHighContrast ? "#fff" : surfaceColor,
-          hoverBorderWidth: 3,
-        }],
-      },
-      options: {
-        animation: { duration: 1000 * getMotionFactor() },
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '68%',
-        layout: { padding: initialHighContrast ? { top: 14, right: 92, bottom: 14, left: 92 } : 0 },
-        onHover: (_event, activeElements, hoveredChart) => {
-          const index = activeElements[0]?.index ?? null;
-          hoveredChart.canvas.style.cursor = index === null ? 'default' : 'pointer';
-          setActiveIndex(index);
-        },
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            backgroundColor: tooltipColors.backgroundColor,
-            titleColor: tooltipColors.foregroundColor,
-            bodyColor: tooltipColors.foregroundColor,
-            borderColor: '#2d5778',
-            borderWidth: 1,
-            cornerRadius: 8,
-            padding: 12,
-            callbacks: {
-              label: (context) => `${context.label}: ${context.formattedValue} ${valueLabel}`,
+    const initializeChart = async () => {
+      setChartLoadStatus('loading');
+
+      try {
+        const { Chart } = await import('./chartRuntime');
+        if (disposed || !canvasRef.current) return;
+
+        const root = document.documentElement;
+        const initialDarkTheme = hasDarkTheme();
+        const initialHighContrast = hasHighContrast();
+        const surfaceColor = getThemeColor("--a11y-surface", "#ffffff");
+        const primaryColor = getThemeColor("--motta-blue", "#102a43");
+        const tooltipColors = getTooltipColors(primaryColor);
+
+        const chartInstance = new Chart(canvas, {
+          type: 'doughnut',
+          data: {
+            labels: segments.map((segment) => segment.label),
+            datasets: [{
+              data: segments.map((segment) => segment.value),
+              backgroundColor: segments.map((segment, index) => {
+                const color = getSegmentDisplayColor(segment, index, initialDarkTheme, initialHighContrast);
+                return initialHighContrast ? createHatchPattern(canvasContext, color, index) : color;
+              }),
+              borderColor: initialHighContrast ? segments.map(() => "#fff") : surfaceColor,
+              borderWidth: initialHighContrast ? segments.map(() => 3) : 3,
+              borderAlign: initialHighContrast ? "inner" : "center",
+              spacing: initialHighContrast ? 5 : 0,
+              hoverOffset: 8,
+              hoverBorderColor: initialHighContrast ? "#fff" : surfaceColor,
+              hoverBorderWidth: 3,
+            }],
+          },
+          options: {
+            animation: { duration: 250 * getMotionFactor() },
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            layout: { padding: initialHighContrast ? { top: 14, right: 92, bottom: 14, left: 92 } : 0 },
+            onHover: (_event, activeElements, hoveredChart) => {
+              const index = activeElements[0]?.index ?? null;
+              hoveredChart.canvas.style.cursor = index === null ? 'default' : 'pointer';
+              setActiveIndex(index);
+            },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: tooltipColors.backgroundColor,
+                titleColor: tooltipColors.foregroundColor,
+                bodyColor: tooltipColors.foregroundColor,
+                borderColor: '#2d5778',
+                borderWidth: 1,
+                cornerRadius: 8,
+                padding: 12,
+                callbacks: {
+                  label: (context) => `${context.label}: ${context.formattedValue} ${valueLabel}`,
+                },
+              },
             },
           },
-        },
-      },
-      plugins: [createHighContrastLabelPlugin()],
-    });
+          plugins: [createHighContrastLabelPlugin()],
+        });
 
-    chartRef.current = chart;
-    const themeObserver = new MutationObserver(() => {
-      const dark = hasDarkTheme();
-      const highContrastEnabled = hasHighContrast();
-      setDarkTheme(dark);
-      setHighContrast(highContrastEnabled);
-      const surface = getThemeColor("--a11y-surface", "#ffffff");
-      const primary = getThemeColor("--motta-blue", "#102a43");
-      const tooltipColors = getTooltipColors(primary);
-      chart.data.datasets[0].borderColor = highContrastEnabled ? segments.map(() => "#fff") : surface;
-      chart.data.datasets[0].borderWidth = highContrastEnabled ? segments.map(() => 3) : 3;
-      chart.data.datasets[0].borderAlign = highContrastEnabled ? "inner" : "center";
-      chart.data.datasets[0].spacing = highContrastEnabled ? 5 : 0;
-      chart.data.datasets[0].backgroundColor = segments.map((segment, index) => {
-        const color = getSegmentDisplayColor(segment, index, dark, highContrastEnabled);
-        return highContrastEnabled ? createHatchPattern(chart.ctx, color, index) : color;
-      });
-      chart.options.layout = {
-        ...chart.options.layout,
-        padding: highContrastEnabled
-          ? { top: 14, right: 92, bottom: 14, left: 92 }
-          : 0,
-      };
-      const dataset = chart.data.datasets[0];
-      if (dataset) {
-        dataset.hoverBorderColor = highContrastEnabled ? "#fff" : surface;
-        dataset.hoverBorderWidth = 3;
+        chart = chartInstance;
+        chartRef.current = chartInstance;
+        themeObserver = new MutationObserver(() => {
+          const dark = hasDarkTheme();
+          const highContrastEnabled = hasHighContrast();
+          setDarkTheme(dark);
+          setHighContrast(highContrastEnabled);
+          const surface = getThemeColor("--a11y-surface", "#ffffff");
+          const primary = getThemeColor("--motta-blue", "#102a43");
+          const updatedTooltipColors = getTooltipColors(primary);
+          chartInstance.data.datasets[0].borderColor = highContrastEnabled ? segments.map(() => "#fff") : surface;
+          chartInstance.data.datasets[0].borderWidth = highContrastEnabled ? segments.map(() => 3) : 3;
+          chartInstance.data.datasets[0].borderAlign = highContrastEnabled ? "inner" : "center";
+          chartInstance.data.datasets[0].spacing = highContrastEnabled ? 5 : 0;
+          const chartContext = chartInstance.ctx;
+          chartInstance.data.datasets[0].backgroundColor = segments.map((segment, index) => {
+            const color = getSegmentDisplayColor(segment, index, dark, highContrastEnabled);
+            return highContrastEnabled ? createHatchPattern(chartContext, color, index) : color;
+          });
+          chartInstance.options.layout = {
+            ...chartInstance.options.layout,
+            padding: highContrastEnabled
+              ? { top: 14, right: 92, bottom: 14, left: 92 }
+              : 0,
+          };
+          const dataset = chartInstance.data.datasets[0];
+          if (dataset) {
+            dataset.hoverBorderColor = highContrastEnabled ? "#fff" : surface;
+            dataset.hoverBorderWidth = 3;
+          }
+          const tooltip = chartInstance.options.plugins?.tooltip;
+          if (tooltip) {
+            tooltip.backgroundColor = updatedTooltipColors.backgroundColor;
+            tooltip.titleColor = updatedTooltipColors.foregroundColor;
+            tooltip.bodyColor = updatedTooltipColors.foregroundColor;
+          }
+          chartInstance.options.animation = { duration: 250 * getMotionFactor() };
+          chartInstance.update("none");
+        });
+        themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
+        setChartLoadStatus('success');
+      } catch {
+        if (!disposed) setChartLoadStatus('error');
       }
-      const tooltip = chart.options.plugins?.tooltip;
-      if (tooltip) {
-        tooltip.backgroundColor = tooltipColors.backgroundColor;
-        tooltip.titleColor = tooltipColors.foregroundColor;
-        tooltip.bodyColor = tooltipColors.foregroundColor;
-      }
-      chart.options.animation = { duration: 1000 * getMotionFactor() };
-      chart.update("none");
-    });
-    themeObserver.observe(root, { attributes: true, attributeFilter: ["data-a11y-theme", "data-a11y-contrast", "data-a11y-motion"] });
+    };
+
+    if (typeof IntersectionObserver === 'undefined') {
+      void initializeChart();
+    } else {
+      intersectionObserver = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        intersectionObserver?.disconnect();
+        void initializeChart();
+      }, { rootMargin: '200px' });
+      intersectionObserver.observe(canvas);
+    }
+
     return () => {
-      themeObserver.disconnect();
-      chart.destroy();
+      disposed = true;
+      intersectionObserver?.disconnect();
+      themeObserver?.disconnect();
+      chart?.destroy();
       chartRef.current = null;
     };
   }, [segments, valueLabel]);
@@ -363,6 +395,17 @@ function DonutChart({ title, description, segments, centerLabel = 'Total', value
           <span>{activeSegment ? activeSegment.label : centerLabel}</span>
         </div>
       </div>
+      {chartLoadStatus === 'loading' && (
+        <p className={styles.srOnly} role="status">Carregando gráfico.</p>
+      )}
+      {chartLoadStatus === 'success' && (
+        <p className={styles.srOnly} role="status">Gráfico carregado.</p>
+      )}
+      {chartLoadStatus === 'error' && (
+        <p className={styles.chartError} role="alert">
+          Não foi possível carregar o gráfico. Os dados permanecem disponíveis na lista abaixo.
+        </p>
+      )}
       <ul className={styles.legend} aria-label={`Dados de ${title}`}>
         {segments.map((segment, index) => (
           <li key={segment.id}>
