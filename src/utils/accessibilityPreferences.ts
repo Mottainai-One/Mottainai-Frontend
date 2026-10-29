@@ -5,7 +5,7 @@ export const ACCESSIBILITY_STORAGE_KEY = "acessibility_v1";
 export const DEFAULT_ACCESSIBILITY_PREFERENCES: AccessibilityPreferences = {
   _versao: 1,
   textScale: 0,
-  theme: "light",
+  theme: "system",
   contrast: "normal",
   saturation: "normal",
   colorVision: "off",
@@ -38,7 +38,7 @@ export function sanitizeAccessibilityPreferences(value: unknown): AccessibilityP
   if (!isRecord(value) || value._versao !== 1) return { ...DEFAULT_ACCESSIBILITY_PREFERENCES };
   const defaults = { ...DEFAULT_ACCESSIBILITY_PREFERENCES };
   const candidate = value as Partial<AccessibilityPreferences>;
-  const themes = ["light", "dark"] as const;
+  const themes = ["system", "light", "dark"] as const;
   const contrasts = ["normal", "high", "low"] as const;
   const saturations = ["normal", "low", "gray"] as const;
   const colorVisions = ["off", "protanopia", "deuteranopia", "tritanopia"] as const;

@@ -107,9 +107,9 @@ function Sidebar({ overviewPaths }: SidebarProps) {
         </div>
 
         <div className={styles["sidebar-nav"]}>
-          <h2 id="group-pages" className={styles["sidebar-group-title"]}>
+          <p id="group-pages" className={styles["sidebar-group-title"]}>
             Páginas
-          </h2>
+          </p>
           <ul className={styles["sidebar-group"]} aria-labelledby="group-pages">
             <li>
               <NavLink

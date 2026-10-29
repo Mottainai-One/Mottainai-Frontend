@@ -7,11 +7,6 @@ import styles from '@/components/AuthLayout/style.module.css';
 import lontraExplicando from '@/assets/imgs/lontra-explicando.webp';
 import { useAuth } from '@/hooks/useAuth'
 import  Loading  from '@/components/Loading'
-import {
-    faEye,
-    faEyeSlash
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { sanitizeLoginCredentials, validateLoginCredentials } from '@/utils/loginValidation';
 
 export function Login() {
@@ -134,7 +129,22 @@ export function Login() {
                 aria-pressed={formData.isPasswordVisible}
                 aria-label={formData.isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
             >
-                <FontAwesomeIcon icon={formData.isPasswordVisible ? faEyeSlash : faEye} aria-hidden="true"/>
+                <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                >
+                    <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" />
+                    <circle cx="12" cy="12" r="3" />
+                    {formData.isPasswordVisible && <path d="m3 3 18 18" />}
+                </svg>
             </button>
             </div>
             {formData.errors.password && <p id={`${passwordFieldId}-error`} className={styles.errorMessage} role="alert">{formData.errors.password}</p>}

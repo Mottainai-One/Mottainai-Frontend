@@ -32,7 +32,6 @@ function decodeUserFromToken(token: string): User | null {
   }
 }
 
-// Recupera a sessão local apenas quando o mock está habilitado.
 const initialAuthState: AuthState = {
   token: null,
   user: null,
@@ -100,7 +99,7 @@ function getInitialAuthState(): AuthState {
     try {
       localStorage.setItem(TOKEN_KEY, JSON.stringify({ _versao: 1, token } satisfies StoredAuthToken));
     } catch {
-      // A sessão continua válida durante esta visita mesmo se a migração falhar.
+      // A sessão continua disponível nesta visita se a migração não puder ser gravada.
     }
   }
 
@@ -142,7 +141,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error('Não foi possível validar o token recebido.');
       }
 
-      localStorage.setItem(TOKEN_KEY, JSON.stringify({ _versao: 1, token } satisfies StoredAuthToken));
+      if (authService.isMockAuthenticationEnabled) {
+        try {
+          localStorage.setItem(
+            TOKEN_KEY,
+            JSON.stringify({ _versao: 1, token } satisfies StoredAuthToken),
+          );
+        } catch {
+          // O login permanece válido em memória se o armazenamento estiver bloqueado.
+        }
+      }
+
       dispatch({ type: 'login-succeeded', token, user: decodedUser });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao autenticar.';
@@ -150,7 +159,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }, []);
 
-  // Encerra a sessão e remove o token local.
+  // Encerra a sessão em memória e limpa tokens legados.
   const logout = useCallback(() => {
     discardStoredToken();
     dispatch({ type: 'logged-out' });

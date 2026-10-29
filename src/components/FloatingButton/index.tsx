@@ -1,69 +1,64 @@
-import { useCallback, useEffect, useId, useRef, useState } from "react";
-import type { AccessibilityPreferences, AccessibilityPreferenceKey, AccessibilityWidgetState } from "@/types/accessibility.types";
-import type { ChoiceGroupProps } from "@/types/accessibility-widget.types";
-import { cancelSpeech, pauseSpeech, resumeSpeech, speakText, updateSpeechRate } from "@/services/speechService";
+import { lazy, Suspense, useCallback, useEffect, useId, useRef, useState } from "react";
+import universalAccessImage from "@/assets/icons/universal-access.svg";
+import type { AccessibilityPreferences, AccessibilityPreferenceKey } from "@/types/accessibility.types";
+import { cancelSpeech } from "@/services/speechService";
+import type { AccessibilityPanelProps } from "@/types/accessibility-widget.types";
 import { DEFAULT_ACCESSIBILITY_PREFERENCES, loadAccessibilityPreferences, saveAccessibilityPreferences } from "@/utils/accessibilityPreferences";
 import styles from "./style.module.css";
 
-function ChoiceGroup({ id, legend, value, options, onChange }: ChoiceGroupProps) {
-  return (
-    <fieldset className={styles.group}>
-      <legend>{legend}</legend>
-      <div className={styles.choices}>
-        {options.map(([optionValue, label]) => {
-          const selected = String(value) === String(optionValue);
-          return (
-            <label className={styles.choice} htmlFor={`${id}-${optionValue}`} key={optionValue}>
-              <input
-                id={`${id}-${optionValue}`}
-                type="radio"
-                name={id}
-                value={optionValue}
-                checked={selected}
-                onChange={(event) => onChange(event.currentTarget.value)}
-              />
-              <span>
-                {label}
-                {selected && <span className={styles.selectedTag} aria-hidden="true">Selecionado</span>}
-              </span>
-            </label>
-          );
-        })}
-      </div>
-    </fieldset>
-  );
-}
+const loadAccessibilityPanel = () => import("./AccessibilityPanel");
+const AccessibilityPanel = lazy(loadAccessibilityPanel);
 
 function FloatingButton() {
   const id = useId();
+  const panelId = `${id}-panel`;
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(loadAccessibilityPreferences);
-  const [widgetState, setWidgetState] = useState<AccessibilityWidgetState>({
+  const [{ isOpen, shouldRenderPanel }, setPanelVisibility] = useState({
     isOpen: false,
-    isReading: false,
-    isPaused: false,
-    statusMessage: "",
-    statusIsError: false,
+    shouldRenderPanel: false,
   });
-  const panelTitleRef = useRef<HTMLHeadingElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
-  const { isOpen, isReading, isPaused, statusMessage, statusIsError } = widgetState;
-  const setIsOpen = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isOpen: value })), []);
-  const setIsReading = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isReading: value })), []);
-  const setIsPaused = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, isPaused: value })), []);
-  const setStatusMessage = useCallback((value: string) => setWidgetState((current) => ({ ...current, statusMessage: value })), []);
-  const setStatusIsError = useCallback((value: boolean) => setWidgetState((current) => ({ ...current, statusIsError: value })), []);
 
   const updatePreference = useCallback(<K extends AccessibilityPreferenceKey>(key: K, value: AccessibilityPreferences[K]) => {
     setPreferences((current) => ({ ...current, [key]: value }));
   }, []);
 
+  const resetPreferences = useCallback(() => {
+    setPreferences({ ...DEFAULT_ACCESSIBILITY_PREFERENCES });
+  }, []);
+
+  const closePanel = useCallback(() => {
+    setPanelVisibility((current) => ({ ...current, isOpen: false }));
+    triggerRef.current?.focus();
+  }, []);
+
+  const openPanel = useCallback(() => {
+    setPanelVisibility({ isOpen: true, shouldRenderPanel: true });
+  }, []);
+
+  useEffect(() => {
+    if (isOpen || !shouldRenderPanel) return;
+    const timeoutId = window.setTimeout(() => {
+      setPanelVisibility((current) => ({ ...current, shouldRenderPanel: false }));
+    }, 300);
+    return () => window.clearTimeout(timeoutId);
+  }, [isOpen, shouldRenderPanel]);
+
   useEffect(() => {
     saveAccessibilityPreferences(preferences);
     const root = document.documentElement;
     const rootStyles = root.style;
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const applyTheme = () => {
+      const useDarkTheme = preferences.theme === "dark"
+        || (preferences.theme === "system" && systemTheme.matches);
+      if (useDarkTheme) root.setAttribute("data-a11y-theme", "dark");
+      else root.removeAttribute("data-a11y-theme");
+    };
+    applyTheme();
+    if (preferences.theme === "system") systemTheme.addEventListener("change", applyTheme);
     const attrs: Record<string, string | undefined> = {
-      "data-a11y-theme": preferences.theme === "dark" ? "dark" : undefined,
       "data-a11y-contrast": preferences.contrast === "normal" ? undefined : preferences.contrast,
       "data-a11y-saturation": preferences.saturation === "normal" ? undefined : preferences.saturation,
       "data-a11y-color-vision": preferences.colorVision === "off" ? undefined : `${id}-${preferences.colorVision}`,
@@ -85,29 +80,26 @@ function FloatingButton() {
     rootStyles.setProperty("--a11y-cursor", getCursorValue(preferences.cursorColor, preferences.cursorSize));
     rootStyles.setProperty("--a11y-color-vision-filter", preferences.colorVision === "off" ? "none" : `url(#${id}-${preferences.colorVision})`);
     return () => {
+      if (preferences.theme === "system") systemTheme.removeEventListener("change", applyTheme);
+      root.removeAttribute("data-a11y-theme");
       Object.keys(attrs).forEach((name) => root.removeAttribute(name));
       ["--a11y-spacing", "--a11y-text-scale", "--a11y-cursor", "--a11y-color-vision-filter"].forEach((name) => rootStyles.removeProperty(name));
     };
   }, [preferences, id]);
 
   useEffect(() => {
-    if (isOpen) panelTitleRef.current?.focus();
-  }, [isOpen]);
-
-  useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.altKey && event.shiftKey && event.key.toLowerCase() === "a") {
         event.preventDefault();
-        if (isOpen) triggerRef.current?.focus();
-        setIsOpen(!isOpen);
+        if (isOpen) closePanel();
+        else openPanel();
       } else if (event.key === "Escape" && isOpen) {
-        setIsOpen(false);
-        triggerRef.current?.focus();
+        closePanel();
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isOpen, setIsOpen]);
+  }, [isOpen, closePanel, openPanel]);
 
   useEffect(() => {
     if (preferences.spotlight === "off") return;
@@ -136,94 +128,14 @@ function FloatingButton() {
 
   useEffect(() => () => cancelSpeech(), []);
 
-  function choose<K extends AccessibilityPreferenceKey>(key: K, value: string) {
-    const normalizedValue = key === "motion" || key === "border" || key === "rate"
-      ? Number(value)
-      : value;
-    updatePreference(key, normalizedValue as AccessibilityPreferences[K]);
-    if (key === "rate") {
-      const rate = Number(normalizedValue);
-      if (isReading) {
-        pauseSpeech();
-        setIsPaused(true);
-      }
-      updateSpeechRate(rate);
-      setStatusMessage(isReading
-        ? "Leitura pausada. Pressione Reproduzir para continuar com a nova velocidade."
-        : "Velocidade selecionada. Ela será usada na próxima leitura.");
-      setStatusIsError(false);
-    }
-  }
-
-  async function speak(text: string) {
-    setIsReading(true);
-    setIsPaused(false);
-    setStatusMessage("Preparando a leitura em voz alta...");
-    setStatusIsError(false);
-
-    const result = await speakText(text, {
-      language: document.documentElement.lang || "pt-BR",
-      rate: preferences.rate,
-      onStarted: () => setStatusMessage("Leitura iniciada."),
-    });
-    if (result.status === "cancelled") {
-      setIsReading(false);
-      setIsPaused(false);
-      return;
-    }
-
-    setIsReading(false);
-    setIsPaused(false);
-    if (result.status === "error") {
-      setStatusMessage(result.message);
-      setStatusIsError(true);
-      return;
-    }
-
-    setStatusMessage("Leitura concluída.");
-    setStatusIsError(false);
-  }
-
-  function readPage() {
-    const main = document.querySelector<HTMLElement>("main, [role='main']");
-    const text = (main ?? document.body).innerText.replace(/\s+/g, " ").trim();
-    speak(text);
-  }
-
-  function readSelection() {
-    const text = window.getSelection()?.toString().replace(/\s+/g, " ").trim() ?? "";
-    if (!text) {
-      setStatusMessage("Selecione um trecho de texto na página e tente novamente.");
-      setStatusIsError(true);
-      return;
-    }
-    speak(text);
-  }
-
-  function resetPreferences() {
-    setPreferences({ ...DEFAULT_ACCESSIBILITY_PREFERENCES });
-    cancelSpeech();
-    setIsReading(false);
-    setIsPaused(false);
-    setStatusMessage("Preferências restauradas.");
-    setStatusIsError(false);
-  }
-
-  function pauseReading() {
-    pauseSpeech();
-    setIsPaused(true);
-    setStatusMessage("Leitura pausada. Pressione Reproduzir para continuar.");
-    setStatusIsError(false);
-  }
-
-  function resumeReading() {
-    resumeSpeech();
-    setIsPaused(false);
-    setStatusMessage("Leitura retomada com a velocidade selecionada.");
-    setStatusIsError(false);
-  }
-
-  const textPercent = 100 + preferences.textScale * 10;
+  const panelProps: AccessibilityPanelProps = {
+    id,
+    isOpen,
+    preferences,
+    onPreferenceChange: updatePreference,
+    onResetPreferences: resetPreferences,
+    onClose: closePanel,
+  };
 
   return (
     <>
@@ -243,101 +155,37 @@ function FloatingButton() {
           className={styles.trigger}
           type="button"
           aria-expanded={isOpen}
-          aria-controls={`${id}-panel`}
+          aria-controls={panelId}
           aria-keyshortcuts="Alt+Shift+A"
           aria-label={isOpen ? "Fechar preferências de acessibilidade" : "Abrir preferências de acessibilidade"}
-          onClick={() => setIsOpen(!isOpen)}
+          onFocus={() => { void loadAccessibilityPanel(); }}
+          onPointerEnter={() => { void loadAccessibilityPanel(); }}
+          onClick={() => isOpen ? closePanel() : openPanel()}
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="4.5" r="2" fill="currentColor" />
-            <path d="M4 8.2c2.4-1.5 5-2.2 8-2.2s5.6.7 8 2.2l-1.2 2c-1.6-1-3.3-1.6-5.1-1.8v4.1l3.8 7.2-2.1 1.1-3.4-6.2-3.4 6.2-2.1-1.1 3.8-7.2V10c-1.8.2-3.5.8-5.1 1.8z" fill="currentColor" />
-          </svg>
+          <img src={universalAccessImage} alt="" aria-hidden="true" />
           <span>Acessibilidade</span>
         </button>
 
         <section
           className={styles.panel}
-          id={`${id}-panel`}
-          aria-labelledby={`${id}-title`}
+          id={panelId}
+          aria-labelledby={isOpen ? `${id}-title` : undefined}
           aria-hidden={!isOpen}
           data-open={isOpen}
           inert={!isOpen}
         >
-            <header className={styles.panelHeader}>
-              <div>
-                <p className={styles.eyebrow}>Preferências</p>
-                <h2 id={`${id}-title`} ref={panelTitleRef} tabIndex={-1}>Acessibilidade</h2>
-              </div>
-              <button className={styles.close} type="button" aria-label="Fechar preferências de acessibilidade" onClick={() => { setIsOpen(false); triggerRef.current?.focus(); }}>×</button>
-            </header>
-            <p className={styles.intro}>As escolhas valem para todas as páginas e ficam salvas neste navegador.</p>
-            <div className={styles.panelContent}>
-              <h3>Cores</h3>
-              <ChoiceGroup id={`${id}-theme`} legend="Tema" value={preferences.theme} options={[["light", "Claro"], ["dark", "Escuro"]]} onChange={(value) => choose("theme", value)} />
-              <ChoiceGroup id={`${id}-contrast`} legend="Contraste" value={preferences.contrast} options={[["normal", "Padrão"], ["high", "Alto contraste"], ["low", "Baixo contraste"]]} onChange={(value) => choose("contrast", value)} />
-              <ChoiceGroup id={`${id}-saturation`} legend="Saturação das cores" value={preferences.saturation} options={[["normal", "Padrão"], ["low", "Baixa"], ["gray", "Cinza"]]} onChange={(value) => choose("saturation", value)} />
-              <ChoiceGroup id={`${id}-color-vision`} legend="Filtro para daltonismo" value={preferences.colorVision} options={[["off", "Desligado"], ["protanopia", "Protanopia (vermelho)"], ["deuteranopia", "Deuteranopia (verde)"], ["tritanopia", "Tritanopia (azul)"]]} onChange={(value) => choose("colorVision", value)} />
-              <div className={styles.toggles}>
-                <button type="button" aria-pressed={preferences.jargonSupport} onClick={() => updatePreference("jargonSupport", !preferences.jargonSupport)} className={styles.help}>
-                  Ajuda para termos técnicos
-                  {preferences.jargonSupport && <span className={styles.activeTag} aria-hidden="true">Ligado</span>}
-                </button>
-              </div>
-              <p className={styles.hint}>Quando ativada, a ajuda aparece ao passar o cursor ou focar os termos marcados com “i”.</p>
-
-              <h3>Texto</h3>
-              <div className={styles.group} role="group" aria-labelledby={`${id}-text-size`}>
-                <span id={`${id}-text-size`} className={styles.legend}>Tamanho do texto</span>
-                <div className={styles.stepper}>
-                  <button type="button" aria-label="Diminuir texto" disabled={preferences.textScale <= -1} onClick={() => updatePreference("textScale", Math.max(-1, preferences.textScale - 1))}>A−</button>
-                  <output aria-live="polite">{textPercent}%</output>
-                  <button type="button" aria-label="Aumentar texto" disabled={preferences.textScale >= 5} onClick={() => updatePreference("textScale", Math.min(5, preferences.textScale + 1))}>A+</button>
-                </div>
-              </div>
-              <ChoiceGroup id={`${id}-font`} legend="Tipo de fonte" value={preferences.font} options={[["default", "Padrão"], ["verdana", "Verdana"], ["arial", "Arial"], ["lexend", "Lexend"], ["andika", "Andika"], ["comic", "Comic Sans"], ["serif", "Com serifa"]]} onChange={(value) => choose("font", value)} />
-              <p className={styles.hint}>Nenhuma fonte funciona igual para todo mundo: teste e escolha a mais confortável. Lexend e Andika dependem das fontes instaladas no dispositivo.</p>
-              <label className={styles.rangeLabel} htmlFor={`${id}-spacing`}>Espaçamento <output htmlFor={`${id}-spacing`}>{preferences.spacing.toFixed(1)}</output></label>
-              <input className={styles.range} id={`${id}-spacing`} type="range" min="0" max="2" step="0.1" value={preferences.spacing} onChange={(event) => updatePreference("spacing", Number(event.currentTarget.value))} />
-              <div className={styles.toggles}>
-                <button type="button" aria-pressed={preferences.underline} onClick={() => updatePreference("underline", !preferences.underline)}>
-                  Sublinhar links
-                  {preferences.underline && <span className={styles.activeTag} aria-hidden="true">Ligado</span>}
-                </button>
-                <button type="button" aria-pressed={preferences.align} onClick={() => updatePreference("align", !preferences.align)}>
-                  Texto à esquerda e linhas curtas
-                  {preferences.align && <span className={styles.activeTag} aria-hidden="true">Ligado</span>}
-                </button>
-                <button type="button" aria-pressed={preferences.targets} onClick={() => updatePreference("targets", !preferences.targets)}>
-                  Botões e links maiores
-                  {preferences.targets && <span className={styles.activeTag} aria-hidden="true">Ligado</span>}
-                </button>
-              </div>
-
-              <h3>Movimento e bordas</h3>
-              <ChoiceGroup id={`${id}-motion`} legend="Reduzir movimento" value={preferences.motion} options={[[0, "Normal"], [25, "25%"], [50, "50%"], [100, "Parar"]]} onChange={(value) => choose("motion", value)} />
-              <ChoiceGroup id={`${id}-border`} legend="Aumentar borda" value={preferences.border} options={[[0, "Padrão"], [25, "25%"], [50, "50%"], [100, "100%"]]} onChange={(value) => choose("border", value)} />
-
-              <h3>Mouse</h3>
-              <ChoiceGroup id={`${id}-cursor-color`} legend="Cor do cursor" value={preferences.cursorColor} options={[["default", "Padrão"], ["black", "Preto"], ["white", "Branco"], ["yellow", "Amarelo"], ["red", "Vermelho"], ["blue", "Azul"]]} onChange={(value) => choose("cursorColor", value)} />
-              <ChoiceGroup id={`${id}-cursor-size`} legend="Tamanho do cursor" value={preferences.cursorSize} options={[["default", "Padrão"], ["large", "Grande"], ["xlarge", "Extra grande"]]} onChange={(value) => choose("cursorSize", value)} />
-              <ChoiceGroup id={`${id}-spotlight`} legend="Foco de leitura" value={preferences.spotlight} options={[["off", "Desligado"], ["lantern", "Lanterna"], ["ruler", "Régua"]]} onChange={(value) => choose("spotlight", value)} />
-
-              <h3>Leitura em voz alta</h3>
-              <div className={styles.reading} role="group" aria-label="Leitura em voz alta">
-                <p>Usa a voz disponível no seu dispositivo para ler o conteúdo principal da página.</p>
-                <button type="button" onClick={readPage} disabled={isReading}>Ouvir esta página</button>
-                <button type="button" onClick={readSelection} disabled={isReading}>Ler seleção</button>
-                {isReading && (isPaused
-                  ? <button type="button" onClick={resumeReading}>▶ Reproduzir leitura</button>
-                  : <button type="button" onClick={pauseReading}>Pausar leitura</button>)}
-                <button type="button" onClick={() => { cancelSpeech(); setIsReading(false); setIsPaused(false); setStatusMessage("Leitura interrompida."); }} disabled={!isReading}>Parar leitura</button>
-              </div>
-              <ChoiceGroup id={`${id}-rate`} legend="Velocidade da voz" value={preferences.rate} options={[[0.75, "Lenta"], [1, "Normal"], [1.25, "Rápida"], [1.5, "Mais rápida"]]} onChange={(value) => choose("rate", value)} />
-              <p className={styles.hint}>Ao escolher outra velocidade durante a leitura, ela será pausada. Pressione Reproduzir para continuar com a nova velocidade.</p>
-              <button className={styles.reset} type="button" onClick={resetPreferences}>Restaurar preferências</button>
-              <p className={styles.shortcut}>Atalho: Alt + Shift + A · Fechar: Esc</p>
-            </div>
-            <p className={styles.status} role={statusIsError ? "alert" : "status"} aria-live={statusIsError ? "assertive" : "polite"}>{statusMessage}</p>
+          {shouldRenderPanel && (
+            <Suspense fallback={(
+              <>
+                <header className={styles.panelHeader}>
+                  <h2 id={`${id}-title`}>Acessibilidade</h2>
+                </header>
+                <p className={styles.status} role="status">Carregando preferências de acessibilidade...</p>
+              </>
+            )}>
+              <AccessibilityPanel key={isOpen ? "open" : "closed"} {...panelProps} />
+            </Suspense>
+          )}
         </section>
       </div>
     </>

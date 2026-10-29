@@ -15,27 +15,42 @@
 }
 
 .trigger {
+  /* Layout */
   display: inline-flex;
-  width: 3.25rem;
-  min-height: 3.25rem;
   align-items: center;
   justify-content: center;
   gap: 0;
   overflow: hidden;
+
+  /* Tamanho */
+  width: 3.25rem;
+  min-height: 3.25rem;
   padding: 0.65rem;
+
+  /* Aparência */
   border: 2px solid var(--main-white);
   border-radius: 999px;
   background: var(--motta-blue);
-  box-shadow: 0 3px 14px rgb(16 42 67 / 28%);
+
+  /* Texto */
   color: var(--a11y-on-brand, var(--main-white));
-  cursor: pointer;
   font-weight: 700;
-  transition: width calc(0.2s * var(--a11y-motion-factor, 1)) ease, gap calc(0.2s * var(--a11y-motion-factor, 1)) ease, padding calc(0.2s * var(--a11y-motion-factor, 1)) ease, background-color calc(0.2s * var(--a11y-motion-factor, 1)) ease, box-shadow calc(0.2s * var(--a11y-motion-factor, 1)) ease;
+
+  /* Efeitos */
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgb(16 42 67 / 28%);
+  transition:
+    width calc(0.24s * var(--a11y-motion-factor, 1)) cubic-bezier(0.22, 1, 0.36, 1),
+    gap calc(0.24s * var(--a11y-motion-factor, 1)) cubic-bezier(0.22, 1, 0.36, 1),
+    padding calc(0.24s * var(--a11y-motion-factor, 1)) cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius calc(0.24s * var(--a11y-motion-factor, 1)) cubic-bezier(0.22, 1, 0.36, 1),
+    background-color calc(0.2s * var(--a11y-motion-factor, 1)) ease,
+    box-shadow calc(0.2s * var(--a11y-motion-factor, 1)) ease;
 }
 
-.trigger svg {
-  width: 1.45rem;
-  height: 1.45rem;
+.trigger img {
+  width: 1.65rem;
+  height: 1.65rem;
   flex: 0 0 auto;
 }
 
@@ -44,11 +59,18 @@
 }
 
 .trigger span {
-  max-width: 0;
+  /* Layout */
   overflow: hidden;
-  opacity: 0;
   white-space: nowrap;
-  transition: max-width calc(0.2s * var(--a11y-motion-factor, 1)) ease, opacity calc(0.15s * var(--a11y-motion-factor, 1)) ease;
+
+  /* Tamanho */
+  max-width: 0;
+
+  /* Efeitos */
+  opacity: 0;
+  transition:
+    max-width calc(0.24s * var(--a11y-motion-factor, 1)) cubic-bezier(0.22, 1, 0.36, 1),
+    opacity calc(0.18s * var(--a11y-motion-factor, 1)) ease;
 }
 
 .trigger:hover,
