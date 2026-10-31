@@ -79,7 +79,6 @@ flowchart TB
     end
 
     API["APIs Mottainai<br/>(não integradas)"]
-    SVC -. "pendente" .-> API
 
     classDef pending fill:#eee,stroke:#999,stroke-dasharray: 5 5,color:#555
     class API pending
