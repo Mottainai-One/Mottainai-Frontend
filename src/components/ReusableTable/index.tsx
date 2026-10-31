@@ -80,7 +80,7 @@ function ReusableTable<T extends object>({
                                             ) : column.display === 'action' ? (
                                                 <button
                                                     type="button"
-                                                    className={`${styles.actionButton} a11y-table-action`}
+                                                    className={`${styles.actionButton} a11y-table-action table-action-transition`}
                                                     onClick={(event) => column.onAction?.(row, event)}
                                                     aria-label={column.actionLabel?.(row) ?? 'Ver ação'}
                                                     aria-haspopup={column.actionHasPopup === false ? undefined : 'dialog'}

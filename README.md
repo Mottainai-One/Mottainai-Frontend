@@ -21,6 +21,10 @@ Uma autenticação real requer um serviço de servidor que valide credenciais e 
 
 A interface oferece preferências de tema, contraste, tipografia e espaçamento. A opção “Contraste baixo” reduz deliberadamente o contraste conforme a preferência da pessoa usuária e não representa um modo conforme WCAG AA. A verificação de contraste deve usar o tema padrão.
 
+## Documentação técnica
+
+Consulte a [documentação do front-end React](docs/react/README.md) para a visão geral, arquitetura, rotas, dados, autenticação, acessibilidade e operação da aplicação.
+
 ## Auditoria Lighthouse
 
 Execute `npm run lighthouse:ci` para gerar um build local específico de auditoria e percorrer as rotas configuradas em `scripts/lighthouse-routes.cjs`. O script usa uma sessão mock local para alcançar páginas privadas. Esse build de auditoria não deve ser publicado.
