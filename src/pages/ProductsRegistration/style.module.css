@@ -387,6 +387,32 @@ input:focus-visible {
     font-size: 1.75rem;
 }
 
+html[data-a11y-theme="dark"] .backdrop {
+    /* Aparência */
+    background: rgba(0, 0, 0, 0.55);
+}
+
+html[data-a11y-theme="dark"] .success h2 {
+    /* Texto */
+    color: #ff963d;
+}
+
+html[data-a11y-theme="dark"] .success-icon {
+    /* Aparência */
+    background-color: #ff963d;
+
+    /* Texto */
+    color: #243746;
+}
+
+html[data-a11y-theme="dark"] .modal :global([data-tone="success"]) {
+    /* Aparência */
+    background-color: #ff963d;
+
+    /* Texto */
+    color: #243746;
+}
+
 @media (max-width: 680px) {
     .card {
         padding: 1.25rem;
