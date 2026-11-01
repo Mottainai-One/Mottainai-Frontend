@@ -615,3 +615,33 @@ Solicitação, revisão, histórico e envio foram verificados em 375, 768 e
 recebimento, cancelamento, perda de resposta, reconciliação e limites de lote.
 Essas verificações não substituem o fluxo autenticado com Firebase e uma conta
 operacional real.
+
+Sexto incremento: funcionários e auditoria deixam de usar estado local como fonte
+de dados. `/users` consulta `/employees-store`; a seleção Empresa consulta
+`/employees-company`, restrita a administradores. Cargos vêm de
+`/employee-roles` e lojas de `/stores`. Os nomes dos cargos são rótulos do banco,
+não uma lista fixa de permissões. A API continua responsável pela autorização;
+uma recusa é mostrada como erro, sem apresentar uma lista vazia de sucesso.
+
+`/users/new` envia nome, CPF, contato, cargo, loja, data de admissão e a escolha
+explícita de criar acesso. Por padrão, cadastra sem acesso. Criar acesso solicita
+convite por e-mail e depende de ativação; uma resposta de sucesso confirma a
+operação, mas não garante a entrega do e-mail. A edição envia somente os campos
+aceitos por `PUT /employees/{id}`. CPF mascarado e loja são somente leitura;
+`roleId: null` preserva o cargo atual, pois a resposta não fornece seu identificador.
+Status e convite usam suas rotas próprias, sempre com revisão antes de confirmar.
+Como esses contratos não oferecem idempotência, uma resposta perdida bloqueia
+novo envio no formulário e orienta conferir o registro na lista antes de outra
+operação. O bloqueio dura enquanto o formulário permanece aberto.
+
+`/users/audit` consulta `/audit-logs` por período de até seis meses. Mostra data,
+identificador do usuário, tabela, operação e registro. Não inventa IP, nome do
+ator nem eventos no navegador e não expõe os objetos brutos de antes/depois.
+As consultas são canceladas ao sair da tela. A criação/edição substitui o antigo
+formulário local nessa rota; o componente legado não é utilizado por `/users`.
+
+Verificação deste incremento: 11 testes novos de contrato/validação e interação,
+checagem de tipos e análise estática dos arquivos alterados. Layout e foco foram
+verificados em 375, 768 e 1440 pixels, com respostas sintéticas da API e sem
+gravações no banco. As gravações reais e o envio de convites ainda dependem da
+configuração Firebase e de uma conta operacional com permissão administrativa.
