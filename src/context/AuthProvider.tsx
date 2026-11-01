@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useCallback } from 'react';
+import { useReducer, useMemo, useCallback, useEffect } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './AuthContext';
 import * as authService from '@/services/authService';
@@ -134,8 +134,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (Object.keys(errors).length > 0) {
         throw new Error(Object.values(errors)[0] ?? 'Revise os dados de acesso.');
       }
-      const { token } = await authService.login(sanitizeLoginCredentials(credentials));
-      const decodedUser = decodeUserFromToken(token);
+      const { token, user } = await authService.login(sanitizeLoginCredentials(credentials));
+      const decodedUser = user ?? decodeUserFromToken(token);
 
       if (!decodedUser) {
         throw new Error('Não foi possível validar o token recebido.');
@@ -161,8 +161,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Encerra a sessão em memória e limpa tokens legados.
   const logout = useCallback(() => {
+    void authService.logout().catch(() => {
+      dispatch({ type: 'login-failed', error: 'A sessão local foi encerrada, mas não foi possível confirmar a revogação no servidor.' });
+    });
     discardStoredToken();
     dispatch({ type: 'logged-out' });
+  }, []);
+
+  useEffect(() => {
+    const onExpired = () => {
+      discardStoredToken();
+      dispatch({ type: 'logged-out' });
+    };
+    window.addEventListener('mottainai:session-expired', onExpired);
+    return () => window.removeEventListener('mottainai:session-expired', onExpired);
   }, []);
 
   const clearError = useCallback(() => dispatch({ type: 'error-cleared' }), []);

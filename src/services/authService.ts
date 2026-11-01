@@ -1,14 +1,31 @@
 import type { LoginCredentials, LoginResponse } from '@/types/auth.types';
+import type { ApiSession } from '@/types/api.types';
+import { apiRequest, setApiSession, endApiSession } from './apiClient';
+import { getFirebaseIdToken } from './firebaseAuthService';
+import { getCurrentProfile } from './profileService';
 
-// O mock existe somente para desenvolvimento local e auditoria Lighthouse.
+// A autenticação simulada fica restrita à auditoria Lighthouse.
 export const isMockAuthenticationEnabled =
-  import.meta.env.DEV || import.meta.env.MODE === 'lighthouse';
+  import.meta.env.MODE === 'lighthouse';
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
-  if (import.meta.env.DEV || import.meta.env.MODE === 'lighthouse') {
+  if (isMockAuthenticationEnabled) {
     const { loginWithMockCredentials } = await import('@/services/mockAuthService');
     return loginWithMockCredentials(credentials);
   }
 
-  throw new Error('A autenticação real não está configurada neste ambiente.');
+  try {
+    const firebaseIdToken = await getFirebaseIdToken(credentials);
+    const session = await apiRequest<ApiSession>('/auth/login', {
+      method: 'POST', authenticated: false, body: { firebaseIdToken, password: credentials.password },
+    });
+    setApiSession(session);
+    const profile = await getCurrentProfile();
+    return { token: session.accessToken, user: { id: String(profile.id), name: profile.name, email: profile.email ?? '' } };
+  } catch (error) {
+    setApiSession(null);
+    throw error;
+  }
 }
+
+export const logout = endApiSession;

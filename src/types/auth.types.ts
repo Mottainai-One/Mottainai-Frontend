@@ -19,6 +19,7 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   token: string;
+  user?: User;
 }
 
 // Tipo do objeto do autenticação do context

@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ReusableTable from "@/components/ReusableTable";
-import { supplierRecords } from "@/data/suppliers";
+import { getSuppliers, updateSupplier } from '@/services/supplierService';
+import { useApiQuery } from '@/hooks/useApiQuery';
 import type { ReusableTableColumn, TableCellTone } from "@/types/reusable-table.types";
 import type { SupplierPageState, SupplierRecord } from "@/types/supplier.types";
 import styles from "./style.module.css";
@@ -12,9 +13,11 @@ const getSupplierStatusTone = (active: boolean): TableCellTone =>
   active ? "success" : "danger";
 
 function Suppliers() {
+  const query = useApiQuery(getSuppliers, []);
+  const [saving, setSaving] = useState(false);
   const [state, setState] = useState<SupplierPageState>({
     search: "",
-    records: supplierRecords,
+    records: [],
     selectedSupplierId: "",
     editDraft: null,
     feedback: "",
@@ -23,6 +26,10 @@ function Suppliers() {
   const editInputRef = useRef<HTMLInputElement>(null);
   const editTriggerRef = useRef<HTMLButtonElement | null>(null);
   const isEditing = Boolean(state.editDraft);
+
+  useEffect(() => {
+    if (query.status === 'success') setState((previous) => ({ ...previous, records: query.data }));
+  }, [query.data, query.status]);
 
   useEffect(() => {
     if (isEditing) {
@@ -52,7 +59,6 @@ function Suppliers() {
     { id: "tradeName", header: "Nome", renderCell: (supplier) => supplier.tradeName },
     { id: "email", header: "Contato", renderCell: (supplier) => supplier.email },
     { id: "phone", header: "Telefone", renderCell: (supplier) => supplier.phone },
-    { id: "linkedSkus", header: "SKUs vinculados", renderCell: (supplier) => supplier.linkedSkus },
     {
       id: "status",
       header: "Status",
@@ -106,7 +112,8 @@ function Suppliers() {
     );
   };
 
-  const saveSupplierEdit = () => {
+  const saveSupplierEdit = async () => {
+    if (saving) return;
     if (!state.selectedSupplierId || !state.editDraft?.tradeName.trim()) {
       setState((currentState) => ({
         ...currentState,
@@ -116,22 +123,21 @@ function Suppliers() {
       return;
     }
 
-    setState((currentState) => ({
-      ...currentState,
-      records: currentState.records.map((supplier) =>
-        supplier.id === currentState.selectedSupplierId && currentState.editDraft
-          ? {
-              ...supplier,
-              tradeName: currentState.editDraft.tradeName.trim(),
-              active: currentState.editDraft.active,
-            }
-          : supplier,
-      ),
-      selectedSupplierId: "",
-      editDraft: null,
-      feedback: "Fornecedor atualizado com sucesso.",
-      feedbackIsError: false,
-    }));
+    setSaving(true);
+    try {
+      const updated = await updateSupplier(state.selectedSupplierId, state.editDraft);
+      setState((currentState) => ({
+        ...currentState,
+        records: currentState.records.map((supplier) => supplier.id === updated.id ? updated : supplier),
+        selectedSupplierId: "",
+        editDraft: null,
+        feedback: "Fornecedor atualizado com sucesso.",
+        feedbackIsError: false,
+      }));
+    } catch (error) {
+      setState((previous) => ({ ...previous, feedbackIsError: true,
+        feedback: error instanceof Error ? error.message : 'Não foi possível salvar o fornecedor.' }));
+    } finally { setSaving(false); }
   };
 
   const cancelSupplierEdit = () => {
@@ -151,6 +157,9 @@ function Suppliers() {
 
   return (
     <section className={styles.page} aria-labelledby="suppliers-title">
+      {query.status === 'loading' && <p role="status">Carregando fornecedores…</p>}
+      {query.status === 'error' && <p role="alert">{query.error}</p>}
+      {saving && <p role="status">Salvando fornecedor…</p>}
       <h1 className={styles["sr-only"]} id="suppliers-title">
         Fornecedores
       </h1>
@@ -175,7 +184,7 @@ function Suppliers() {
       </div>
 
       <p className={styles["sr-only"]} role="status" aria-live="polite">
-        {resultLabel}
+        {query.status === 'success' ? resultLabel : ''}
       </p>
 
       {state.feedback && (
@@ -215,17 +224,17 @@ function Suppliers() {
             </label>
           </div>
           <div className={styles.editActions}>
-            <button className={styles.cancelEditButton} type="button" onClick={cancelSupplierEdit}>
+            <button className={styles.cancelEditButton} type="button" onClick={cancelSupplierEdit} disabled={saving}>
               Cancelar
             </button>
-            <button className={styles.saveEditButton} type="button" onClick={saveSupplierEdit}>
+            <button className={styles.saveEditButton} type="button" onClick={saveSupplierEdit} disabled={saving}>
               Salvar alterações
             </button>
           </div>
         </section>
       )}
 
-      <div className={styles.tableSection}>
+      {query.status === 'success' && <div className={styles.tableSection}>
         <ReusableTable
           title="Fornecedores cadastrados"
           columns={columns}
@@ -233,7 +242,7 @@ function Suppliers() {
           rowKey={(supplier) => supplier.id}
           emptyMessage="Nenhum fornecedor corresponde à busca."
         />
-      </div>
+      </div>}
     </section>
   );
 }

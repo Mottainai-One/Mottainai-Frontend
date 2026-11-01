@@ -475,3 +475,143 @@ Não há deploy automatizado (Firebase, Vercel, S3 ou similar) configurado no re
 <sub>Parte do ecossistema <a href="https://github.com/Mottainai-One">Mottainai-One</a></sub>
 
 </div>
+## Integração com a API operacional
+
+Copie `.env.example` para `.env.local` e configure `VITE_API_BASE_URL`,
+`VITE_FIREBASE_AUTH_URL` e `VITE_FIREBASE_API_KEY`. Reinicie o Vite após mudar
+as variáveis. Todas as variáveis `VITE_` ficam públicas no navegador: não coloque
+senhas do banco, segredos JWT ou chaves AES nelas.
+
+O ambiente local da API usa `http://localhost:18080/api/v1`. O projeto Firebase
+da chave web precisa corresponder ao `FIREBASE_PROJECT_ID` configurado no
+container. O identificador provisório do ambiente de QA precisa ser substituído
+antes de autenticar. A conta Firebase deve estar vinculada a um funcionário
+ativo no banco operacional, com loja e cargo válidos.
+
+O login usa a mesma senha digitada para Firebase e para a API, conforme a
+suposição adotada nesta integração. A API retorna access/refresh tokens;
+ambos ficam apenas em memória. Recarregar a página exige novo login.
+Requisições autenticadas renovam a sessão uma vez quando recebem HTTP 401;
+falha na renovação encerra a sessão local. O logout solicita revogação no servidor.
+O modo Lighthouse mantém seu login simulado específico; o modo normal de
+desenvolvimento usa autenticação real.
+
+Primeiro incremento conectado: autenticação, consulta paginada de fornecedores,
+cadastro com endereço consultado da API e edição de apelido/status. As listas
+tratam carregamento, sucesso, vazio e erro, com cancelamento ao sair da tela.
+Os endereços devem existir na API antes do cadastro de fornecedor. O contrato
+cria um endereço a partir dos campos enviados; selecionar um endereço existente
+no formulário fornece esses campos, sem presumir vínculo pelo ID.
+
+Produtos vinculados não fazem parte da resposta da listagem de fornecedores:
+a coluna de SKUs simulados foi removida até existir consulta dos vínculos.
+Os demais módulos (funcionários, indicadores
+e relatórios) ainda precisam de integrações próprias; este incremento não os
+converte para dados reais. Não use as telas com dados de demonstração como
+evidência de uma operação executada no servidor.
+
+Segundo incremento: listagem e detalhes cadastrais de produtos consultam
+`/products`; o cadastro manual envia o contrato real com categoria, perfil
+fiscal, código de barras, NCM, CEST opcional, nome, marca, unidade, descrição
+e peso opcional. Categorias e perfis fiscais ativos são consultados da API.
+O SKU é gerado pelo servidor. A consulta de produtos percorre as páginas
+retornadas pela API antes de aplicar os filtros locais existentes.
+
+A antiga importação XML/CSV e sua massa de produtos recentes não são mais
+expostas na página de cadastro: o backend fornecido não define esse contrato.
+Estoque, preço por loja, fornecedores e previsões não pertencem ao DTO de
+produto; as telas de catálogo mostram apenas dados cadastrais até a integração
+dos recursos correspondentes. O fluxo completo de cadastro depende da mesma
+conta Firebase/operacional requerida para fornecedores.
+
+Terceiro incremento: `/stock` consulta o estoque da loja vinculada ao usuário,
+combinando `/inventory`, `/batches` e `/products`. Exibe saldo por lote, tipo e
+local, validade e limites mínimo/máximo; pesquisa e filtros são locais sobre os
+dados carregados. A mesma página consulta `/inventory-counts` e permite abrir
+uma contagem existente pelo endereço `/stock/counts/new?id=ID`.
+
+Contagens são criadas explicitamente pelo usuário. O backend determina a loja
+e o funcionário a partir da sessão. Cada quantidade física é salva pelo ID do
+item de estoque: um item novo usa POST e um já contado usa PUT. Valores zero
+e quantidades com até três casas decimais são aceitos. O saldo do sistema
+mostrado na contagem é o snapshot retornado pelo servidor na inclusão do item.
+
+A finalização exige revisar os itens e confirmar a aplicação dos ajustes.
+A mesma chave `Idempotency-Key` é preservada nas tentativas de finalização da
+contagem enquanto o editor permanece aberto. Se a confirmação falhar, a tela
+bloqueia novas edições e exige consultar o estado no servidor antes de continuar.
+O backend continua sendo responsável pelas permissões, transação e prevenção
+de ajustes duplicados. Recarregar a página consulta o estado pelo ID da URL.
+
+Os antigos dados simulados de divergência de caixa e seu gráfico foram
+retirados da página inicial de estoque. Os relatórios de fechamento e os
+demais indicadores ainda precisam de contratos próprios. As páginas de
+funcionários e relatórios permanecem pendentes de integração. A instalação
+de QA fornece o schema; o fluxo autenticado completo continua dependente da
+configuração Firebase e de uma conta operacional vinculada.
+
+As telas de estoque e contagem foram verificadas em 375, 768 e 1440 pixels
+com respostas sintéticas interceptadas somente no navegador de teste. Foram
+verificados o foco na revisão, os formulários e a ausência de rolagem horizontal
+da página; tabelas mantêm rolagem própria acessível por teclado. Isso não
+substitui a validação das gravações com uma conta Firebase/operacional real.
+
+Quarto incremento: a página de avarias/consumo registra avarias e vencimentos
+em `/disposals`, usando lote e quantidade positiva. Conforme a decisão do
+usuário, consumo interno é uma movimentação `OUT` em
+`/inventory/{id}/movements`, com quantidade negativa e observação iniciada
+por `Consumo interno`. A tela exige um item do estoque normal com saldo,
+valida a quantidade e apresenta revisão antes da confirmação. Loja e funcionário
+são determinados pelo backend. Cada baixa enviada contém `Idempotency-Key`.
+
+Uma falha de conexão ou resposta inconclusiva preserva chave e payload enquanto
+a página estiver aberta, bloqueando alteração dos dados até reenviar a mesma
+solicitação. O reenvio permite ao servidor recuperar a operação já registrada.
+Se sair/recarregar durante uma falha, consulte o histórico antes de iniciar outra
+baixa: a tentativa pendente não é persistida entre visitas. Rejeições HTTP 4xx
+liberam a correção do formulário. Após sucesso, registros e estoque são
+consultados novamente; nenhum saldo é declarado atualizado apenas por cálculo
+local. As consultas usam período explícito de até seis meses. O histórico de
+consumo filtra movimentações `OUT` cuja observação começa com `Consumo interno`.
+
+Os valores financeiros, percentuais de faturamento e pico de vendas simulados
+foram retirados desta página, pois não pertencem às respostas desses recursos.
+Foram verificados o formulário, revisão e confirmação em 375, 768 e 1440 pixels
+com respostas sintéticas isoladas. As transações reais continuam dependentes
+da configuração Firebase e da conta operacional vinculada.
+
+Quinto incremento: transferências usam `/transfers` para solicitação com
+múltiplos lotes e histórico por período. Origem, solicitante e datas são
+determinados pelo servidor; a solicitação não movimenta estoque. O envio usa
+`PATCH /transfers/{id}/status` com `IN_TRANSIT` e retira o saldo da origem.
+Somente transferências em trânsito podem ser canceladas com `CANCELED`,
+devolvendo o saldo à origem. O recebimento usa
+`POST /transfers/{id}/receive`, credita o destino e conclui a transferência.
+Os antigos estados simulados `APPROVED` e `CANCELLED` não são enviados.
+
+As ações da interface são apresentadas de acordo com o estado e a loja atual
+do perfil: envio/cancelamento na origem e recebimento no destino. A API
+continua validando autorização e concorrência. Toda ação de saldo exige revisão
+e confirmação. Após falha, novas ações ficam bloqueadas até consultar o estado
+no servidor; PATCH de envio/cancelamento não é repetido automaticamente.
+Criação e recebimento preservam suas chaves de idempotência enquanto o editor
+permanece aberto. Após sair/recarregar durante uma falha de criação, consulte
+o histórico antes de solicitar novamente. Detalhes são reabertos por
+`/stock/transfers?id=ID`.
+
+A lista de destinos vem de `/stores`. Quando esse recurso retorna HTTP 403,
+a tela permite informar o identificador da loja de destino; não cria nomes ou
+lojas fictícias, e o servidor valida o destino. Outros erros de listagem são
+exibidos como falha. Recomendações de transferência simuladas foram removidas.
+
+As consultas de estoque, descartes, movimentações e transferências agora obtêm
+a loja de `/auth/profile` e enviam `storeId` explicitamente. Isso atende ao
+contrato que exige esse parâmetro para administradores, mantendo o contexto
+na loja do perfil em todos esses históricos. Não há cache de perfil entre
+sessões. Login e consultas usam o mesmo serviço de perfil.
+
+Solicitação, revisão, histórico e envio foram verificados em 375, 768 e
+1440 pixels com respostas sintéticas isoladas. Testes de comportamento cobrem
+recebimento, cancelamento, perda de resposta, reconciliação e limites de lote.
+Essas verificações não substituem o fluxo autenticado com Firebase e uma conta
+operacional real.

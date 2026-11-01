@@ -491,3 +491,16 @@ html[data-a11y-theme="dark"] .modal :global([data-tone="success"]) {
     /* Texto */
     color: #fff;
 }
+.catalogFields {
+    /* Layout */
+    display: grid;
+    gap: 1rem;
+
+    /* Tamanho */
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+
+    /* Aparência */
+    border: 0;
+}
