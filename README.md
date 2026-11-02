@@ -673,3 +673,46 @@ Layout, revisão, retorno de foco e texto ampliado a 200% foram verificados em
 375, 768 e 1440 pixels, sem transbordamento horizontal da página. As tabelas
 mantêm rolagem própria. As bordas dos campos usam a cor do texto para preservar
 contraste também quando o tema altera a cor da superfície.
+
+Nono incremento: sugestões pendentes ou aprovadas podem ser executadas em
+`POST /suggested-actions/{id}/execute`, com `Idempotency-Key`. A tela coleta os
+itens explicitamente, pois o DTO da sugestão não inclui produtos, lotes ou
+quantidades. Há formulários para pedido de compra, promoção, transferência,
+doação, descarte e pré-lista de reposição. Cada formulário envia somente os
+campos aceitos pelo respectivo tipo, após validação e revisão dos efeitos.
+
+Produtos, fornecedores, lojas e saldos são consultados pelos serviços já
+integrados, conforme a necessidade da operação. A loja do alerta precisa ser
+a mesma do perfil para evitar criar operações na loja errada. Para operações
+por lote, a interface considera somente estoque normal com saldo e limita a
+quantidade ao saldo consultado; essa é uma escolha conservadora da interface,
+e o servidor continua responsável pela validação final. Caso listar lojas
+retorne 403, a transferência admite informar o identificador conhecido do destino.
+O tipo da promoção usa os valores definidos no schema operacional fornecido.
+Quantidades e valores respeitam as casas decimais e os limites das colunas.
+
+O efeito é informado antes de confirmar: descarte baixa estoque imediatamente;
+transferência cria solicitação; doação cria registro para entrega posterior;
+promoção é criada inativa e pendente de aprovação; pedido de compra não registra
+recebimento; reposição cria apenas a pré-lista. Executar a sugestão não equivale
+a concluir as etapas posteriores desses registros. O comprovante exibe o tipo
+e o identificador retornados pela API, com link para transferências.
+
+Depois de uma resposta perdida, dados e chave permanecem congelados enquanto
+o formulário estiver aberto. Reenviar a mesma execução permite recuperar o
+resultado idempotente. Recusas HTTP 4xx permitem correção. Ao sair, a chave não
+é persistida; a tela orienta consultar o estado da sugestão antes de tentar de
+novo. O backend também bloqueia outra execução da mesma sugestão já executada.
+A interface não cria registros nem declara sucesso por cálculo local.
+
+Os testes usam respostas sintéticas. As gravações reais continuam dependendo
+do Firebase e da conta operacional vinculada. As etapas posteriores de aprovação,
+entrega, recebimento e movimentação têm contratos próprios; este incremento
+conecta a criação pela sugestão, sem executar essas etapas automaticamente.
+
+Verificação do nono incremento: 23 testes novos de contrato, validação e
+interação, além de 42 regressões de integração aprovadas. Os seis tipos foram
+verificados com dois itens em 375, 768 e 1440 pixels, incluindo revisão sem
+envio, retorno de foco, confirmação, atualização do alerta e texto ampliado a
+200%, com respostas sintéticas isoladas. Não houve transbordamento horizontal
+da página. Análise estática, tipos e compilação de produção aprovados.
