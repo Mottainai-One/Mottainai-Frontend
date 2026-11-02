@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '@/components/AuthLayout';
 import ErrorModal from '@/components/ErrorModal';
@@ -11,18 +11,16 @@ export default function ActivateAccess() {
   const token = new URLSearchParams(location.hash.slice(1)).get('token') ?? '';
   const { state, change, submit } = useAccessActivation(token);
   const hasError = !token || state.status === 'error';
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [dismissedError, setDismissedError] = useState<string | null>(null);
+  const errorIdentity = `${location.key}:${state.status}:${state.message}`;
+  const isErrorModalOpen = hasError && dismissedError !== errorIdentity;
   const errorTitle = token ? 'Não foi possível ativar seu acesso' : 'Link de convite inválido';
   const errorMessage = token
     ? state.message
     : 'O link do convite está incompleto ou inválido. Abra o link completo que você recebeu ou solicite um novo convite ao responsável pelo seu acesso.';
 
-  useEffect(() => {
-    setIsErrorModalOpen(hasError);
-  }, [hasError]);
-
   return <AuthLayout title="Ativar acesso por convite" description="Confirme sua conta Firebase e defina a senha operacional." artworkVariant={token ? 'unavailable' : 'invalid-link'}>
-    <form className={styles.page} onSubmit={event => { event.preventDefault(); void submit(); }}>
+    <form className={styles.page} onSubmit={event => { event.preventDefault(); setDismissedError(null); void submit(); }}>
       <p>A senha Firebase é a que você já usa nessa conta. Você pode definir a mesma senha para o acesso operacional.</p>
       <fieldset className={styles.fields} disabled={!token || state.status === 'saving' || state.status === 'success'}>
         <legend>Dados para ativação</legend>
@@ -42,7 +40,7 @@ export default function ActivateAccess() {
       title={errorTitle}
       message={errorMessage}
       onBack={() => navigate('/login', { replace: true })}
-      onClose={() => setIsErrorModalOpen(false)}
+      onClose={() => setDismissedError(errorIdentity)}
     />
   </AuthLayout>;
 }

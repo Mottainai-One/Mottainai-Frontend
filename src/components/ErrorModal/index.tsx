@@ -6,6 +6,7 @@ import styles from './style.module.css';
 
 function ErrorModal({ isOpen, title, message, onBack, onClose }: ErrorModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   const messageId = useId();
 
@@ -13,7 +14,10 @@ function ErrorModal({ isOpen, title, message, onBack, onClose }: ErrorModalProps
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    if (isOpen && !dialog.open) dialog.showModal();
+    if (isOpen && !dialog.open) {
+      dialog.showModal();
+      confirmRef.current?.focus();
+    }
     if (!isOpen && dialog.open) dialog.close();
   }, [isOpen]);
 
@@ -53,7 +57,7 @@ function ErrorModal({ isOpen, title, message, onBack, onClose }: ErrorModalProps
         <span className={`${styles.wave} ${styles.waveCyan}`} />
       </div>
 
-      <button className={styles.confirm} type="button" autoFocus onClick={onBack}>
+      <button ref={confirmRef} className={styles.confirm} type="button" onClick={onBack}>
         Voltar para o login
       </button>
     </dialog>
