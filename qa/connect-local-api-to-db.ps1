@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$EnvironmentFile = 'C:\Users\joaocapelli-ieg\Downloads\env',
-    [switch]$RestorePreviousConfiguration
+    [switch]$RestorePreviousConfiguration,
+    [switch]$RecoverUnavailableApi
 )
 
 $ErrorActionPreference = 'Stop'
@@ -101,6 +102,7 @@ function Set-FrontendApiBase([string]$Value) {
     $match = $apiUrlMatches[0]
     $updated = $content.Substring(0, $match.Index) + $match.Groups[1].Value + $Value +
         $content.Substring($match.Index + $match.Length)
+    if ([string]::Equals($content, $updated, [StringComparison]::Ordinal)) { return }
     [IO.File]::WriteAllText($frontendEnvironmentFile, $updated, [Text.UTF8Encoding]::new($false))
 }
 
@@ -177,7 +179,16 @@ if ($RestorePreviousConfiguration) {
 $database = Read-EnvironmentFile $EnvironmentFile
 $databaseLocation = Get-DatabaseLocation $database
 $current = Get-Container
-if ($current.State.Status -ne 'running' -or $current.State.Health.Status -ne 'healthy') {
+if ($current.Config.Labels.'com.docker.compose.project' -ne 'mottainai-local-qa' -or
+    $current.Config.Labels.'com.docker.compose.service' -ne 'api') {
+    throw 'O container não corresponde à API local de QA esperada.'
+}
+if ($RecoverUnavailableApi) {
+    if (-not (Test-Path -LiteralPath $stateFile -PathType Leaf) -or
+        (Get-ContainerEnvironment $current).DB_URL -ne $databaseLocation.Url) {
+        throw 'A recuperação exige um estado salvo e o mesmo banco remoto já configurado.'
+    }
+} elseif ($current.State.Status -ne 'running' -or $current.State.Health.Status -ne 'healthy') {
     throw 'A API local precisa estar ativa e saudável antes da troca.'
 }
 
@@ -193,7 +204,7 @@ if (-not (Test-Path -LiteralPath $stateFile -PathType Leaf)) {
 }
 
 try {
-    if (-not (Invoke-ComposeQuiet ($composeArguments + @('up', '-d', '--no-deps', '--no-build', '--wait', 'api')))) {
+    if (-not (Invoke-ComposeQuiet ($composeArguments + @('up', '-d', '--no-deps', '--no-build', '--wait', '--wait-timeout', '180', 'api')))) {
         throw 'O container da API não iniciou com a nova conexão.'
     }
     $updated = Get-Container
@@ -209,6 +220,9 @@ try {
     Set-FrontendApiBase $localApiBase
     Write-Output 'API local saudável e configurada com o banco remoto; o frontend local aponta para essa API.'
 } catch {
+    if ($RecoverUnavailableApi) {
+        throw 'A API não ficou saudável durante a recuperação. O destino remoto foi mantido; nenhum banco alternativo foi selecionado.'
+    }
     try { Restore-BaseConfiguration $state } catch { throw 'A nova conexão falhou e a restauração automática também falhou. O estado da API precisa de atenção.' }
     throw 'A nova conexão falhou; a API e a URL do frontend foram restauradas à configuração anterior.'
 }

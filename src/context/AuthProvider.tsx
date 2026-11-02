@@ -1,4 +1,4 @@
-import { useReducer, useMemo, useCallback, useEffect } from 'react';
+import { useReducer, useMemo, useCallback, useEffect, useRef } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from './AuthContext';
 import * as authService from '@/services/authService';
@@ -55,7 +55,7 @@ function getInitialAuthState(): AuthState {
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'login-started':
-      return { ...state, isLoggingIn: true, error: null, notice: null };
+      return { ...initialAuthState, isLoggingIn: true };
     case 'login-succeeded':
       return { token: action.token, user: action.user, isLoggingIn: false, error: null, notice: null };
     case 'login-failed':
@@ -70,9 +70,13 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 // Compartilha o estado de autenticação com a aplicação.
 export function AuthProvider({ children }: AuthProviderProps) {
   const [authState, dispatch] = useReducer(authReducer, undefined, getInitialAuthState);
+  const operation = useRef({ revision: 0, pending: false });
 
   // Valida as credenciais e inicia a sessão retornada pelo servidor.
   const login = useCallback(async (credentials: LoginCredentials) => {
+    if (operation.current.pending) return;
+    const revision = ++operation.current.revision;
+    operation.current.pending = true;
     dispatch({ type: 'login-started' });
 
     try {
@@ -81,6 +85,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(Object.values(errors)[0] ?? 'Revise os dados de acesso.');
       }
       const { token, user } = await authService.login(sanitizeLoginCredentials(credentials));
+      if (revision !== operation.current.revision) return;
       const decodedUser = user ?? decodeUserFromToken(token);
 
       if (!decodedUser) {
@@ -89,14 +94,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       dispatch({ type: 'login-succeeded', token, user: decodedUser });
     } catch (err) {
+      if (revision !== operation.current.revision) return;
       const message = err instanceof Error ? err.message : 'Erro ao autenticar.';
       dispatch({ type: 'login-failed', error: message });
+    } finally {
+      if (revision === operation.current.revision) operation.current.pending = false;
     }
   }, []);
 
   // Encerra a sessão em memória e limpa tokens legados.
   const logout = useCallback(() => {
+    const revision = ++operation.current.revision;
+    operation.current.pending = false;
     void authService.logout().catch(() => {
+      if (revision !== operation.current.revision) return;
       dispatch({ type: 'login-failed', error: 'A sessão local foi encerrada, mas não foi possível confirmar a revogação no servidor.' });
     });
     discardStoredToken();
@@ -105,13 +116,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     const onExpired = (event: Event) => {
+      operation.current.revision += 1;
+      operation.current.pending = false;
       discardStoredToken();
       const changed = 'detail' in event && typeof event.detail === 'object' && event.detail !== null
         && 'reason' in event.detail && event.detail.reason === 'password-changed';
       dispatch({ type: 'logged-out', ...(changed ? { notice: 'password-changed' as const } : {}) });
     };
     window.addEventListener('mottainai:session-expired', onExpired);
-    return () => window.removeEventListener('mottainai:session-expired', onExpired);
+    const current = operation.current;
+    return () => {
+      current.revision += 1;
+      current.pending = false;
+      window.removeEventListener('mottainai:session-expired', onExpired);
+    };
   }, []);
 
   const clearError = useCallback(() => dispatch({ type: 'error-cleared' }), []);

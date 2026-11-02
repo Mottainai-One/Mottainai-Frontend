@@ -15,7 +15,6 @@ export interface DecodedToken {
 export interface LoginCredentials {
   email: string;
   password: string;
-  apiPassword?: string;
 }
 
 export interface LoginResponse {

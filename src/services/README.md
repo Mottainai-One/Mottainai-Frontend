@@ -86,19 +86,41 @@ está disponível em `passwordChangeService.ts` e na página Minha conta.
 | Estoque | Ativar/desativar lote por identificador, com confirmação; exige administrador no servidor |
 | Contagem | Remover item antes da finalização, com confirmação e nova consulta ao servidor |
 | Minha conta | Trocar senha operacional, com confirmação e encerramento da sessão |
-| Login | Um campo de senha por padrão; opção para informar senha operacional diferente |
+| Login | E-mail e senha Firebase; sessão operacional obtida com o token validado |
 
 O preço é alterado somente na loja do perfil, decisão adotada para evitar uma
 seleção administrativa de outras lojas. A ativação do produto é cadastral.
 Status de lote e remoção de item da contagem não ajustam saldo de estoque.
 Permissões e restrições de vínculo continuam verificadas no servidor.
 
-A nova senha operacional não altera a senha Firebase. Por padrão, o formulário
-envia uma única senha para as duas autenticações. Quando forem diferentes, a
-opção “Minha senha operacional é diferente” revela o segundo campo obrigatório.
-Fechar essa opção limpa a senha adicional e volta a enviar a mesma senha aos
-dois serviços. Isso simplifica a interface, sem sincronizar ou concatenar senhas.
-As senhas não são persistidas pelo frontend.
+A senha de acesso é validada somente no Firebase. A API recebe apenas o token
+Firebase em `POST /auth/firebase`, valida a identidade e o vínculo operacional
+ativo e emite a sessão do sistema. Não há comparação adicional de senha no login.
+A troca da senha operacional não altera a senha Firebase. As senhas não são
+persistidas pelo frontend.
+
+### Adaptação do login móvel para o sistema operacional
+
+O aplicativo Android fornecido autentica no Firebase e consulta o perfil do
+cliente antes de liberar a sessão. Aqui, o contrato existente é operacional:
+Firebase → `POST /auth/firebase` somente com token Firebase →
+`GET /auth/profile`. O endpoint de clientes não substitui estes endpoints.
+
+`authResponseValidation.ts` confere os tokens, o tipo Bearer e os prazos
+positivos da sessão antes de utilizá-la. O acesso só é publicado no Context
+depois de confirmar um perfil com identificador válido, nome e `active=true`.
+Perfil ausente, incompleto ou inativo encerra a tentativa; não cria cadastros.
+
+O Provider impede envios simultâneos e ignora resultados de operações anteriores
+após saída, expiração ou desmontagem. Uma falha atrasada de saída também não
+substitui o estado de um novo login. Mantêm-se o formulário responsivo, uma única
+senha de acesso e os tokens em memória. Não foram adicionados acesso
+Google, cadastro público ou recuperação de senha do aplicativo de clientes.
+
+`tests/auth-login-contract.test.tsx` verifica estes cenários com respostas
+simuladas. A API precisa disponibilizar `/auth/firebase`; versões antigas com
+apenas `/auth/login` exigem atualização. A integração real ainda depende da configuração Firebase/API e de
+uma conta operacional válida.
 
 Após resposta inconclusiva, produto, fornecedor, lote e contagem oferecem
 consulta ao servidor antes de outro envio. Após erro de troca de senha, os

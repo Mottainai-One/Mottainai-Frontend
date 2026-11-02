@@ -1,8 +1,11 @@
 // Somente textos conhecidos são exibidos; respostas desconhecidas usam mensagens locais.
 const messages: Record<string, string> = {
+  'operational account is unavailable': 'Seu acesso ao sistema não está disponível. Solicite a revisão do vínculo e da ativação do cadastro.',
   'invalid cpf or password': 'Não foi possível entrar. Confira a senha operacional e se o acesso está ativo.',
   'invalid firebase identity or password': 'Não foi possível entrar. Confira a senha operacional e se o acesso está ativo.',
   'bad credentials': 'Não foi possível entrar. Confira suas credenciais.',
+  'employee role is not supported for api authentication': 'O cargo desta conta não está configurado para acessar o sistema. Solicite a revisão do cadastro.',
+  'staff data could not be authenticated or decrypted': 'Não foi possível ler os dados protegidos do cadastro. Solicite a revisão da configuração do sistema.',
   'invalid firebase id token': 'A autenticação Firebase não foi aceita. Entre novamente.',
   'a verified firebase id token is required': 'Entre com sua conta Firebase para continuar.',
   'invalid or expired invitation token': 'O convite é inválido, expirou ou já foi utilizado.',

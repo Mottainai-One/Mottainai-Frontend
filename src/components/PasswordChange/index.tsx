@@ -27,7 +27,7 @@ export default function PasswordChange() {
     </form>
     {state.status === 'review' && <div className={styles.card}>
       <h3 ref={review} tabIndex={-1}>Confirmar troca de senha operacional</h3>
-      <p>As sessões serão encerradas. Você precisará da senha Firebase e da nova senha operacional para entrar novamente.</p>
+      <p>As sessões serão encerradas. Entre novamente com sua senha de acesso Firebase. A nova senha operacional será usada nas operações que a exigirem.</p>
       <div className={styles.actions}>
         <button type="button" onClick={() => void editor.confirm()}>Confirmar troca de senha</button>
         <button type="button" onClick={() => { editor.cancel(); window.requestAnimationFrame(() => trigger.current?.focus()); }}>Cancelar troca de senha</button>

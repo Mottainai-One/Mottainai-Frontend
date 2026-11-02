@@ -266,7 +266,7 @@ sequenceDiagram
     AP->>AS: login()
     AS->>FB: e-mail e senha
     FB-->>AS: token Firebase
-    AS->>API: POST /auth/login
+    AS->>API: POST /auth/firebase (token Firebase)
     API-->>AS: access/refresh tokens
     AS->>API: GET /auth/profile
     API-->>AS: perfil
@@ -276,7 +276,7 @@ sequenceDiagram
 
 | Comportamento | Detalhe |
 |---|---|
-| Credenciais | Firebase e API operacional configurados; não há conta mock ou senha de demonstração |
+| Credenciais | E-mail e senha validados no Firebase; API operacional recebe somente o token em /auth/firebase e confirma o vínculo ativo |
 | Ambiente sem configuração | Login apresenta erro de configuração/integração e não cria uma sessão fictícia |
 | Sessão | Access/refresh tokens mantidos em memória; recarregar a página exige novo login |
 | Autorização | `PrivateRoute` só confere `isAuthenticated`; a API deve validar permissões. Os cargos e lojas exibidos na administração de funcionários vêm da API |
