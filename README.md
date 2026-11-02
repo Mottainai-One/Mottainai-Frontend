@@ -645,3 +645,31 @@ checagem de tipos e análise estática dos arquivos alterados. Layout e foco for
 verificados em 375, 768 e 1440 pixels, com respostas sintéticas da API e sem
 gravações no banco. As gravações reais e o envio de convites ainda dependem da
 configuração Firebase e de uma conta operacional com permissão administrativa.
+
+Oitavo incremento: `/overview` consulta os alertas da loja de `/auth/profile`
+em `/alerts?storeId=ID`. Busca e filtro por status atuam somente nos registros
+retornados. O detalhe, reaberto por `/overview?alert=ID`, combina `/alerts/{id}`
+e `/alerts/{id}/suggested-actions`; as consultas são canceladas ao sair da tela.
+Não há geração local de previsão, alerta, sugestão ou valor financeiro.
+
+Alterar status envia `PATCH /alerts/{id}/status` após revisão. Aprovar/rejeitar
+uma sugestão pendente usa `POST /suggested-actions/{id}/decision`, com
+`APPROVED` ou `REJECTED`. A resposta do servidor atualiza a tela; não há alteração
+otimista nem chamada a `/execute`. Aprovar é uma decisão, não a execução da
+operação sugerida. A execução operacional continua pendente de integração dos
+formulários e contratos próprios de cada tipo de sugestão.
+
+Qualquer falha de mutação exige consultar novamente o alerta e suas sugestões
+antes de liberar outra operação. Uma falha nessa consulta mantém o bloqueio.
+Essa precaução evita repetir uma decisão aplicada cuja resposta se perdeu;
+não pressupõe idempotência nos contratos de status/decisão. O servidor permanece
+responsável por autorização, contexto da loja e concorrência. Os testes e a
+verificação visual usam dados sintéticos; o fluxo autenticado real permanece
+condicionado à configuração Firebase e à conta operacional vinculada.
+
+Verificação do oitavo incremento: 12 testes novos e 30 regressões de integração
+aprovados, análise estática dos arquivos envolvidos e compilação de produção.
+Layout, revisão, retorno de foco e texto ampliado a 200% foram verificados em
+375, 768 e 1440 pixels, sem transbordamento horizontal da página. As tabelas
+mantêm rolagem própria. As bordas dos campos usam a cor do texto para preservar
+contraste também quando o tema altera a cor da superfície.

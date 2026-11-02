@@ -55,7 +55,7 @@
   /* Aparência */
   background-color: var(--a11y-surface, var(--main-white));
   border-radius: 0.5rem;
-  border: 1px solid var(--a11y-card-border, #817970);
+  border: 1px solid currentColor;
 
   /* Texto */
   font: inherit;
