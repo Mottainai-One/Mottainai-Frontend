@@ -52,7 +52,7 @@
 
 .fieldError {
     /* Texto */
-    color: var(--a11y-text-muted, #a32720);
+    color: var(--a11y-text-muted, var(--a11y-field-error-text));
     font-size: 0.8rem;
     font-weight: 600;
 }
@@ -62,7 +62,7 @@
 .formField textarea {
     width: 100%;
     box-sizing: border-box;
-    border: 1px solid #bcb5ae;
+    border: 1px solid var(--a11y-textarea-border);
     border-radius: 0.45rem;
     background: var(--a11y-surface-raised, #f5f1ee);
     color: var(--a11y-text-muted, #625d58);
@@ -92,13 +92,13 @@
 
 .feedback {
     margin: 0;
-    color: #205c1c;
+    color: var(--a11y-status-success-text);
     font-size: 0.8rem;
     font-weight: 700;
 }
 
 .feedbackError {
-    color: #8f1d18;
+    color: var(--a11y-feedback-error-text);
 }
 
 .submitButton {
@@ -167,19 +167,25 @@
     color: #783800;
 }
 
+:global(html[data-a11y-theme="dark"]) .feedback {
+    color: var(--a11y-success-text);
+}
+
+:global(html[data-a11y-theme="dark"]) .feedbackError,
+:global(html[data-a11y-theme="dark"]) .lossValue {
+    color: var(--a11y-error-text);
+}
+
+:global(html[data-a11y-theme="dark"]) .expiryValue {
+    color: var(--a11y-warning-text);
+}
+
 .recordsSection {
     margin-top: 1rem;
 }
 
 .sr-only {
-    position: absolute;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    border: 0;
-    white-space: nowrap;
+    composes: visually-hidden from global;
 }
 
 @media (max-width: 900px) {

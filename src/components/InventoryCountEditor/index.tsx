@@ -24,6 +24,12 @@ export default function InventoryCountEditor(props: InventoryCountEditorProps) {
       editor.edit(item);
       document.getElementById('count-item-quantity')?.focus();
     }}>Editar quantidade</button> },
+    { id: 'remove', header: 'Remover', renderCell: (item) => <button type="button" id={`remove-count-item-${item.id}`}
+      disabled={!editor.editable || state.reviewing || Boolean(state.item.inventoryId || state.item.quantity || state.item.observation)}
+      aria-label={`Remover item ${item.inventoryId} da contagem`} onClick={() => {
+        editor.askRemove(item);
+        window.requestAnimationFrame(() => document.getElementById('count-remove-title')?.focus());
+      }}>Remover item</button> },
   ];
   const pendingItem = Boolean(state.item.inventoryId || state.item.quantity || state.item.observation);
   return (
@@ -52,6 +58,22 @@ export default function InventoryCountEditor(props: InventoryCountEditorProps) {
         <div className={styles.itemTable}>
           <ReusableTable title="Itens da contagem" columns={columns} data={count.items} rowKey={(item) => item.id} emptyMessage="Nenhum item foi registrado nesta contagem." />
         </div>
+        {state.removal && !state.uncertainRemoval && <section className={styles.card} aria-labelledby="count-remove-title">
+          <h2 id="count-remove-title" tabIndex={-1}>Revisar remoção do item {state.removal.inventoryId}</h2>
+          <p>A quantidade física deste item será retirada da contagem. O saldo do estoque não será alterado.</p>
+          <div className={styles.actions}>
+            <button type="button" disabled={state.busy} onClick={async () => {
+              await editor.remove();
+              window.requestAnimationFrame(() => document.getElementById('count-feedback')?.focus());
+            }}>Confirmar remoção do item</button>
+            <button type="button" disabled={state.busy} onClick={() => {
+              const id = state.removal?.id;
+              editor.askRemove(null);
+              window.requestAnimationFrame(() => document.getElementById(`remove-count-item-${id}`)?.focus());
+            }}>Manter item na contagem</button>
+          </div>
+        </section>}
+        {state.uncertainRemoval && <p role="alert">A remoção ainda não foi confirmada. Consulte o estado da contagem antes de continuar.</p>}
         {count.status === 'IN_PROGRESS' && !state.reviewing && <form className={styles.card} onSubmit={editor.save} noValidate>
           <h2>Registrar quantidade física</h2>
           <p>Selecione o produto e lote. Para um item já contado, salvar substitui a quantidade física anterior.</p>

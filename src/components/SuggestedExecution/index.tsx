@@ -80,6 +80,10 @@ export default function SuggestedExecution(props: SuggestedExecutionProps) {
     {state.busy && <p role="status">Executando sugestão…</p>}
     {result && <><p role="status">Execução confirmada pelo servidor. Registro criado: {executionEntityLabels[result.entityType] ?? result.entityType}, identificador {result.entityId}. Ação {result.suggestedAction.id} executada.</p>
       {result.entityType === 'transfer' && <Link className={styles.link} to={`/stock/transfers?id=${result.entityId}`}>Abrir transferência {result.entityId}</Link>}
+      {result.entityType === 'purchase_order' && <Link className={styles.link} to={`/stock?purchaseOrderId=${result.entityId}`}>Acompanhar pedido de compra {result.entityId}</Link>}
+      {result.entityType === 'promotion' && <Link className={styles.link} to={`/products?promotionId=${result.entityId}`}>Acompanhar promoção {result.entityId}</Link>}
+      {result.entityType === 'donation' && <Link className={styles.link} to={`/stock/damages?donationId=${result.entityId}`}>Acompanhar doação {result.entityId}</Link>}
+      {result.entityType === 'replenishment_pre_list' && <Link className={styles.link} to={`/stock?preListId=${result.entityId}`}>Acompanhar pré-lista {result.entityId}</Link>}
       <button type="button" onClick={props.onCompleted}>Concluir e atualizar alerta</button>
     </>}
     {!result && <button type="button" disabled={state.busy} onClick={props.onClose}>{state.uncertain ? 'Sair e consultar estado do alerta' : 'Voltar ao alerta'}</button>}

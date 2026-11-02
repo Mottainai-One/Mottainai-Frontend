@@ -93,12 +93,12 @@
 
 .error {
   /* Texto */
-  color: var(--a11y-text-muted, #8f1d18);
+  color: var(--a11y-text-muted, var(--a11y-feedback-error-text));
 }
 
 .feedback {
   /* Texto */
-  color: var(--a11y-text-muted, #205c1c);
+  color: var(--a11y-text-muted, var(--a11y-status-success-text));
 }
 
 @media (max-width: 640px) {

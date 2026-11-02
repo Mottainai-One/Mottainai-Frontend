@@ -91,7 +91,7 @@
   min-width: 0;
 }
 
-.page :is(button, a, input, select, textarea, h2, p, fieldset):focus-visible {
+.page :is(button, a, input, select, textarea, h2, h3, p, fieldset):focus-visible {
   /* Aparência */
   outline: 3px solid var(--a11y-brand-text, var(--motta-blue));
   outline-offset: 3px;

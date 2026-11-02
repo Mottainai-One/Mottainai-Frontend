@@ -1,9 +1,9 @@
-import type { ApiPage } from '@/types/api.types';
 import type { SupplierRecord, SupplierFormState, SupplierEditState } from '@/types/supplier.types';
 import type { SupplierResponse, CreateSupplierPayload, UpdateSupplierPayload } from '@/types/supplier-api.types';
 import { sanitizeSupplierForm, validateSupplierForm, validateSupplierEdit } from '@/utils/supplierFormValidation';
-import { apiRequest, serviceError } from './apiClient';
+import { apiPages, apiRequest, serviceError } from './apiClient';
 import { getAddress } from './addressService';
+import { operationalId } from '@/utils/operationalValidation';
 
 function toRecord(item: SupplierResponse): SupplierRecord {
   return { id: String(item.id), addressId: item.address.id, tradeName: item.tradeName,
@@ -12,12 +12,7 @@ function toRecord(item: SupplierResponse): SupplierRecord {
 
 export async function getSuppliers(signal?: AbortSignal): Promise<SupplierRecord[]> {
   try {
-    const records: SupplierRecord[] = [];
-    for (let page = 0; ; page += 1) {
-      const result = await apiRequest<ApiPage<SupplierResponse>>(`/suppliers?page=${page}&size=100`, { signal });
-      records.push(...result.content.map(toRecord));
-      if (result.last || result.content.length === 0) return records;
-    }
+    return (await apiPages<SupplierResponse>('/suppliers', signal)).map(toRecord);
   } catch (error) { throw serviceError(error, 'Não foi possível carregar os fornecedores.'); }
 }
 
@@ -41,7 +36,12 @@ export async function updateSupplier(id: string, draft: SupplierEditState): Prom
     const { id: addressId, ...address } = current.address;
     if (!addressId) throw new Error('O fornecedor não possui endereço válido.');
     const body: UpdateSupplierPayload = { address, tradeName: draft.tradeName.trim(),
-      active: draft.active, email: current.email ?? '', phone: current.phone ?? '' };
+      active: draft.active, email: draft.email === undefined ? current.email ?? '' : draft.email.trim(), phone: draft.phone === undefined ? current.phone ?? '' : draft.phone.trim() };
     return toRecord(await apiRequest<SupplierResponse>(`/suppliers/${id}`, { method: 'PUT', body }));
   } catch (error) { throw serviceError(error, 'Não foi possível atualizar o fornecedor.'); }
+}
+
+export async function deleteSupplier(id: string): Promise<void> {
+  try { return await apiRequest<void>(`/suppliers/${operationalId(Number(id))}`, { method: 'DELETE' }); }
+  catch (error) { throw serviceError(error, 'Não foi possível excluir o fornecedor.'); }
 }

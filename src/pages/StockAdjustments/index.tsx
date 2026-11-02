@@ -6,8 +6,11 @@ import type { InventoryMovementResponse } from '@/types/inventory-movement-api.t
 import type { ReusableTableColumn } from '@/types/reusable-table.types';
 import { formatCountDate } from '@/utils/inventoryPresentation';
 import styles from './style.module.css';
+import DonationOperations from '@/components/DonationOperations';
 
-export default function StockAdjustments() {
+export interface StockAdjustmentsProps { trackedDonationId?: number | null; }
+
+export default function StockAdjustments({ trackedDonationId = null }: StockAdjustmentsProps) {
   const editor = useStockDisposals();
   const { state } = editor;
   const batchMap = new Map(editor.inventory.data.map((item) => [item.batchId, item]));
@@ -143,6 +146,7 @@ export default function StockAdjustments() {
         <p role="status">{editor.consumptions.length === 1 ? '1 registro de consumo interno encontrado.' : `${editor.consumptions.length} registros de consumo interno encontrados.`}</p>
         <ReusableTable title="Consumo interno" columns={consumptionColumns} data={editor.consumptions} rowKey={(item) => item.id} emptyMessage="Nenhuma saída identificada como consumo interno no período." />
       </div>}
+      <DonationOperations trackedDonationId={trackedDonationId} inventory={editor.inventory.data} inventoryStatus={editor.inventory.status} />
     </section>
   );
 }

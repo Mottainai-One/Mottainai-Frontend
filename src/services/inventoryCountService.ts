@@ -42,3 +42,11 @@ export async function finishInventoryCount(countId: string, key: string): Promis
     return await apiRequest<InventoryCount>(`/inventory-counts/${countId}/finish`, { method: 'POST', headers: { 'Idempotency-Key': key } });
   } catch (error) { throw serviceError(error, 'Não foi possível finalizar a contagem.'); }
 }
+
+export async function deleteInventoryCountItem(countId: string, itemId: number): Promise<void> {
+  try {
+    requireInventoryId(countId);
+    requireInventoryId(String(itemId));
+    return await apiRequest<void>(`/inventory-counts/${countId}/items/${itemId}`, { method: 'DELETE' });
+  } catch (error) { throw serviceError(error, 'Não foi possível remover o item da contagem.'); }
+}

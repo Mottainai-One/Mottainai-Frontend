@@ -4,6 +4,8 @@ import StockAdjustments from '../src/pages/StockAdjustments';
 import { createDisposal, getDisposals } from '../src/services/disposalService';
 import { createConsumption, getInventoryMovements } from '../src/services/inventoryMovementService';
 import { getInventoryRows } from '../src/services/inventoryService';
+import { getCurrentProfile } from '../src/services/profileService';
+import { getDonations, getDonation, createDonation, updateDonationStatus } from '../src/services/donationService';
 import { ApiRequestError } from '../src/services/apiClient';
 import { operationDateParams } from '../src/utils/operationDateRange';
 import { stockExitAttempt, validateConsumptionPayload } from '../src/utils/disposalValidation';
@@ -13,6 +15,8 @@ import type { DisposalResponse } from '../src/types/stock-disposal.types';
 vi.mock('../src/services/disposalService', () => ({ createDisposal: vi.fn(), getDisposals: vi.fn() }));
 vi.mock('../src/services/inventoryMovementService', () => ({ createConsumption: vi.fn(), getInventoryMovements: vi.fn() }));
 vi.mock('../src/services/inventoryService', () => ({ getInventoryRows: vi.fn() }));
+vi.mock('../src/services/profileService', () => ({ getCurrentProfile: vi.fn() }));
+vi.mock('../src/services/donationService', () => ({ getDonations: vi.fn(), getDonation: vi.fn(), createDonation: vi.fn(), updateDonationStatus: vi.fn() }));
 
 const inventory: InventoryRow = { id: 2, storeId: 10, batchId: 5, inventoryType: 'NORMAL', currentQuantity: 4, minimumQuantity: 1, maximumQuantity: null,
   location: 'Depósito', version: 0, reactivated: false, productId: 6, productName: 'Produto de teste', barcode: '123', unitMeasure: 'UN', batchCode: 'L1', expirationDate: '2027-01-01' };
@@ -20,6 +24,11 @@ const disposal: DisposalResponse = { id: 11, storeId: 10, employeeId: 7, reason:
   items: [{ id: 1, batchId: 5, disposedQuantity: 1 }] };
 
 beforeEach(() => {
+  vi.mocked(getCurrentProfile).mockResolvedValue({ id: 7, name: 'Teste', email: null, role: 'Manager', storeId: 10, active: true });
+  vi.mocked(getDonations).mockResolvedValue([]);
+  vi.mocked(getDonation).mockReset();
+  vi.mocked(createDonation).mockReset();
+  vi.mocked(updateDonationStatus).mockReset();
   vi.mocked(getInventoryRows).mockResolvedValue([inventory]);
   vi.mocked(getDisposals).mockResolvedValue([]);
   vi.mocked(getInventoryMovements).mockResolvedValue([]);

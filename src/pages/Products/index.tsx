@@ -1,5 +1,5 @@
-import { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import DetailsModal from "@/components/DetailsModal";
@@ -12,6 +12,7 @@ import type {
   ProductFilterState,
 } from "@/types/product.types";
 import styles from "./style.module.css";
+import PromotionOperations from '@/components/PromotionOperations';
 
 
 const initialFilters: ProductFilterState = { search: "", category: "" };
@@ -27,6 +28,11 @@ const normalize = (value: string) =>
     .trim();
 
 function Products() {
+  const location = useLocation();
+  const [params] = useSearchParams();
+  const trackedPromotionValue = params.get('promotionId') ?? '';
+  const trackedPromotionId = /^[1-9]\d*$/.test(trackedPromotionValue) && Number.isSafeInteger(Number(trackedPromotionValue)) ? Number(trackedPromotionValue) : null;
+  useEffect(() => { document.getElementById('product-deleted-feedback')?.focus(); }, [location.key]);
   const query = useApiQuery(getProducts, []);
   const products = query.data;
   const [filters, setFilters] = useState<ProductFilterState>(initialFilters);
@@ -52,6 +58,7 @@ function Products() {
 
   return (
     <section className={styles.page} aria-labelledby="products-title">
+      {typeof location.state === 'object' && location.state !== null && 'productDeleted' in location.state && location.state.productDeleted === true && <p id="product-deleted-feedback" tabIndex={-1} role="status">Produto excluído ou não disponível na consulta atual. A lista foi consultada novamente.</p>}
       <h1 className={styles["sr-only"]} id="products-title">
         Produtos
       </h1>
@@ -152,6 +159,7 @@ function Products() {
           </Link>
         </DetailsModal>
       )}
+      <PromotionOperations trackedPromotionId={trackedPromotionId} />
     </section>
   );
 }

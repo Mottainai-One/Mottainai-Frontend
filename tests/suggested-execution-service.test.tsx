@@ -50,5 +50,5 @@ it('distingue proibição de listar lojas de falhas da API', async () => {
   vi.mocked(getStores).mockRejectedValueOnce(new ApiRequestError('Sem permissão', 403));
   expect((await getExecutionContext('CREATE_TRANSFER')).storeListAvailable).toBe(false);
   vi.mocked(getStores).mockRejectedValueOnce(new ApiRequestError('Indisponível', 500));
-  await expect(getExecutionContext('CREATE_TRANSFER')).rejects.toThrow('Indisponível');
+  await expect(getExecutionContext('CREATE_TRANSFER')).rejects.toThrow(/indisponível/i);
 });

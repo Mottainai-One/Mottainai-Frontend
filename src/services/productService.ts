@@ -1,16 +1,12 @@
 import type { CatalogProduct, CatalogProductForm } from '@/types/catalog-product.types';
-import type { ApiPage } from '@/types/api.types';
 import { toCatalogProductPayload } from '@/utils/catalogProductValidation';
-import { apiRequest, serviceError } from './apiClient';
+import { apiPages, apiRequest, serviceError } from './apiClient';
+import { operationalId } from '@/utils/operationalValidation';
+import { productActive } from '@/utils/productOperationsValidation';
 
 export async function getProducts(signal?: AbortSignal): Promise<CatalogProduct[]> {
   try {
-    const products: CatalogProduct[] = [];
-    for (let page = 0; ; page += 1) {
-      const result = await apiRequest<ApiPage<CatalogProduct>>(`/products?page=${page}&size=100`, { signal });
-      products.push(...result.content);
-      if (result.last || result.content.length === 0) return products;
-    }
+    return await apiPages<CatalogProduct>('/products', signal);
   } catch (error) { throw serviceError(error, 'Não foi possível consultar os produtos.'); }
 }
 
@@ -26,4 +22,15 @@ export async function createProduct(form: CatalogProductForm): Promise<CatalogPr
     const body = toCatalogProductPayload(form);
     return await apiRequest<CatalogProduct>('/products', { method: 'POST', body });
   } catch (error) { throw serviceError(error, 'Não foi possível cadastrar o produto.'); }
+}
+
+export async function updateProductStatus(id: number, active: boolean): Promise<CatalogProduct> {
+  try {
+    return await apiRequest<CatalogProduct>(`/products/${operationalId(id)}/status`, { method: 'PATCH', body: { active: productActive(active) } });
+  } catch (error) { throw serviceError(error, 'Não foi possível alterar o status do produto.'); }
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  try { return await apiRequest<void>(`/products/${operationalId(id)}`, { method: 'DELETE' }); }
+  catch (error) { throw serviceError(error, 'Não foi possível excluir o produto.'); }
 }

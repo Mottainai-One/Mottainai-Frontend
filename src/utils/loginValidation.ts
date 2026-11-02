@@ -1,7 +1,7 @@
 import type { LoginCredentials } from "@/types/auth.types";
 import { isValidEmailAddress } from "./emailValidation.ts";
 
-export type LoginValidationErrors = Partial<Record<"email" | "password", string>>;
+export type LoginValidationErrors = Partial<Record<"email" | "password" | "apiPassword", string>>;
 
 const MAX_EMAIL_LENGTH = 254;
 const MAX_PASSWORD_LENGTH = 128;
@@ -16,9 +16,11 @@ export function validateLoginCredentials(credentials: LoginCredentials): LoginVa
 
   if (!credentials.password) errors.password = "Informe sua senha.";
   else if (credentials.password.length > MAX_PASSWORD_LENGTH) errors.password = `Use até ${MAX_PASSWORD_LENGTH} caracteres na senha.`;
+  if (credentials.apiPassword !== undefined && (!credentials.apiPassword || credentials.apiPassword.length > 72)) errors.apiPassword = 'Informe a senha operacional com até 72 caracteres.';
   return errors;
 }
 
 export function sanitizeLoginCredentials(credentials: LoginCredentials): LoginCredentials {
-  return { email: credentials.email.trim().slice(0, MAX_EMAIL_LENGTH), password: credentials.password };
+  return { email: credentials.email.trim().slice(0, MAX_EMAIL_LENGTH), password: credentials.password,
+    ...(credentials.apiPassword === undefined ? {} : { apiPassword: credentials.apiPassword }) };
 }

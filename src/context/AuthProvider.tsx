@@ -9,7 +9,6 @@ import type {
   AuthProviderProps,
   AuthAction,
   AuthState,
-  StoredAuthToken,
   User,
 } from '@/types/auth.types';
 import { sanitizeLoginCredentials, validateLoginCredentials } from '@/utils/loginValidation';
@@ -33,20 +32,12 @@ function decodeUserFromToken(token: string): User | null {
 }
 
 const initialAuthState: AuthState = {
+  notice: null,
   token: null,
   user: null,
   isLoggingIn: false,
   error: null,
 };
-
-function isStoredAuthToken(value: unknown): value is StoredAuthToken {
-  return typeof value === 'object'
-    && value !== null
-    && '_versao' in value
-    && value._versao === 1
-    && 'token' in value
-    && typeof value.token === 'string';
-}
 
 function discardStoredToken(): void {
   try {
@@ -57,65 +48,20 @@ function discardStoredToken(): void {
 }
 
 function getInitialAuthState(): AuthState {
-  if (!authService.isMockAuthenticationEnabled) {
-    discardStoredToken();
-    return initialAuthState;
-  }
-
-  let storedValue: string | null;
-  try {
-    storedValue = localStorage.getItem(TOKEN_KEY);
-  } catch {
-    return initialAuthState;
-  }
-  if (!storedValue) return initialAuthState;
-
-  let token: string | null = null;
-  let isCurrentSchema = false;
-  try {
-    const parsedValue: unknown = JSON.parse(storedValue);
-    if (isStoredAuthToken(parsedValue)) {
-      token = parsedValue.token;
-      isCurrentSchema = true;
-    } else if (typeof parsedValue === 'string') {
-      token = parsedValue;
-    }
-  } catch {
-    token = storedValue;
-  }
-
-  if (!token) {
-    discardStoredToken();
-    return initialAuthState;
-  }
-
-  const decodedUser = decodeUserFromToken(token);
-  if (!decodedUser) {
-    discardStoredToken();
-    return initialAuthState;
-  }
-
-  if (!isCurrentSchema) {
-    try {
-      localStorage.setItem(TOKEN_KEY, JSON.stringify({ _versao: 1, token } satisfies StoredAuthToken));
-    } catch {
-      // A sessão continua disponível nesta visita se a migração não puder ser gravada.
-    }
-  }
-
-  return { ...initialAuthState, token, user: decodedUser };
+  discardStoredToken();
+  return initialAuthState;
 }
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
     case 'login-started':
-      return { ...state, isLoggingIn: true, error: null };
+      return { ...state, isLoggingIn: true, error: null, notice: null };
     case 'login-succeeded':
-      return { token: action.token, user: action.user, isLoggingIn: false, error: null };
+      return { token: action.token, user: action.user, isLoggingIn: false, error: null, notice: null };
     case 'login-failed':
       return { ...state, isLoggingIn: false, error: action.error };
     case 'logged-out':
-      return initialAuthState;
+      return { ...initialAuthState, notice: action.notice ?? null };
     case 'error-cleared':
       return { ...state, error: null };
   }
@@ -125,7 +71,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [authState, dispatch] = useReducer(authReducer, undefined, getInitialAuthState);
 
-  // Valida e inicia a sessão de demonstração.
+  // Valida as credenciais e inicia a sessão retornada pelo servidor.
   const login = useCallback(async (credentials: LoginCredentials) => {
     dispatch({ type: 'login-started' });
 
@@ -139,17 +85,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!decodedUser) {
         throw new Error('Não foi possível validar o token recebido.');
-      }
-
-      if (authService.isMockAuthenticationEnabled) {
-        try {
-          localStorage.setItem(
-            TOKEN_KEY,
-            JSON.stringify({ _versao: 1, token } satisfies StoredAuthToken),
-          );
-        } catch {
-          // O login permanece válido em memória se o armazenamento estiver bloqueado.
-        }
       }
 
       dispatch({ type: 'login-succeeded', token, user: decodedUser });
@@ -169,9 +104,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
-    const onExpired = () => {
+    const onExpired = (event: Event) => {
       discardStoredToken();
-      dispatch({ type: 'logged-out' });
+      const changed = 'detail' in event && typeof event.detail === 'object' && event.detail !== null
+        && 'reason' in event.detail && event.detail.reason === 'password-changed';
+      dispatch({ type: 'logged-out', ...(changed ? { notice: 'password-changed' as const } : {}) });
     };
     window.addEventListener('mottainai:session-expired', onExpired);
     return () => window.removeEventListener('mottainai:session-expired', onExpired);
@@ -189,6 +126,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = useMemo<AuthContextData>(
     () => ({
       user: authState.user,
+      notice: authState.notice,
       token: authState.token,
       isAuthenticated,
       isLoggingIn: authState.isLoggingIn,

@@ -24,7 +24,6 @@ export default function ProductsRegistration() {
       <section className={styles.card}>
         <h1 id="registration-title">Novo produto</h1>
         <p>O SKU é gerado após o cadastro. Preencha os dados fiscais de acordo com o produto.</p>
-        <p>Importação XML/CSV indisponível nesta integração. Use o cadastro manual.</p>
         {(categories.status === 'loading' || taxProfiles.status === 'loading') && <p role="status">Carregando categorias e perfis fiscais…</p>}
         {categories.status === 'error' && <p role="alert">{categories.error}</p>}
         {taxProfiles.status === 'error' && <p role="alert">{taxProfiles.error}</p>}

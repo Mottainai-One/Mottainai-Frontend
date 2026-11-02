@@ -38,4 +38,7 @@ export function validateSupplierEdit(id: string, draft: SupplierEditState): void
   if (!/^[1-9]\d*$/.test(id) || !draft.tradeName.trim() || draft.tradeName.trim().length > 150) {
     throw new Error('Informe um fornecedor e um apelido válido de até 150 caracteres.');
   }
+  if (typeof draft.active !== 'boolean') throw new Error('Informe um status válido.');
+  if (draft.email !== undefined && (draft.email.trim().length > 150 || (draft.email.trim() && !isValidEmailAddress(draft.email.trim())))) throw new Error('Informe um e-mail válido com até 150 caracteres.');
+  if (draft.phone !== undefined && draft.phone.trim().length > 20) throw new Error('O telefone deve ter até 20 caracteres.');
 }

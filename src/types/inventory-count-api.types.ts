@@ -37,6 +37,8 @@ export interface CountEditorState {
   failed: boolean;
   reviewing: boolean;
   uncertainFinish: boolean;
+  removal: InventoryCountItem | null;
+  uncertainRemoval: boolean;
   errors: Partial<Record<keyof CountItemForm, string>>;
 }
 

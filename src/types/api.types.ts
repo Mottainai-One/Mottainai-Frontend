@@ -12,6 +12,7 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'body'> {
 }
 
 export interface ApiPage<T> {
+  number?: number;
   content: T[];
   last: boolean;
   totalElements: number;

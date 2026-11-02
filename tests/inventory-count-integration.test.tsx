@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import InventoryCountEditor from '../src/components/InventoryCountEditor';
-import { getInventoryCount, finishInventoryCount, saveInventoryCountItem } from '../src/services/inventoryCountService';
+import { getInventoryCount, finishInventoryCount, saveInventoryCountItem, deleteInventoryCountItem } from '../src/services/inventoryCountService';
 import { getInventoryRows } from '../src/services/inventoryService';
 import { toCountItemPayload } from '../src/utils/inventoryValidation';
 import type { InventoryCount } from '../src/types/inventory-count-api.types';
@@ -10,6 +10,7 @@ import type { InventoryRow } from '../src/types/inventory-api.types';
 
 vi.mock('../src/services/inventoryCountService', () => ({
   getInventoryCount: vi.fn(), finishInventoryCount: vi.fn(), saveInventoryCountItem: vi.fn(), createInventoryCount: vi.fn(),
+  deleteInventoryCountItem: vi.fn(),
 }));
 vi.mock('../src/services/inventoryService', () => ({ getInventoryRows: vi.fn() }));
 
@@ -23,6 +24,35 @@ beforeEach(() => {
   vi.mocked(getInventoryRows).mockResolvedValue([inventory]);
 });
 afterEach(cleanup);
+
+it('remove um item somente após confirmação e nova consulta à contagem', async () => {
+  vi.mocked(deleteInventoryCountItem).mockResolvedValue(undefined);
+  mount();
+  const remove = await screen.findByRole('button', { name: 'Remover item 2 da contagem' });
+  await waitFor(() => expect((remove as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(remove);
+  expect(deleteInventoryCountItem).not.toHaveBeenCalled();
+  vi.mocked(getInventoryCount).mockResolvedValue({ ...count, items: [] });
+  const confirm = await screen.findByRole('button', { name: 'Confirmar remoção do item' });
+  fireEvent.click(confirm); fireEvent.click(confirm);
+  await screen.findByText('Item removido da contagem. Nenhum saldo de estoque foi alterado.');
+  expect(deleteInventoryCountItem).toHaveBeenCalledTimes(1);
+  expect(deleteInventoryCountItem).toHaveBeenCalledWith('1', 3);
+});
+
+it('bloqueia novas ações quando a resposta de remoção é perdida', async () => {
+  vi.mocked(deleteInventoryCountItem).mockReset().mockRejectedValue(new Error('Resposta perdida'));
+  mount();
+  const remove = await screen.findByRole('button', { name: 'Remover item 2 da contagem' });
+  await waitFor(() => expect((remove as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(remove);
+  fireEvent.click(await screen.findByRole('button', { name: 'Confirmar remoção do item' }));
+  await screen.findByText('A remoção ainda não foi confirmada. Consulte o estado da contagem antes de continuar.');
+  expect(screen.queryByRole('button', { name: 'Confirmar remoção do item' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Consultar estado da contagem' }));
+  await screen.findByText('Estado da contagem atualizado.');
+  expect(deleteInventoryCountItem).toHaveBeenCalledTimes(1);
+});
 
 function mount() {
   render(<MemoryRouter><InventoryCountEditor countId="1" onCreated={vi.fn()} /></MemoryRouter>);

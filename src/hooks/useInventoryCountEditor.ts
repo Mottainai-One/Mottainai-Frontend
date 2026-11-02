@@ -2,7 +2,8 @@ import { useCallback, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type { CountEditorState, CountItemForm, InventoryCount, InventoryCountItem, InventoryCountEditorProps } from '@/types/inventory-count-api.types';
 import { getInventoryRows } from '@/services/inventoryService';
-import { createInventoryCount, getInventoryCount, saveInventoryCountItem, finishInventoryCount } from '@/services/inventoryCountService';
+import { createInventoryCount, getInventoryCount, saveInventoryCountItem, finishInventoryCount, deleteInventoryCountItem } from '@/services/inventoryCountService';
+import { ApiRequestError } from '@/services/apiClient';
 import { countItemErrors } from '@/utils/inventoryValidation';
 import { useApiQuery } from './useApiQuery';
 
@@ -15,9 +16,9 @@ export function useInventoryCountEditor({ countId, onCreated }: InventoryCountEd
   const inventory = useApiQuery(getInventoryRows, []);
   const lock = useRef(false);
   const finishKey = useRef<string | null>(null);
-  const [state, setState] = useState<CountEditorState>({ countId, count: null, item: emptyItem, observation: '', busy: false, message: '', failed: false, reviewing: false, uncertainFinish: false, errors: {} });
+  const [state, setState] = useState<CountEditorState>({ countId, count: null, item: emptyItem, observation: '', busy: false, message: '', failed: false, reviewing: false, uncertainFinish: false, removal: null, uncertainRemoval: false, errors: {} });
   const count = state.count ?? query.data;
-  const editable = count?.status === 'IN_PROGRESS' && !state.busy && !state.uncertainFinish;
+  const editable = count?.status === 'IN_PROGRESS' && !state.busy && !state.uncertainFinish && !state.removal && !state.uncertainRemoval;
   const availableInventory = inventory.data.filter((item) => !count || item.storeId === count.storeId);
 
   async function run(message: string, action: () => Promise<void>): Promise<void> {
@@ -83,11 +84,34 @@ export function useInventoryCountEditor({ countId, onCreated }: InventoryCountEd
     if (!countId) return;
     await run('Consultando estado da contagem…', async () => {
       const latest = await getInventoryCount(countId);
-      setState((previous) => ({ ...previous, count: latest, uncertainFinish: false, reviewing: false, message: 'Estado da contagem atualizado.' }));
+      setState((previous) => ({ ...previous, count: latest, uncertainFinish: false, reviewing: false, removal: null, uncertainRemoval: false, message: 'Estado da contagem atualizado.' }));
     });
   }
 
-  return { state, count, query, inventory, availableInventory, editable, change, create, save, edit, finish, reload,
+  async function remove(): Promise<void> {
+    if (!state.removal || state.uncertainRemoval || !count || count.status !== 'IN_PROGRESS' || state.uncertainFinish) return;
+    const itemId = state.removal.id;
+    await run('Removendo item e consultando a contagem…', async () => {
+      setState(previous => ({ ...previous, uncertainRemoval: true }));
+      let deleted = false;
+      try {
+        await deleteInventoryCountItem(countId, itemId);
+        deleted = true;
+        const latest = await getInventoryCount(countId);
+        if (latest.items.some(item => item.id === itemId)) throw new Error('O servidor ainda não confirmou a remoção. Consulte a contagem novamente.');
+        setState(previous => ({ ...previous, count: latest, removal: null, uncertainRemoval: false, message: 'Item removido da contagem. Nenhum saldo de estoque foi alterado.' }));
+      } catch (error) {
+        if (!deleted && error instanceof ApiRequestError && error.status >= 400 && error.status < 500) setState(previous => ({ ...previous, uncertainRemoval: false }));
+        throw error;
+      }
+    });
+  }
+
+  return { state, count, query, inventory, availableInventory, editable, change, create, save, edit, finish, reload, remove,
+    askRemove: (item: InventoryCountItem | null) => {
+      if (state.busy || state.uncertainRemoval || (item && !editable)) return;
+      setState(previous => ({ ...previous, removal: item, message: '', failed: false }));
+    },
     clearItem: () => setState((previous) => ({ ...previous, item: emptyItem, errors: {}, message: '' })),
     changeObservation: (value: string) => setState((previous) => ({ ...previous, observation: value })),
     review: (value: boolean) => setState((previous) => ({ ...previous, reviewing: value })) };

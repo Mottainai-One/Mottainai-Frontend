@@ -1,0 +1,7 @@
+services:
+  api:
+    environment:
+      DB_URL: ${DB_URL:?Defina DB_URL no arquivo de ambiente}
+      DB_USER: ${DB_USERNAME:?Defina DB_USERNAME no arquivo de ambiente}
+      DB_PASSWORD: ${DB_PASSWORD:?Defina DB_PASSWORD no arquivo de ambiente}
+      DB_SCHEMA: ${DB_SCHEMA:?Defina DB_SCHEMA no arquivo de ambiente}

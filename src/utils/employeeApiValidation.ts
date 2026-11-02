@@ -23,3 +23,14 @@ export function employeeCreateInput(draft: EmployeeDraft): CreateEmployeeInput {
   }
   return { ...contact, cpf, roleId: requireInventoryId(draft.roleId), storeId: requireInventoryId(draft.storeId), hireDate: draft.hireDate, createLogin: draft.createLogin };
 }
+
+export function validatedEmployeeUpdate(input: UpdateEmployeeInput): UpdateEmployeeInput {
+  return employeeContactInput({ name: input.name, email: input.email ?? '', phone: input.phone ?? '',
+    roleId: input.roleId == null ? '' : String(input.roleId), cpf: '', storeId: '', hireDate: '', createLogin: false }, false);
+}
+
+export function validatedEmployeeCreate(input: CreateEmployeeInput): CreateEmployeeInput {
+  if (typeof input.createLogin !== 'boolean') throw new Error('Informe se o funcionário terá acesso ao sistema.');
+  return employeeCreateInput({ name: input.name, email: input.email ?? '', phone: input.phone ?? '',
+    roleId: String(input.roleId), cpf: input.cpf, storeId: String(input.storeId), hireDate: input.hireDate, createLogin: input.createLogin });
+}
